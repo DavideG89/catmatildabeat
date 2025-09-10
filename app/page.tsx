@@ -2,9 +2,9 @@
 
 import type React from "react"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { Play, ChevronRight, Clock, Music, Search } from "lucide-react"
+import { Play, ChevronRight, Clock, Music, Search, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import TrendingBeats from "@/components/trending-beats"
@@ -14,10 +14,65 @@ import YouTubeSection from "@/components/youtube-section"
 import TracklistSection from "@/components/tracklist-section"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
+import { useBeats } from "@/components/beats-context"
 
 export default function Home() {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
+  const { searchBeats } = useBeats()
+  const [searchQuery, setSearchQuery] = useState("")
+  const [searchResults, setSearchResults] = useState<any[]>([])
+  const [showSearchResults, setShowSearchResults] = useState(false)
+
+  // Enhanced search function
+  const enhancedSearch = (query: string, allBeats: any[]) => {
+    if (!query.trim()) return []
+
+    const searchTerm = query.toLowerCase().trim()
+
+    return allBeats.filter((beat) => {
+      // Search in title
+      if (beat.title.toLowerCase().includes(searchTerm)) return true
+
+      // Search in producer
+      if (beat.producer.toLowerCase().includes(searchTerm)) return true
+
+      // Search in genre
+      if (beat.genre.toLowerCase().includes(searchTerm)) return true
+
+      // Search in tags/moods
+      if (beat.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm))) return true
+
+      // Search in BPM (exact match or range)
+      const bpmMatch = searchTerm.match(/(\d+)/)
+      if (bpmMatch) {
+        const searchBpm = Number.parseInt(bpmMatch[1])
+        // Allow for ±5 BPM tolerance
+        if (Math.abs(beat.bpm - searchBpm) <= 5) return true
+      }
+
+      // Search in key
+      if (beat.key.toLowerCase().includes(searchTerm)) return true
+
+      // Search in description
+      if (beat.description && beat.description.toLowerCase().includes(searchTerm)) return true
+
+      return false
+    })
+  }
+
+  // Dynamic search as user types
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      const allBeats = searchBeats("") // Get all active beats
+      const results = enhancedSearch(searchQuery, allBeats)
+      setSearchResults(results.slice(0, 6)) // Limit to 6 results for preview
+      setShowSearchResults(true)
+    } else {
+      setSearchResults([])
+      setShowSearchResults(false)
+    }
+  }, [searchQuery, searchBeats])
 
   // Intersection Observer for animations
   useEffect(() => {
@@ -47,17 +102,54 @@ export default function Home() {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (searchInputRef.current) {
-      const query = searchInputRef.current.value.trim()
-      if (query) {
-        router.push(`/beats?search=${encodeURIComponent(query)}`)
-      }
+    if (searchQuery.trim()) {
+      router.push(`/beats?search=${encodeURIComponent(searchQuery)}`)
+      setShowSearchResults(false)
     }
+  }
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }
+
+  const clearSearch = () => {
+    setSearchQuery("")
+    setShowSearchResults(false)
+    if (searchInputRef.current) {
+      searchInputRef.current.focus()
+    }
+  }
+
+  const handleBeatClick = (beatId: string) => {
+    router.push(`/beats/${beatId}`)
+    setShowSearchResults(false)
+  }
+
+  const handleViewAllResults = () => {
+    router.push(`/beats?search=${encodeURIComponent(searchQuery)}`)
+    setShowSearchResults(false)
   }
 
   const handleBrowseBeats = () => {
     window.open("https://beatstars.com/catmatildabeat", "_blank")
   }
+
+  // Close search results when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchInputRef.current &&
+        !searchInputRef.current.closest(".search-container")?.contains(event.target as Node)
+      ) {
+        setShowSearchResults(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   return (
     <div className="flex flex-col min-h-screen mb-24 overflow-hidden">
@@ -117,9 +209,9 @@ export default function Home() {
             </motion.div>
           </motion.div>
 
-          {/* Search Bar */}
+          {/* Enhanced Search Bar */}
           <motion.div
-            className="max-w-2xl mx-auto relative"
+            className="max-w-2xl mx-auto relative search-container"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.5 }}
@@ -130,9 +222,20 @@ export default function Home() {
                 <input
                   ref={searchInputRef}
                   type="text"
-                  placeholder="Search beats, genres, moods..."
-                  className="w-full bg-card/80 backdrop-blur-sm border border-border rounded-full py-3 md:py-4 pl-10 md:pl-12 pr-6 text-foreground focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm md:text-base"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  placeholder="Search beats, genres, moods, BPM..."
+                  className="w-full bg-card/80 backdrop-blur-sm border border-border rounded-full py-3 md:py-4 pl-10 md:pl-12 pr-20 text-foreground focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm md:text-base"
                 />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={clearSearch}
+                    className="absolute right-12 md:right-16 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
                 <Button
                   type="submit"
                   className="absolute right-1.5 top-1.5 rounded-full bg-brand-600 hover:bg-brand-500 px-4 md:px-6 transition-colors text-sm py-1.5"
@@ -141,6 +244,79 @@ export default function Home() {
                 </Button>
               </div>
             </form>
+
+            {/* Search Results Dropdown */}
+            {showSearchResults && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-card/95 backdrop-blur-sm border border-border rounded-xl shadow-lg z-50 max-h-96 overflow-y-auto">
+                {searchResults.length > 0 ? (
+                  <>
+                    <div className="p-4">
+                      <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                        Search Results for "{searchQuery}"
+                      </h3>
+                      <div className="space-y-2">
+                        {searchResults.map((beat) => (
+                          <div
+                            key={beat.id}
+                            onClick={() => handleBeatClick(beat.id)}
+                            className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                          >
+                            <img
+                              src={beat.coverImage || "/placeholder.svg"}
+                              alt={beat.title}
+                              className="w-12 h-12 rounded-lg object-cover"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-medium text-sm truncate">{beat.title}</h4>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <span>{beat.genre}</span>
+                                <span>•</span>
+                                <span>{beat.bpm} BPM</span>
+                                <span>•</span>
+                                <span>{beat.key}</span>
+                              </div>
+                              <div className="flex items-center gap-1 mt-1">
+                                {beat.tags.slice(0, 2).map((tag: string, index: number) => (
+                                  <span
+                                    key={index}
+                                    className="px-2 py-0.5 bg-brand-500/20 text-brand-500 text-xs rounded-full"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-sm font-medium">${beat.price}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="border-t border-border p-3">
+                      <button
+                        onClick={handleViewAllResults}
+                        className="w-full text-center text-sm text-brand-500 hover:text-brand-400 font-medium transition-colors"
+                      >
+                        View all results for "{searchQuery}"
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="p-4 text-center">
+                    <p className="text-muted-foreground text-sm mb-2">No beats found for "{searchQuery}"</p>
+                    <div className="text-xs text-muted-foreground">
+                      <p>Try searching by:</p>
+                      <div className="flex flex-wrap justify-center gap-2 mt-2">
+                        <span className="px-2 py-1 bg-muted rounded">Genre (trap, hip hop)</span>
+                        <span className="px-2 py-1 bg-muted rounded">Mood (dark, chill)</span>
+                        <span className="px-2 py-1 bg-muted rounded">BPM (140, 95)</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </motion.div>
         </div>
       </section>

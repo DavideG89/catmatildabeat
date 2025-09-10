@@ -14,8 +14,50 @@ export default function BeatsList({ searchQuery = "", filters }: BeatsListProps)
   const [beats, setBeats] = useState<any[]>([])
   const [sortBy, setSortBy] = useState("newest")
 
+  // Enhanced search function
+  const enhancedSearch = (query: string, allBeats: any[]) => {
+    if (!query.trim()) return allBeats
+
+    const searchTerm = query.toLowerCase().trim()
+
+    return allBeats.filter((beat) => {
+      // Search in title
+      if (beat.title.toLowerCase().includes(searchTerm)) return true
+
+      // Search in producer
+      if (beat.producer.toLowerCase().includes(searchTerm)) return true
+
+      // Search in genre
+      if (beat.genre.toLowerCase().includes(searchTerm)) return true
+
+      // Search in tags/moods
+      if (beat.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm))) return true
+
+      // Search in BPM (exact match or range)
+      const bpmMatch = searchTerm.match(/(\d+)/)
+      if (bpmMatch) {
+        const searchBpm = Number.parseInt(bpmMatch[1])
+        // Allow for ±5 BPM tolerance
+        if (Math.abs(beat.bpm - searchBpm) <= 5) return true
+      }
+
+      // Search in key
+      if (beat.key.toLowerCase().includes(searchTerm)) return true
+
+      // Search in description
+      if (beat.description && beat.description.toLowerCase().includes(searchTerm)) return true
+
+      return false
+    })
+  }
+
   useEffect(() => {
-    let filteredBeats = searchBeats(searchQuery, filters)
+    let filteredBeats = searchBeats("", filters) // Get all beats with filters first
+
+    // Apply enhanced search
+    if (searchQuery) {
+      filteredBeats = enhancedSearch(searchQuery, filteredBeats)
+    }
 
     // Apply sorting
     switch (sortBy) {
@@ -27,6 +69,12 @@ export default function BeatsList({ searchQuery = "", filters }: BeatsListProps)
         break
       case "popular":
         filteredBeats = filteredBeats.sort((a, b) => (b.sales || 0) - (a.sales || 0))
+        break
+      case "bpm-low":
+        filteredBeats = filteredBeats.sort((a, b) => a.bpm - b.bpm)
+        break
+      case "bpm-high":
+        filteredBeats = filteredBeats.sort((a, b) => b.bpm - a.bpm)
         break
       case "newest":
       default:
@@ -53,6 +101,8 @@ export default function BeatsList({ searchQuery = "", filters }: BeatsListProps)
           <option value="price-low">Sort by: Price (Low to High)</option>
           <option value="price-high">Sort by: Price (High to Low)</option>
           <option value="popular">Sort by: Most Popular</option>
+          <option value="bpm-low">Sort by: BPM (Low to High)</option>
+          <option value="bpm-high">Sort by: BPM (High to Low)</option>
         </select>
       </div>
 
@@ -68,6 +118,17 @@ export default function BeatsList({ searchQuery = "", filters }: BeatsListProps)
           <p className="text-muted-foreground text-sm">
             {searchQuery || filters ? "Try adjusting your search or filters" : "No beats available at the moment"}
           </p>
+          {searchQuery && (
+            <div className="mt-4 text-sm text-muted-foreground">
+              <p>Search tips:</p>
+              <ul className="list-disc list-inside mt-2 space-y-1">
+                <li>Try searching by genre (trap, hip hop, r&b)</li>
+                <li>Search by mood (dark, chill, energetic)</li>
+                <li>Search by BPM (140, 95, etc.)</li>
+                <li>Search by key (C Minor, G Major)</li>
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </div>
