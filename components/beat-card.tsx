@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useState, useRef } from "react"
 import Image from "next/image"
-import Link from "next/link"
 import { Play, Pause, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -17,73 +16,74 @@ interface BeatCardProps {
     title: string
     producer: string
     coverImage: string
-    price: number
+    price?: number
     bpm: number
     key: string
     genre: string
     tags: string[]
     beatstarsLink?: string
+    audioFile?: string
   }
+  onClick?: (e: React.MouseEvent) => void
 }
 
-export default function BeatCard({ beat }: BeatCardProps) {
-  const [isPlaying, setIsPlaying] = useState(false)
+export default function BeatCard({ beat, onClick }: BeatCardProps) {
   const [isHovered, setIsHovered] = useState(false)
-  const { setCurrentTrack, currentTrack, isPlaying: globalIsPlaying } = useAudioPlayer()
+  const { currentTrack, isPlaying, playTrack, togglePlayPause } = useAudioPlayer()
   const cardRef = useRef<HTMLDivElement>(null)
 
   // Check if this card's track is currently playing
-  const isThisTrackPlaying = globalIsPlaying && currentTrack?.id === beat.id && currentTrack?.type === "beat"
+  const isThisTrackPlaying = isPlaying && currentTrack?.id === beat.id
 
-  const togglePlay = (e: React.MouseEvent) => {
+  const handlePlayTrack = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
 
-    // Update local state
-    setIsPlaying(!isThisTrackPlaying)
-
-    // Set the current track in the global audio player
-    if (!isThisTrackPlaying) {
-      setCurrentTrack({
+    if (currentTrack?.id === beat.id) {
+      togglePlayPause()
+    } else {
+      playTrack({
+        id: beat.id,
         title: beat.title,
         artist: beat.producer,
+        audioSrc: beat.audioFile || "/demo-beat.mp3",
         coverImage: beat.coverImage,
-        audioSrc: "/demo-beat.mp3", // In a real app, this would be the actual beat audio
-        id: beat.id,
-        type: "beat",
+        beatstarsLink: beat.beatstarsLink,
       })
-    } else {
-      // If it's already playing, we'll let the audio context handle pausing
-      setCurrentTrack(null)
     }
   }
 
   const handleBuyNow = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    // Redirect to BeatStars
     const link = beat.beatstarsLink || "https://beatstars.com/catmatildabeat"
     window.open(link, "_blank")
   }
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      onClick(e)
+    }
+  }
+
   return (
-    <Link href={`/beats/${beat.id}`} className="block">
+    <div onClick={handleCardClick} className="block cursor-pointer">
       <motion.div
         ref={cardRef}
-        className="beat-card card-hover-effect group"
+        className="group bg-card rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         transition={{ duration: 0.2 }}
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
       >
-        <div className="relative overflow-hidden rounded-t-xl">
+        <div className="relative aspect-square overflow-hidden">
           <Image
             src={beat.coverImage || "/placeholder.svg"}
             alt={beat.title}
             width={400}
             height={400}
-            className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
 
@@ -96,7 +96,7 @@ export default function BeatCard({ beat }: BeatCardProps) {
           >
             <Button
               className="bg-white/90 hover:bg-white text-black rounded-full h-16 w-16 flex items-center justify-center shadow-lg transform transition-transform hover:scale-110"
-              onClick={togglePlay}
+              onClick={handlePlayTrack}
               aria-label={isThisTrackPlaying ? "Pause" : "Play"}
             >
               {isThisTrackPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 ml-1" />}
@@ -116,7 +116,7 @@ export default function BeatCard({ beat }: BeatCardProps) {
           </div>
         </div>
 
-        <div className="p-3 md:p-4 bg-card rounded-b-xl">
+        <div className="p-3 md:p-4 bg-card">
           <div className="flex flex-wrap gap-1 md:gap-2 mb-3">
             {beat.tags.slice(0, 2).map((tag, index) => (
               <Badge key={index} variant="outline" className="bg-secondary text-muted-foreground text-xs">
@@ -130,7 +130,17 @@ export default function BeatCard({ beat }: BeatCardProps) {
             )}
           </div>
 
-          <div className="flex justify-start">
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handlePlayTrack}
+              className="text-brand-500 hover:text-brand-400 hover:bg-brand-500/10 px-3"
+            >
+              {isThisTrackPlaying ? <Pause className="h-4 w-4 mr-1" /> : <Play className="h-4 w-4 mr-1" />}
+              {isThisTrackPlaying ? "Pause" : "Play"}
+            </Button>
+
             <Button
               size="sm"
               className="bg-brand-600 hover:bg-brand-500 transition-colors text-xs h-8"
@@ -142,6 +152,6 @@ export default function BeatCard({ beat }: BeatCardProps) {
           </div>
         </div>
       </motion.div>
-    </Link>
+    </div>
   )
 }

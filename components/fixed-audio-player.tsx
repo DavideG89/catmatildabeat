@@ -9,16 +9,13 @@ import { useAudioPlayer } from "@/components/audio-player-context"
 import { motion, AnimatePresence } from "framer-motion"
 
 export default function FixedAudioPlayer() {
-  const { currentTrack, isPlaying, togglePlayPause, setIsPlaying } = useAudioPlayer()
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const [volume, setVolume] = useState(0.7)
+  const { currentTrack, isPlaying, togglePlayPause, currentTime, duration, volume, setVolume, seekTo } =
+    useAudioPlayer()
   const [isMuted, setIsMuted] = useState(false)
   const [showVolumeControl, setShowVolumeControl] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
 
-  const audioRef = useRef<HTMLAudioElement | null>(null)
   const volumeControlRef = useRef<HTMLDivElement>(null)
 
   // Handle clicks outside volume control
@@ -34,90 +31,17 @@ export default function FixedAudioPlayer() {
   }, [])
 
   useEffect(() => {
-    // Create audio element if it doesn't exist
-    if (!audioRef.current) {
-      const audio = new Audio()
-      audioRef.current = audio
-
-      // Set up event listeners
-      audio.addEventListener("timeupdate", updateProgress)
-      audio.addEventListener("loadedmetadata", () => {
-        setDuration(audio.duration)
-      })
-      audio.addEventListener("ended", () => {
-        setIsPlaying(false)
-        setCurrentTime(0)
-      })
-    }
-
-    // Update audio source when currentTrack changes
-    if (currentTrack && audioRef.current) {
-      audioRef.current.src = currentTrack.audioSrc
-      audioRef.current.load()
-
-      // Show the player with animation
+    if (currentTrack) {
       setIsVisible(true)
-
-      if (isPlaying) {
-        const playPromise = audioRef.current.play()
-
-        if (playPromise !== undefined) {
-          playPromise.catch((error) => {
-            console.error("Error playing audio:", error)
-            setIsPlaying(false)
-          })
-        }
-      }
     } else {
       setIsVisible(false)
     }
-
-    // Clean up
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause()
-        audioRef.current.removeEventListener("timeupdate", updateProgress)
-        audioRef.current.removeEventListener("loadedmetadata", () => {})
-        audioRef.current.removeEventListener("ended", () => {})
-      }
-    }
-  }, [currentTrack, isPlaying, setIsPlaying])
-
-  useEffect(() => {
-    if (audioRef.current) {
-      if (isPlaying && !isDragging) {
-        const playPromise = audioRef.current.play()
-
-        if (playPromise !== undefined) {
-          playPromise.catch((error) => {
-            console.error("Error playing audio:", error)
-            setIsPlaying(false)
-          })
-        }
-      } else {
-        audioRef.current.pause()
-      }
-    }
-  }, [isPlaying, isDragging, setIsPlaying])
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : volume
-    }
-  }, [volume, isMuted])
-
-  const updateProgress = () => {
-    if (audioRef.current && !isDragging) {
-      setCurrentTime(audioRef.current.currentTime)
-    }
-  }
+  }, [currentTrack])
 
   const handleProgressChange = (value: number[]) => {
-    if (audioRef.current) {
-      const newTime = value[0]
-      audioRef.current.currentTime = newTime
-      setCurrentTime(newTime)
-    }
+    if (!isDragging) return
+    const newTime = (value[0] / 100) * duration
+    seekTo(newTime)
   }
 
   const handleVolumeChange = (value: number[]) => {
@@ -131,7 +55,13 @@ export default function FixedAudioPlayer() {
   }
 
   const toggleMute = () => {
-    setIsMuted(!isMuted)
+    if (isMuted) {
+      setVolume(0.7) // Restore to default volume
+      setIsMuted(false)
+    } else {
+      setVolume(0)
+      setIsMuted(true)
+    }
   }
 
   const formatTime = (time: number) => {
@@ -142,9 +72,11 @@ export default function FixedAudioPlayer() {
   }
 
   const handleBuyLicense = () => {
-    // Redirect to BeatStars
-    window.open("https://beatstars.com/catmatildabeat", "_blank")
+    const link = currentTrack?.beatstarsLink || "https://beatstars.com/catmatildabeat"
+    window.open(link, "_blank")
   }
+
+  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0
 
   if (!currentTrack) return null
 
@@ -194,9 +126,9 @@ export default function FixedAudioPlayer() {
 
                 <div className="flex items-center gap-2">
                   <Slider
-                    value={[currentTime]}
+                    value={[progressPercentage]}
                     min={0}
-                    max={duration || 100}
+                    max={100}
                     step={0.1}
                     onValueChange={handleProgressChange}
                     onValueCommit={() => setIsDragging(false)}
@@ -214,7 +146,7 @@ export default function FixedAudioPlayer() {
                       onMouseEnter={() => setShowVolumeControl(true)}
                       aria-label={isMuted ? "Unmute" : "Mute"}
                     >
-                      {isMuted ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
+                      {isMuted || volume === 0 ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
                     </Button>
 
                     <AnimatePresence>

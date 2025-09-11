@@ -1,290 +1,454 @@
 "use client"
 
-import { useState } from "react"
-import Image from "next/image"
+import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Edit, MoreVertical, Trash, Eye, ExternalLink } from "lucide-react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Search, MoreHorizontal, Edit, Trash2, Eye, TrendingUp, Music, Star, Clock } from "lucide-react"
 import { useBeats } from "@/components/beats-context"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+
+const categories = [
+  { value: "trending", label: "Trending" },
+  { value: "featured", label: "Featured" },
+  { value: "new_releases", label: "New Releases" },
+  { value: "latest", label: "Latest Tracks" },
+]
 
 export default function BeatsDashboard() {
-  const { beats, updateBeat, deleteBeat } = useBeats()
-  const [searchTerm, setSearchTerm] = useState("")
+  const { beats, loading, deleteBeat, updateBeat } = useBeats()
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState<string>("all")
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editingBeat, setEditingBeat] = useState<any>(null)
-  const [viewingBeat, setViewingBeat] = useState<any>(null)
+  const [editForm, setEditForm] = useState({
+    title: "",
+    producer: "",
+    genre: "",
+    bpm: "",
+    key: "",
+    category: "",
+    beatstarsLink: "",
+  })
 
-  const filteredBeats = beats.filter(
-    (beat) =>
-      beat.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      beat.genre.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  // Filter beats based on search and category
+  const filteredBeats = useMemo(() => {
+    let filtered = beats
+
+    // Filter by search query
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (beat) =>
+          beat.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          beat.genre.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          beat.producer.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+    }
+
+    // Filter by category
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter((beat) => beat.category === selectedCategory)
+    }
+
+    return filtered
+  }, [beats, searchQuery, selectedCategory])
+
+  // Group beats by category for overview cards
+  const beatsByCategory = useMemo(() => {
+    return {
+      trending: beats.filter((beat) => beat.category === "trending" && beat.status === "active"),
+      featured: beats.filter((beat) => beat.category === "featured" && beat.status === "active"),
+      new_releases: beats.filter((beat) => beat.category === "new_releases" && beat.status === "active"),
+      latest: beats.filter((beat) => beat.category === "latest" && beat.status === "active"),
+    }
+  }, [beats])
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Are you sure you want to delete this beat?")) {
+      await deleteBeat(id)
+    }
+  }
+
+  const handleStatusChange = async (id: string, newStatus: "active" | "draft" | "archived") => {
+    await updateBeat(id, { status: newStatus })
+  }
 
   const handleEdit = (beat: any) => {
-    setEditingBeat({ ...beat })
+    setEditingBeat(beat)
+    setEditForm({
+      title: beat.title || "",
+      producer: beat.producer || "",
+      genre: beat.genre || "",
+      bpm: beat.bpm?.toString() || "",
+      key: beat.key || "",
+      category: beat.category || "",
+      beatstarsLink: beat.beatstars_link || "",
+    })
+    setIsEditModalOpen(true)
   }
 
-  const handleView = (beat: any) => {
-    setViewingBeat(beat)
+  const handleView = (id: string) => {
+    // In a real app, this would navigate to beat detail page
+    console.log("View beat:", id)
+    // router.push(`/beats/${id}`)
   }
 
-  const handleDelete = (beatId: string) => {
-    if (confirm("Are you sure you want to delete this beat?")) {
-      deleteBeat(beatId)
-    }
-  }
+  const handleSaveEdit = async () => {
+    if (!editingBeat) return
 
-  const handleSaveEdit = () => {
-    if (editingBeat) {
-      updateBeat(editingBeat.id, editingBeat)
+    try {
+      await updateBeat(editingBeat.id, {
+        title: editForm.title,
+        producer: editForm.producer,
+        genre: editForm.genre,
+        bpm: Number.parseInt(editForm.bpm) || 0,
+        key: editForm.key,
+        category: editForm.category as "trending" | "featured" | "new_releases" | "latest",
+        beatstars_link: editForm.beatstarsLink,
+      })
+      setIsEditModalOpen(false)
       setEditingBeat(null)
+    } catch (error) {
+      console.error("Error updating beat:", error)
     }
   }
 
-  const handleBuyNow = (beatstarsLink: string) => {
-    if (beatstarsLink) {
-      window.open(beatstarsLink, "_blank")
-    } else {
-      alert("No BeatStars link available for this beat")
+  const handleCancelEdit = () => {
+    setIsEditModalOpen(false)
+    setEditingBeat(null)
+    setEditForm({
+      title: "",
+      producer: "",
+      genre: "",
+      bpm: "",
+      key: "",
+      category: "",
+      beatstarsLink: "",
+    })
+  }
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "active":
+        return <Badge className="bg-green-100 text-green-800">Active</Badge>
+      case "draft":
+        return <Badge className="bg-yellow-100 text-yellow-800">Draft</Badge>
+      case "archived":
+        return <Badge className="bg-gray-100 text-gray-800">Archived</Badge>
+      default:
+        return <Badge>{status}</Badge>
     }
+  }
+
+  const getCategoryBadge = (category: string) => {
+    switch (category) {
+      case "trending":
+        return <Badge className="bg-orange-100 text-orange-800">Trending</Badge>
+      case "featured":
+        return <Badge className="bg-blue-100 text-blue-800">Featured</Badge>
+      case "new_releases":
+        return <Badge className="bg-green-100 text-green-800">New Release</Badge>
+      case "latest":
+        return <Badge className="bg-purple-100 text-purple-800">Latest</Badge>
+      default:
+        return <Badge>{category}</Badge>
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="space-y-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-16 bg-gray-100 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="bg-zinc-900 rounded-xl p-4 md:p-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <h2 className="text-xl font-bold">My Beats</h2>
-        <div className="relative w-full sm:w-auto">
-          <input
-            type="text"
+    <div className="space-y-6">
+      {/* Header */}
+
+      {/* Category Overview Cards - Single instance of each */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Trending Card */}
+        <Card className="border-orange-200 bg-orange-50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-orange-800">Trending</p>
+                <p className="text-2xl font-bold text-orange-900">{beatsByCategory.trending.length}</p>
+              </div>
+              <TrendingUp className="h-8 w-8 text-orange-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Featured Card */}
+        <Card className="border-blue-200 bg-blue-50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-blue-800">Featured</p>
+                <p className="text-2xl font-bold text-blue-900">{beatsByCategory.featured.length}</p>
+              </div>
+              <Star className="h-8 w-8 text-blue-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* New Releases Card */}
+        <Card className="border-green-200 bg-green-50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-green-800">New Releases</p>
+                <p className="text-2xl font-bold text-green-900">{beatsByCategory.new_releases.length}</p>
+              </div>
+              <Music className="h-8 w-8 text-green-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Latest Card */}
+        <Card className="border-purple-200 bg-purple-50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-purple-800">Latest</p>
+                <p className="text-2xl font-bold text-purple-900">{beatsByCategory.latest.length}</p>
+              </div>
+              <Clock className="h-8 w-8 text-purple-600" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filters and Search */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
             placeholder="Search beats..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-zinc-800 text-white px-4 py-2 rounded-md w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
           />
         </div>
+        <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full sm:w-auto">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="trending">Trending</TabsTrigger>
+            <TabsTrigger value="featured">Featured</TabsTrigger>
+            <TabsTrigger value="new_releases">New</TabsTrigger>
+            <TabsTrigger value="latest">Latest</TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="min-w-[200px]">Beat</TableHead>
-              <TableHead className="hidden sm:table-cell">Genre</TableHead>
-              <TableHead className="hidden md:table-cell">BPM / Key</TableHead>
-              <TableHead className="hidden sm:table-cell">Price</TableHead>
-              <TableHead className="hidden lg:table-cell">Sales</TableHead>
-              <TableHead className="hidden sm:table-cell">Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredBeats.map((beat) => (
-              <TableRow key={beat.id}>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Image
-                      src={beat.coverImage || "/placeholder.svg"}
-                      alt={beat.title}
-                      width={40}
-                      height={40}
-                      className="rounded-md flex-shrink-0"
-                    />
-                    <div className="min-w-0">
-                      <span className="font-medium text-sm truncate block">{beat.title}</span>
-                      <span className="text-xs text-muted-foreground sm:hidden">{beat.genre}</span>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell className="hidden sm:table-cell">{beat.genre}</TableCell>
-                <TableCell className="hidden md:table-cell text-sm">
-                  {beat.bpm} BPM / {beat.key}
-                </TableCell>
-                <TableCell className="hidden sm:table-cell">${beat.price.toFixed(2)}</TableCell>
-                <TableCell className="hidden lg:table-cell">{beat.sales || 0}</TableCell>
-                <TableCell className="hidden sm:table-cell">
-                  <Badge
-                    variant={beat.status === "Active" ? "default" : "secondary"}
-                    className={beat.status === "Active" ? "bg-green-600" : "bg-zinc-600"}
-                  >
-                    {beat.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleView(beat)}>
-                        <Eye className="h-4 w-4 mr-2" />
-                        View
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleEdit(beat)}>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleBuyNow(beat.beatstarsLink)}>
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        Buy on BeatStars
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-500" onClick={() => handleDelete(beat.id)}>
-                        <Trash className="h-4 w-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      {/* Beats Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>My Beats ({filteredBeats.length})</CardTitle>
+          <CardDescription>Manage your beat collection</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Cover</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Genre</TableHead>
+                  <TableHead>BPM</TableHead>
+                  <TableHead>Key</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Sales</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredBeats.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={9} className="text-center py-8 text-gray-500">
+                      No beats found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredBeats.map((beat) => (
+                    <TableRow key={beat.id}>
+                      <TableCell>
+                        <div className="w-12 h-12 bg-gray-200 rounded overflow-hidden">
+                          <img
+                            src={beat.cover_image || "/placeholder.svg?height=48&width=48"}
+                            alt={beat.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium">{beat.title}</p>
+                          <p className="text-sm text-gray-500">{beat.producer}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>{beat.genre}</TableCell>
+                      <TableCell>{beat.bpm}</TableCell>
+                      <TableCell>{beat.key}</TableCell>
+                      <TableCell>{getCategoryBadge(beat.category)}</TableCell>
+                      <TableCell>{getStatusBadge(beat.status)}</TableCell>
+                      <TableCell>{beat.sales || 0}</TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleView(beat.id)}>
+                              <Eye className="h-4 w-4 mr-2" />
+                              View
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleEdit(beat)}>
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleStatusChange(beat.id, beat.status === "active" ? "draft" : "active")}
+                            >
+                              {beat.status === "active" ? "Set to Draft" : "Set to Active"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDelete(beat.id)} className="text-red-600">
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
 
-      {filteredBeats.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-muted-foreground">
-            {searchTerm ? "No beats found matching your search." : "No beats uploaded yet."}
-          </p>
-        </div>
-      )}
-
-      {/* View Dialog */}
-      <Dialog open={!!viewingBeat} onOpenChange={() => setViewingBeat(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Beat Details</DialogTitle>
-            <DialogDescription>View beat information</DialogDescription>
-          </DialogHeader>
-          {viewingBeat && (
-            <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <Image
-                  src={viewingBeat.coverImage || "/placeholder.svg"}
-                  alt={viewingBeat.title}
-                  width={100}
-                  height={100}
-                  className="rounded-lg flex-shrink-0"
-                />
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-xl font-bold">{viewingBeat.title}</h3>
-                  <p className="text-muted-foreground">{viewingBeat.genre}</p>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    <Badge>{viewingBeat.bpm} BPM</Badge>
-                    <Badge>{viewingBeat.key}</Badge>
-                    <Badge className={viewingBeat.status === "Active" ? "bg-green-600" : "bg-zinc-600"}>
-                      {viewingBeat.status}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <Label>Price</Label>
-                  <p className="font-bold">${viewingBeat.price}</p>
-                </div>
-                <div>
-                  <Label>Sales</Label>
-                  <p className="font-bold">{viewingBeat.sales || 0}</p>
-                </div>
-              </div>
-              {viewingBeat.description && (
-                <div>
-                  <Label>Description</Label>
-                  <p className="text-sm text-muted-foreground">{viewingBeat.description}</p>
-                </div>
-              )}
-              {viewingBeat.beatstarsLink && (
-                <div>
-                  <Label>BeatStars Link</Label>
-                  <p className="text-sm text-muted-foreground break-all">{viewingBeat.beatstarsLink}</p>
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Dialog */}
-      <Dialog open={!!editingBeat} onOpenChange={() => setEditingBeat(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      {/* Edit Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>Edit Beat</DialogTitle>
-            <DialogDescription>Update beat information</DialogDescription>
           </DialogHeader>
-          {editingBeat && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-title">Title</Label>
-                  <Input
-                    id="edit-title"
-                    value={editingBeat.title}
-                    onChange={(e) => setEditingBeat({ ...editingBeat, title: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-genre">Genre</Label>
-                  <Input
-                    id="edit-genre"
-                    value={editingBeat.genre}
-                    onChange={(e) => setEditingBeat({ ...editingBeat, genre: e.target.value })}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="edit-bpm">BPM</Label>
-                  <Input
-                    id="edit-bpm"
-                    type="number"
-                    value={editingBeat.bpm}
-                    onChange={(e) => setEditingBeat({ ...editingBeat, bpm: Number.parseInt(e.target.value) })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-key">Key</Label>
-                  <Input
-                    id="edit-key"
-                    value={editingBeat.key}
-                    onChange={(e) => setEditingBeat({ ...editingBeat, key: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-price">Price</Label>
-                  <Input
-                    id="edit-price"
-                    type="number"
-                    step="0.01"
-                    value={editingBeat.price}
-                    onChange={(e) => setEditingBeat({ ...editingBeat, price: Number.parseFloat(e.target.value) })}
-                  />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="edit-beatstars-link">BeatStars Link</Label>
-                <Input
-                  id="edit-beatstars-link"
-                  value={editingBeat.beatstarsLink}
-                  onChange={(e) => setEditingBeat({ ...editingBeat, beatstarsLink: e.target.value })}
-                  placeholder="https://beatstars.com/catmatildabeat/your-beat"
-                />
-              </div>
-              <div className="flex flex-col sm:flex-row justify-end gap-2">
-                <Button variant="outline" onClick={() => setEditingBeat(null)} className="w-full sm:w-auto">
-                  Cancel
-                </Button>
-                <Button onClick={handleSaveEdit} className="bg-purple-600 hover:bg-purple-700 w-full sm:w-auto">
-                  Save Changes
-                </Button>
-              </div>
+          <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="title" className="text-right">
+                Title
+              </Label>
+              <Input
+                id="title"
+                value={editForm.title}
+                onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                className="col-span-3"
+              />
             </div>
-          )}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="producer" className="text-right">
+                Artist
+              </Label>
+              <Input
+                id="producer"
+                value={editForm.producer}
+                onChange={(e) => setEditForm({ ...editForm, producer: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="genre" className="text-right">
+                Genre
+              </Label>
+              <Input
+                id="genre"
+                value={editForm.genre}
+                onChange={(e) => setEditForm({ ...editForm, genre: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="bpm" className="text-right">
+                BPM
+              </Label>
+              <Input
+                id="bpm"
+                type="number"
+                value={editForm.bpm}
+                onChange={(e) => setEditForm({ ...editForm, bpm: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="key" className="text-right">
+                Key
+              </Label>
+              <Input
+                id="key"
+                value={editForm.key}
+                onChange={(e) => setEditForm({ ...editForm, key: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="category" className="text-right">
+                Category
+              </Label>
+              <Select
+                value={editForm.category}
+                onValueChange={(value) => setEditForm({ ...editForm, category: value })}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category.value} value={category.value}>
+                      {category.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="beatstarsLink" className="text-right">
+                BeatStars Link
+              </Label>
+              <Input
+                id="beatstarsLink"
+                value={editForm.beatstarsLink}
+                onChange={(e) => setEditForm({ ...editForm, beatstarsLink: e.target.value })}
+                placeholder="https://beatstars.com/your-beat"
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={handleCancelEdit}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit}>Save Changes</Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

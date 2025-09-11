@@ -1,8 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import BeatCard from "@/components/beat-card"
-import { useBeats } from "@/components/beats-context"
+import { beatOperations } from "@/lib/supabase"
+import { Loader2 } from "lucide-react"
+import type { Beat } from "@/lib/supabase"
 
 interface BeatsListProps {
   searchQuery?: string
@@ -10,80 +12,72 @@ interface BeatsListProps {
 }
 
 export default function BeatsList({ searchQuery = "", filters }: BeatsListProps) {
-  const { searchBeats } = useBeats()
-  const [beats, setBeats] = useState<any[]>([])
+  const [beats, setBeats] = useState<Beat[]>([])
+  const [loading, setLoading] = useState(true)
   const [sortBy, setSortBy] = useState("newest")
 
-  // Enhanced search function
-  const enhancedSearch = (query: string, allBeats: any[]) => {
-    if (!query.trim()) return allBeats
-
-    const searchTerm = query.toLowerCase().trim()
-
-    return allBeats.filter((beat) => {
-      // Search in title
-      if (beat.title.toLowerCase().includes(searchTerm)) return true
-
-      // Search in producer
-      if (beat.producer.toLowerCase().includes(searchTerm)) return true
-
-      // Search in genre
-      if (beat.genre.toLowerCase().includes(searchTerm)) return true
-
-      // Search in tags/moods
-      if (beat.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm))) return true
-
-      // Search in BPM (exact match or range)
-      const bpmMatch = searchTerm.match(/(\d+)/)
-      if (bpmMatch) {
-        const searchBpm = Number.parseInt(bpmMatch[1])
-        // Allow for ±5 BPM tolerance
-        if (Math.abs(beat.bpm - searchBpm) <= 5) return true
-      }
-
-      // Search in key
-      if (beat.key.toLowerCase().includes(searchTerm)) return true
-
-      // Search in description
-      if (beat.description && beat.description.toLowerCase().includes(searchTerm)) return true
-
-      return false
-    })
-  }
+  // Memoize filters to prevent unnecessary re-renders
+  const memoizedFilters = useMemo(() => filters, [JSON.stringify(filters)])
 
   useEffect(() => {
-    let filteredBeats = searchBeats("", filters) // Get all beats with filters first
+    const loadBeats = async () => {
+      setLoading(true)
+      try {
+        let searchResults: Beat[] = []
 
-    // Apply enhanced search
-    if (searchQuery) {
-      filteredBeats = enhancedSearch(searchQuery, filteredBeats)
+        if (searchQuery || (memoizedFilters && Object.keys(memoizedFilters).length > 0)) {
+          // Use search with filters
+          searchResults = await beatOperations.search(searchQuery, memoizedFilters)
+        } else {
+          // Get all active beats
+          searchResults = await beatOperations.getActive()
+        }
+
+        // Apply sorting
+        switch (sortBy) {
+          case "price-low":
+            searchResults = searchResults.sort((a, b) => (a.price || 0) - (b.price || 0))
+            break
+          case "price-high":
+            searchResults = searchResults.sort((a, b) => (b.price || 0) - (a.price || 0))
+            break
+          case "popular":
+            searchResults = searchResults.sort((a, b) => (b.sales || 0) - (a.sales || 0))
+            break
+          case "bpm-low":
+            searchResults = searchResults.sort((a, b) => a.bpm - b.bpm)
+            break
+          case "bpm-high":
+            searchResults = searchResults.sort((a, b) => b.bpm - a.bpm)
+            break
+          case "newest":
+          default:
+            searchResults = searchResults.sort(
+              (a, b) => new Date(b.created_at || "").getTime() - new Date(a.created_at || "").getTime(),
+            )
+            break
+        }
+
+        setBeats(searchResults)
+      } catch (error) {
+        console.error("Error loading beats:", error)
+        setBeats([])
+      } finally {
+        setLoading(false)
+      }
     }
 
-    // Apply sorting
-    switch (sortBy) {
-      case "price-low":
-        filteredBeats = filteredBeats.sort((a, b) => a.price - b.price)
-        break
-      case "price-high":
-        filteredBeats = filteredBeats.sort((a, b) => b.price - a.price)
-        break
-      case "popular":
-        filteredBeats = filteredBeats.sort((a, b) => (b.sales || 0) - (a.sales || 0))
-        break
-      case "bpm-low":
-        filteredBeats = filteredBeats.sort((a, b) => a.bpm - b.bpm)
-        break
-      case "bpm-high":
-        filteredBeats = filteredBeats.sort((a, b) => b.bpm - a.bpm)
-        break
-      case "newest":
-      default:
-        filteredBeats = filteredBeats.sort((a, b) => Number.parseInt(b.id) - Number.parseInt(a.id))
-        break
-    }
+    loadBeats()
+  }, [searchQuery, memoizedFilters, sortBy])
 
-    setBeats(filteredBeats)
-  }, [searchQuery, filters, sortBy, searchBeats])
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-brand-500" />
+        <span className="ml-2 text-muted-foreground">Loading beats...</span>
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -109,21 +103,38 @@ export default function BeatsList({ searchQuery = "", filters }: BeatsListProps)
       {beats.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {beats.map((beat) => (
-            <BeatCard key={beat.id} beat={beat} />
+            <BeatCard
+              key={beat.id}
+              beat={{
+                id: beat.id,
+                title: beat.title,
+                producer: beat.producer,
+                coverImage: beat.cover_image,
+                price: beat.price || 0,
+                bpm: beat.bpm,
+                key: beat.key,
+                genre: beat.genre,
+                tags: beat.tags,
+                beatstarsLink: beat.beatstars_link,
+                audioFile: beat.audio_file,
+              }}
+            />
           ))}
         </div>
       ) : (
         <div className="text-center py-12">
           <p className="text-muted-foreground text-lg mb-2">No beats found</p>
           <p className="text-muted-foreground text-sm">
-            {searchQuery || filters ? "Try adjusting your search or filters" : "No beats available at the moment"}
+            {searchQuery || (memoizedFilters && Object.keys(memoizedFilters).length > 0)
+              ? "Try adjusting your search or filters"
+              : "No beats available at the moment"}
           </p>
           {searchQuery && (
             <div className="mt-4 text-sm text-muted-foreground">
               <p>Search tips:</p>
               <ul className="list-disc list-inside mt-2 space-y-1">
                 <li>Try searching by genre (trap, hip hop, r&b)</li>
-                <li>Search by mood (dark, chill, energetic)</li>
+                <li>Search by producer name</li>
                 <li>Search by BPM (140, 95, etc.)</li>
                 <li>Search by key (C Minor, G Major)</li>
               </ul>

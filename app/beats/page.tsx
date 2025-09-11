@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect, Suspense, useCallback } from "react"
 import { useSearchParams } from "next/navigation"
 import BeatsList from "@/components/beats-list"
 import BeatFilters from "@/components/beat-filters"
@@ -20,13 +20,13 @@ function BeatsPageContent() {
     setSearchQuery(query)
   }, [searchParams])
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
-  }
+  }, [])
 
-  const handleFiltersChange = (newFilters: any) => {
+  const handleFiltersChange = useCallback((newFilters: any) => {
     setFilters(newFilters)
-  }
+  }, [])
 
   return (
     <div className="container mx-auto px-4 py-6 md:py-12 mb-24">

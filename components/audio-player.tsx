@@ -11,6 +11,7 @@ export default function AudioPlayer() {
   const [duration, setDuration] = useState(0)
   const [volume, setVolume] = useState(0.7)
   const [isMuted, setIsMuted] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
@@ -22,25 +23,61 @@ export default function AudioPlayer() {
   useEffect(() => {
     // Create audio element
     const audio = new Audio()
+    audio.preload = "metadata"
     audio.src = audioSrc
     audioRef.current = audio
 
     // Set up event listeners
-    audio.addEventListener("timeupdate", updateProgress)
-    audio.addEventListener("loadedmetadata", () => {
-      setDuration(audio.duration)
-    })
-    audio.addEventListener("ended", () => {
+    const updateProgress = () => {
+      if (audio && !isNaN(audio.currentTime)) {
+        setCurrentTime(audio.currentTime)
+      }
+    }
+
+    const handleLoadedMetadata = () => {
+      if (audio && !isNaN(audio.duration)) {
+        setDuration(audio.duration)
+        setIsLoading(false)
+      }
+    }
+
+    const handleEnded = () => {
       setIsPlaying(false)
       setCurrentTime(0)
-    })
+    }
+
+    const handleLoadStart = () => {
+      setIsLoading(true)
+    }
+
+    const handleCanPlay = () => {
+      setIsLoading(false)
+    }
+
+    const handleError = () => {
+      setIsLoading(false)
+      console.error("Audio loading error")
+    }
+
+    audio.addEventListener("timeupdate", updateProgress)
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata)
+    audio.addEventListener("ended", handleEnded)
+    audio.addEventListener("loadstart", handleLoadStart)
+    audio.addEventListener("canplay", handleCanPlay)
+    audio.addEventListener("error", handleError)
+
+    // Set initial volume
+    audio.volume = volume
 
     // Clean up
     return () => {
       audio.pause()
       audio.removeEventListener("timeupdate", updateProgress)
-      audio.removeEventListener("loadedmetadata", () => {})
-      audio.removeEventListener("ended", () => {})
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata)
+      audio.removeEventListener("ended", handleEnded)
+      audio.removeEventListener("loadstart", handleLoadStart)
+      audio.removeEventListener("canplay", handleCanPlay)
+      audio.removeEventListener("error", handleError)
     }
   }, [audioSrc])
 
@@ -50,25 +87,28 @@ export default function AudioPlayer() {
     }
   }, [volume, isMuted])
 
-  const updateProgress = () => {
-    if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime)
-    }
-  }
+  const togglePlay = async () => {
+    if (!audioRef.current) return
 
-  const togglePlay = () => {
-    if (audioRef.current) {
+    try {
       if (isPlaying) {
         audioRef.current.pause()
+        setIsPlaying(false)
       } else {
-        audioRef.current.play()
+        setIsLoading(true)
+        await audioRef.current.play()
+        setIsPlaying(true)
+        setIsLoading(false)
       }
-      setIsPlaying(!isPlaying)
+    } catch (error) {
+      console.error("Error playing audio:", error)
+      setIsPlaying(false)
+      setIsLoading(false)
     }
   }
 
   const handleProgressChange = (value: number[]) => {
-    if (audioRef.current) {
+    if (audioRef.current && !isNaN(value[0])) {
       const newTime = value[0]
       audioRef.current.currentTime = newTime
       setCurrentTime(newTime)
@@ -78,42 +118,62 @@ export default function AudioPlayer() {
   const handleVolumeChange = (value: number[]) => {
     const newVolume = value[0]
     setVolume(newVolume)
-    if (newVolume === 0) {
-      setIsMuted(true)
-    } else {
-      setIsMuted(false)
-    }
+    setIsMuted(newVolume === 0)
   }
 
   const toggleMute = () => {
     setIsMuted(!isMuted)
   }
 
+  const skipForward = () => {
+    if (audioRef.current) {
+      const newTime = Math.min(currentTime + 10, duration)
+      audioRef.current.currentTime = newTime
+      setCurrentTime(newTime)
+    }
+  }
+
+  const skipBackward = () => {
+    if (audioRef.current) {
+      const newTime = Math.max(currentTime - 10, 0)
+      audioRef.current.currentTime = newTime
+      setCurrentTime(newTime)
+    }
+  }
+
   const formatTime = (time: number) => {
+    if (isNaN(time)) return "0:00"
     const minutes = Math.floor(time / 60)
     const seconds = Math.floor(time % 60)
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
   }
 
   return (
-    <div className="bg-zinc-900 rounded-xl p-4">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-zinc-900 rounded-xl p-6">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="font-bold">{trackTitle}</h3>
+          <h3 className="font-bold text-lg">{trackTitle}</h3>
           <p className="text-sm text-gray-400">{artistName}</p>
         </div>
-        <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" onClick={toggleMute}>
-            {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+        <div className="flex items-center space-x-3">
+          <Button variant="ghost" size="icon" onClick={toggleMute} className="h-8 w-8">
+            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </Button>
           <div className="w-24">
-            <Slider value={[isMuted ? 0 : volume]} min={0} max={1} step={0.01} onValueChange={handleVolumeChange} />
+            <Slider
+              value={[isMuted ? 0 : volume]}
+              min={0}
+              max={1}
+              step={0.01}
+              onValueChange={handleVolumeChange}
+              className="w-full"
+            />
           </div>
         </div>
       </div>
 
-      <div className="flex items-center space-x-2 mb-4">
-        <span className="text-xs text-gray-400 w-10">{formatTime(currentTime)}</span>
+      <div className="flex items-center space-x-3 mb-6">
+        <span className="text-xs text-gray-400 w-12 text-right">{formatTime(currentTime)}</span>
         <Slider
           value={[currentTime]}
           min={0}
@@ -121,21 +181,31 @@ export default function AudioPlayer() {
           step={0.1}
           onValueChange={handleProgressChange}
           className="flex-1"
+          disabled={isLoading}
         />
-        <span className="text-xs text-gray-400 w-10">{formatTime(duration)}</span>
+        <span className="text-xs text-gray-400 w-12">{formatTime(duration)}</span>
       </div>
 
-      <div className="flex justify-center space-x-4">
-        <Button variant="ghost" size="icon">
+      <div className="flex justify-center items-center space-x-4">
+        <Button variant="ghost" size="icon" onClick={skipBackward} className="h-10 w-10" disabled={isLoading}>
           <SkipBack className="h-5 w-5" />
         </Button>
+
         <Button
           onClick={togglePlay}
-          className="bg-purple-600 hover:bg-purple-700 rounded-full h-12 w-12 flex items-center justify-center"
+          disabled={isLoading}
+          className="bg-purple-600 hover:bg-purple-700 rounded-full h-14 w-14 flex items-center justify-center"
         >
-          {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+          {isLoading ? (
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+          ) : isPlaying ? (
+            <Pause className="h-6 w-6" />
+          ) : (
+            <Play className="h-6 w-6" />
+          )}
         </Button>
-        <Button variant="ghost" size="icon">
+
+        <Button variant="ghost" size="icon" onClick={skipForward} className="h-10 w-10" disabled={isLoading}>
           <SkipForward className="h-5 w-5" />
         </Button>
       </div>

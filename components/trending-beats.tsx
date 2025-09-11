@@ -1,123 +1,127 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { Play, Pause, ExternalLink } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
-import BeatCard from "@/components/beat-card"
-import MobileScrollContainer from "@/components/mobile-scroll-container"
-
-// Mock data for trending beats
-const trendingBeats = [
-  {
-    id: "1",
-    title: "Midnight Dreams",
-    producer: "Cat Matilda Beat",
-    coverImage: "/placeholder.svg?height=400&width=400",
-    price: 29.99,
-    bpm: 140,
-    key: "C Minor",
-    genre: "Trap",
-    duration: "2:45",
-    tags: ["Dark", "Emotional", "Trap"],
-    beatstarsLink: "https://beatstars.com/catmatildabeat/midnight-dreams",
-  },
-  {
-    id: "2",
-    title: "Summer Vibes",
-    producer: "Cat Matilda Beat",
-    coverImage: "/placeholder.svg?height=400&width=400",
-    price: 24.99,
-    bpm: 95,
-    key: "G Major",
-    genre: "R&B",
-    duration: "3:12",
-    tags: ["Chill", "Summer", "R&B"],
-    beatstarsLink: "https://beatstars.com/catmatildabeat/summer-vibes",
-  },
-  {
-    id: "3",
-    title: "Urban Legend",
-    producer: "Cat Matilda Beat",
-    coverImage: "/placeholder.svg?height=400&width=400",
-    price: 34.99,
-    bpm: 160,
-    key: "F Minor",
-    genre: "Hip Hop",
-    duration: "2:58",
-    tags: ["Hard", "Urban", "Hip Hop"],
-    beatstarsLink: "https://beatstars.com/catmatildabeat/urban-legend",
-  },
-  {
-    id: "4",
-    title: "Neon Lights",
-    producer: "Cat Matilda Beat",
-    coverImage: "/placeholder.svg?height=400&width=400",
-    price: 27.99,
-    bpm: 128,
-    key: "A Minor",
-    genre: "Pop",
-    duration: "3:24",
-    tags: ["Upbeat", "Electronic", "Pop"],
-    beatstarsLink: "https://beatstars.com/catmatildabeat/neon-lights",
-  },
-  {
-    id: "5",
-    title: "Cosmic Journey",
-    producer: "Cat Matilda Beat",
-    coverImage: "/placeholder.svg?height=400&width=400",
-    price: 39.99,
-    bpm: 85,
-    key: "E Minor",
-    genre: "Ambient",
-    duration: "4:15",
-    tags: ["Spacey", "Chill", "Ambient"],
-    beatstarsLink: "https://beatstars.com/catmatildabeat/cosmic-journey",
-  },
-  {
-    id: "6",
-    title: "Street Dreams",
-    producer: "Cat Matilda Beat",
-    coverImage: "/placeholder.svg?height=400&width=400",
-    price: 32.99,
-    bpm: 90,
-    key: "D Minor",
-    genre: "Boom Bap",
-    duration: "3:05",
-    tags: ["Old School", "Hip Hop", "Boom Bap"],
-    beatstarsLink: "https://beatstars.com/catmatildabeat/street-dreams",
-  },
-]
+import { useAudioPlayer } from "@/components/audio-player-context"
+import { useBeats } from "@/components/beats-context"
 
 export default function TrendingBeats() {
-  const [hoveredId, setHoveredId] = useState<string | null>(null)
+  const { currentTrack, isPlaying, playTrack, togglePlayPause } = useAudioPlayer()
+  const { getBeatsByCategory } = useBeats()
+  const [trendingBeats, setTrendingBeats] = useState<any[]>([])
 
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
+  useEffect(() => {
+    const beats = getBeatsByCategory("trending").slice(0, 6)
+    setTrendingBeats(beats)
+  }, [getBeatsByCategory])
+
+  const handlePlayTrack = (beat: any) => {
+    if (currentTrack?.id === beat.id) {
+      togglePlayPause()
+    } else {
+      playTrack({
+        id: beat.id,
+        title: beat.title,
+        artist: beat.producer,
+        audioSrc: beat.audio_file || "/demo-beat.mp3",
+        coverImage: beat.cover_image,
+        beatstarsLink: beat.beatstars_link,
+      })
+    }
   }
 
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 },
+  const handleBuyBeat = (beatstarsLink: string) => {
+    window.open(beatstarsLink || "https://beatstars.com/catmatildabeat", "_blank")
+  }
+
+  if (trendingBeats.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">No trending beats available at the moment.</p>
+      </div>
+    )
   }
 
   return (
-    <MobileScrollContainer>
-      {trendingBeats.map((beat) => (
+    <>
+      {trendingBeats.map((beat, index) => (
         <motion.div
           key={beat.id}
-          variants={item}
-          onHoverStart={() => setHoveredId(beat.id)}
-          onHoverEnd={() => setHoveredId(null)}
-          className="flex-shrink-0 w-72 md:w-auto"
+          className="group bg-card rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 min-w-[280px] md:min-w-[320px] flex-shrink-0"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1, duration: 0.5 }}
         >
-          <BeatCard beat={beat} />
+          <div className="relative aspect-square overflow-hidden">
+            <img
+              src={beat.cover_image || "/placeholder.svg?height=300&width=300"}
+              alt={beat.title}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <button
+              onClick={() => handlePlayTrack(beat)}
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-brand-600 hover:bg-brand-500 rounded-full p-3 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
+            >
+              {currentTrack?.id === beat.id && isPlaying ? (
+                <Pause className="h-6 w-6 text-white" />
+              ) : (
+                <Play className="h-6 w-6 text-white" />
+              )}
+            </button>
+          </div>
+
+          <div className="p-4">
+            <h3 className="font-bold text-lg mb-1 truncate">{beat.title}</h3>
+            <p className="text-muted-foreground text-sm mb-3 truncate">{beat.producer}</p>
+
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+              <span>{beat.genre}</span>
+              <span>•</span>
+              <span>{beat.bpm} BPM</span>
+              <span>•</span>
+              <span>{beat.key}</span>
+            </div>
+
+            {beat.tags && (
+              <div className="flex flex-wrap gap-1 mb-4">
+                {beat.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
+                  <span key={tagIndex} className="px-2 py-1 bg-brand-500/20 text-brand-500 text-xs rounded-full">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div className="flex items-center justify-between">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handlePlayTrack(beat)}
+                className="text-brand-500 hover:text-brand-400 hover:bg-brand-500/10 px-3"
+              >
+                {currentTrack?.id === beat.id && isPlaying ? (
+                  <Pause className="h-4 w-4 mr-1" />
+                ) : (
+                  <Play className="h-4 w-4 mr-1" />
+                )}
+                {currentTrack?.id === beat.id && isPlaying ? "Pause" : "Play"}
+              </Button>
+
+              <Button
+                size="sm"
+                className="bg-brand-600 hover:bg-brand-500"
+                onClick={() => handleBuyBeat(beat.beatstars_link)}
+              >
+                <ExternalLink className="h-3 w-3 mr-1" />
+                Buy
+              </Button>
+            </div>
+          </div>
         </motion.div>
       ))}
-    </MobileScrollContainer>
+    </>
   )
 }

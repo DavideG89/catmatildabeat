@@ -2,23 +2,163 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import AudioPlayer from "@/components/audio-player"
 import RelatedBeats from "@/components/related-beats"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ExternalLink } from "lucide-react"
+import { ExternalLink, Play, Pause } from "lucide-react"
 import { useBeats } from "@/components/beats-context"
+import { useAudioPlayer } from "@/components/audio-player-context"
+
+interface Beat {
+  id: string
+  title: string
+  producer: string
+  coverImage: string
+  price: number
+  bpm: number
+  key: string
+  genre: string
+  tags: string[]
+  beatstarsLink?: string
+  description?: string
+  audioFile?: string
+}
+
+// Mock data fallback for when Supabase data isn't available
+const mockBeats: Beat[] = [
+  {
+    id: "1",
+    title: "Midnight Vibes",
+    producer: "Cat Matilda Beat",
+    coverImage: "/placeholder.svg?height=500&width=500&text=Midnight+Vibes",
+    price: 29.99,
+    bpm: 140,
+    key: "C Minor",
+    genre: "Hip Hop",
+    tags: ["Hip Hop", "Dark", "Atmospheric"],
+    description:
+      "A dark and atmospheric hip hop beat perfect for late night sessions. Features deep bass lines and haunting melodies that create the perfect backdrop for introspective lyrics.",
+    beatstarsLink: "https://beatstars.com/catmatildabeat",
+  },
+  {
+    id: "2",
+    title: "Summer Vibes",
+    producer: "Cat Matilda Beat",
+    coverImage: "/placeholder.svg?height=500&width=500&text=Summer+Vibes",
+    price: 24.99,
+    bpm: 95,
+    key: "G Major",
+    genre: "R&B",
+    tags: ["R&B", "Chill", "Summer"],
+    description:
+      "A smooth R&B beat with summer vibes. Perfect for laid-back vocals and chill sessions with warm, nostalgic melodies.",
+    beatstarsLink: "https://beatstars.com/catmatildabeat",
+  },
+  {
+    id: "3",
+    title: "Urban Legend",
+    producer: "Cat Matilda Beat",
+    coverImage: "/placeholder.svg?height=500&width=500&text=Urban+Legend",
+    price: 34.99,
+    bpm: 160,
+    key: "F Minor",
+    genre: "Hip Hop",
+    tags: ["Hip Hop", "Hard", "Urban"],
+    description:
+      "Hard-hitting urban beat with aggressive drums and street-ready energy. Built for powerful vocals and commanding presence.",
+    beatstarsLink: "https://beatstars.com/catmatildabeat",
+  },
+  {
+    id: "4",
+    title: "Neon Lights",
+    producer: "Cat Matilda Beat",
+    coverImage: "/placeholder.svg?height=500&width=500&text=Neon+Lights",
+    price: 27.99,
+    bpm: 128,
+    key: "A Minor",
+    genre: "Pop",
+    tags: ["Pop", "Upbeat", "Electronic"],
+    description:
+      "Upbeat pop beat with electronic elements and catchy melodies. Perfect for radio-ready tracks with commercial appeal.",
+    beatstarsLink: "https://beatstars.com/catmatildabeat",
+  },
+]
 
 export default function BeatDetailPage({ params }: { params: { id: string } }) {
-  const { beats } = useBeats()
-  const [beat, setBeat] = useState<any>(null)
+  const { beats, loading } = useBeats()
+  const { setCurrentTrack, currentTrack, isPlaying, togglePlayPause } = useAudioPlayer()
+  const [beat, setBeat] = useState<Beat | null>(null)
 
   useEffect(() => {
-    const foundBeat = beats.find((b) => b.id === params.id)
-    if (foundBeat) {
-      setBeat(foundBeat)
+    // First try to find beat in Supabase data
+    if (!loading && beats.length > 0) {
+      const foundBeat = beats.find((b) => b.id === params.id)
+      if (foundBeat) {
+        setBeat({
+          id: foundBeat.id,
+          title: foundBeat.title,
+          producer: foundBeat.producer,
+          coverImage: foundBeat.cover_image,
+          price: foundBeat.price,
+          bpm: foundBeat.bpm,
+          key: foundBeat.key,
+          genre: foundBeat.genre,
+          tags: foundBeat.tags,
+          beatstarsLink: foundBeat.beatstars_link,
+          description: foundBeat.description,
+          audioFile: foundBeat.audio_file,
+        })
+        return
+      }
     }
-  }, [params.id, beats])
+
+    // Fallback to mock data if not found in Supabase
+    const mockBeat = mockBeats.find((b) => b.id === params.id)
+    if (mockBeat) {
+      setBeat(mockBeat)
+    }
+  }, [params.id, beats, loading])
+
+  // Check if this beat is currently playing
+  const isThisBeatPlaying = currentTrack?.id === beat?.id && currentTrack?.type === "beat"
+
+  const handlePlayPause = () => {
+    if (!beat) return
+
+    if (isThisBeatPlaying) {
+      togglePlayPause()
+    } else {
+      // Set this beat as the current track
+      setCurrentTrack({
+        id: beat.id,
+        title: beat.title,
+        artist: beat.producer,
+        coverImage: beat.coverImage,
+        audioSrc: beat.audioFile || "/demo-beat.mp3",
+        type: "beat",
+        beatstarsLink: beat.beatstarsLink,
+      })
+    }
+  }
+
+  const handleBuyNow = () => {
+    if (beat?.beatstarsLink) {
+      window.open(beat.beatstarsLink, "_blank")
+    } else {
+      window.open("https://beatstars.com/catmatildabeat", "_blank")
+    }
+  }
+
+  if (loading && !beat) {
+    return (
+      <div className="container mx-auto px-4 py-6 md:py-12 mb-24">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-500 mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading beat...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (!beat) {
     return (
@@ -26,17 +166,12 @@ export default function BeatDetailPage({ params }: { params: { id: string } }) {
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Beat not found</h1>
           <p className="text-muted-foreground">The beat you're looking for doesn't exist.</p>
+          <Button className="mt-4" onClick={() => window.history.back()}>
+            Go Back
+          </Button>
         </div>
       </div>
     )
-  }
-
-  const handleBuyNow = () => {
-    if (beat.beatstarsLink) {
-      window.open(beat.beatstarsLink, "_blank")
-    } else {
-      window.open("https://beatstars.com/catmatildabeat", "_blank")
-    }
   }
 
   return (
@@ -46,13 +181,23 @@ export default function BeatDetailPage({ params }: { params: { id: string } }) {
         <div className="w-full lg:w-2/3">
           <div className="flex flex-col md:flex-row gap-6 md:gap-8 mb-6 md:mb-8">
             <div className="w-full md:w-1/3">
-              <Image
-                src={beat.coverImage || "/placeholder.svg"}
-                alt={beat.title}
-                width={500}
-                height={500}
-                className="w-full h-auto rounded-xl"
-              />
+              <div className="relative group">
+                <Image
+                  src={beat.coverImage || "/placeholder.svg?height=500&width=500"}
+                  alt={beat.title}
+                  width={500}
+                  height={500}
+                  className="w-full h-auto rounded-xl"
+                />
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
+                  <Button
+                    className="bg-white/90 hover:bg-white text-black rounded-full h-16 w-16 flex items-center justify-center shadow-lg transform transition-transform hover:scale-110"
+                    onClick={handlePlayPause}
+                  >
+                    {isThisBeatPlaying && isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 ml-1" />}
+                  </Button>
+                </div>
+              </div>
             </div>
             <div className="w-full md:w-2/3">
               <h1 className="text-2xl md:text-3xl font-bold mb-2 font-heading">{beat.title}</h1>
@@ -67,7 +212,22 @@ export default function BeatDetailPage({ params }: { params: { id: string } }) {
               </div>
 
               <div className="mb-6">
-                <AudioPlayer />
+                <Button
+                  onClick={handlePlayPause}
+                  className="bg-brand-600 hover:bg-brand-500 text-white px-6 py-2 rounded-lg flex items-center gap-2"
+                >
+                  {isThisBeatPlaying && isPlaying ? (
+                    <>
+                      <Pause className="h-4 w-4" />
+                      Pause
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-4 w-4" />
+                      Play Preview
+                    </>
+                  )}
+                </Button>
               </div>
 
               <div className="grid grid-cols-3 gap-3 md:gap-4 mb-6">
@@ -106,8 +266,8 @@ export default function BeatDetailPage({ params }: { params: { id: string } }) {
             <h2 className="text-xl font-bold mb-6 font-heading">Get This Beat</h2>
 
             <div className="text-center mb-6">
-              <div className="text-3xl font-bold mb-2">${beat.price}</div>
               <p className="text-muted-foreground text-sm">Available on BeatStars</p>
+              <p className="text-2xl font-bold text-brand-600 mt-2">${beat.price}</p>
             </div>
 
             <Button size="lg" className="w-full bg-brand-600 hover:bg-brand-500 mb-4" onClick={handleBuyNow}>
@@ -118,6 +278,17 @@ export default function BeatDetailPage({ params }: { params: { id: string } }) {
             <div className="text-center text-sm text-gray-400">
               <p>Secure payment via BeatStars</p>
               <p className="mt-1">Instant delivery after purchase</p>
+            </div>
+
+            <div className="mt-6 pt-6 border-t border-border">
+              <h3 className="font-semibold mb-3">License Options Available:</h3>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• Basic License</li>
+                <li>• Premium License</li>
+                <li>• Trackout License</li>
+                <li>• Unlimited License</li>
+                <li>• Exclusive Rights</li>
+              </ul>
             </div>
           </div>
         </div>

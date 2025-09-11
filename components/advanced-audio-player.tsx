@@ -1,418 +1,268 @@
 "use client"
 
-import { useState, useRef, useEffect, useCallback } from "react"
-import Image from "next/image"
-import {
-  Play,
-  Pause,
-  SkipBack,
-  SkipForward,
-  Volume2,
-  VolumeX,
-  Repeat,
-  Shuffle,
-  ExternalLink,
-  List,
-  X,
-} from "lucide-react"
-import { Slider } from "@/components/ui/slider"
+import type React from "react"
+import { useState, useRef } from "react"
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Shuffle, Repeat, List } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Slider } from "@/components/ui/slider"
 import { useAudioPlayer } from "@/components/audio-player-context"
-import { motion, AnimatePresence } from "framer-motion"
+import Image from "next/image"
 
 export default function AdvancedAudioPlayer() {
-  const { currentTrack, isPlaying, togglePlayPause, setIsPlaying, queue, currentIndex, nextTrack, previousTrack } =
-    useAudioPlayer()
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const [volume, setVolume] = useState(0.7)
+  const {
+    currentTrack,
+    isPlaying,
+    volume,
+    currentTime,
+    duration,
+    queue,
+    togglePlayPause,
+    nextTrack,
+    previousTrack,
+    setVolume,
+    seekTo,
+    shuffleQueue,
+    clearQueue,
+  } = useAudioPlayer()
+
   const [isMuted, setIsMuted] = useState(false)
-  const [showVolumeControl, setShowVolumeControl] = useState(false)
+  const [isShuffled, setIsShuffled] = useState(false)
+  const [repeatMode, setRepeatMode] = useState<"off" | "one" | "all">("off")
   const [showQueue, setShowQueue] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
-  const [isVisible, setIsVisible] = useState(false)
-  const [repeatMode, setRepeatMode] = useState<"off" | "all" | "one">("off")
-  const [shuffleMode, setShuffleMode] = useState(false)
-  const [crossfade, setCrossfade] = useState(false)
+  const [previousVolume, setPreviousVolume] = useState(volume)
 
-  const audioRef = useRef<HTMLAudioElement | null>(null)
-  const nextAudioRef = useRef<HTMLAudioElement | null>(null)
-  const volumeControlRef = useRef<HTMLDivElement>(null)
+  const progressRef = useRef<HTMLDivElement>(null)
 
-  // Handle clicks outside volume control
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (volumeControlRef.current && !volumeControlRef.current.contains(event.target as Node)) {
-        setShowVolumeControl(false)
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
-
-  useEffect(() => {
-    // Create audio element if it doesn't exist
-    if (!audioRef.current) {
-      const audio = new Audio()
-      audioRef.current = audio
-
-      // Set up event listeners
-      audio.addEventListener("timeupdate", updateProgress)
-      audio.addEventListener("loadedmetadata", () => {
-        setDuration(audio.duration)
-      })
-      audio.addEventListener("ended", handleTrackEnd)
-    }
-
-    // Update audio source when currentTrack changes
-    if (currentTrack && audioRef.current) {
-      audioRef.current.src = currentTrack.audioSrc
-      audioRef.current.load()
-
-      // Show the player with animation
-      setIsVisible(true)
-
-      if (isPlaying) {
-        const playPromise = audioRef.current.play()
-
-        if (playPromise !== undefined) {
-          playPromise.catch((error) => {
-            console.error("Error playing audio:", error)
-            setIsPlaying(false)
-          })
-        }
-      }
-    } else {
-      setIsVisible(false)
-    }
-
-    // Clean up
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause()
-        audioRef.current.removeEventListener("timeupdate", updateProgress)
-        audioRef.current.removeEventListener("loadedmetadata", () => {})
-        audioRef.current.removeEventListener("ended", handleTrackEnd)
-      }
-    }
-  }, [currentTrack, isPlaying, setIsPlaying])
-
-  useEffect(() => {
-    if (audioRef.current) {
-      if (isPlaying && !isDragging) {
-        const playPromise = audioRef.current.play()
-
-        if (playPromise !== undefined) {
-          playPromise.catch((error) => {
-            console.error("Error playing audio:", error)
-            setIsPlaying(false)
-          })
-        }
-      } else {
-        audioRef.current.pause()
-      }
-    }
-  }, [isPlaying, isDragging, setIsPlaying])
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : volume
-    }
-  }, [volume, isMuted])
-
-  const updateProgress = useCallback(() => {
-    if (audioRef.current && !isDragging) {
-      setCurrentTime(audioRef.current.currentTime)
-    }
-  }, [isDragging])
-
-  const handleTrackEnd = useCallback(() => {
-    if (repeatMode === "one") {
-      // Repeat current track
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0
-        audioRef.current.play()
-      }
-    } else if (repeatMode === "all" || currentIndex < queue.length - 1) {
-      // Play next track
-      nextTrack()
-    } else {
-      // Stop playing
-      setIsPlaying(false)
-      setCurrentTime(0)
-    }
-  }, [repeatMode, currentIndex, queue.length, nextTrack, setIsPlaying])
-
-  const handleProgressChange = (value: number[]) => {
-    if (audioRef.current) {
-      const newTime = value[0]
-      audioRef.current.currentTime = newTime
-      setCurrentTime(newTime)
-    }
-  }
-
-  const handleVolumeChange = (value: number[]) => {
-    const newVolume = value[0]
-    setVolume(newVolume)
-    if (newVolume === 0) {
-      setIsMuted(true)
-    } else {
-      setIsMuted(false)
-    }
-  }
-
-  const toggleMute = () => {
-    setIsMuted(!isMuted)
-  }
-
-  const toggleRepeat = () => {
-    setRepeatMode((prev) => {
-      switch (prev) {
-        case "off":
-          return "all"
-        case "all":
-          return "one"
-        case "one":
-          return "off"
-        default:
-          return "off"
-      }
-    })
-  }
-
-  const toggleShuffle = () => {
-    setShuffleMode(!shuffleMode)
-  }
-
+  // Format time helper
   const formatTime = (time: number) => {
     if (isNaN(time)) return "0:00"
     const minutes = Math.floor(time / 60)
     const seconds = Math.floor(time % 60)
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`
   }
 
-  const handleBuyLicense = () => {
-    if (currentTrack?.beatstarsLink) {
-      window.open(currentTrack.beatstarsLink, "_blank")
+  // Handle progress bar click
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!progressRef.current || !duration) return
+
+    const rect = progressRef.current.getBoundingClientRect()
+    const clickX = e.clientX - rect.left
+    const newTime = (clickX / rect.width) * duration
+    seekTo(newTime)
+  }
+
+  // Handle volume toggle
+  const toggleMute = () => {
+    if (isMuted) {
+      setVolume(previousVolume)
+      setIsMuted(false)
     } else {
-      window.open("https://beatstars.com/catmatildabeat", "_blank")
+      setPreviousVolume(volume)
+      setVolume(0)
+      setIsMuted(true)
     }
   }
 
-  if (!currentTrack) return null
+  // Handle shuffle
+  const handleShuffle = () => {
+    setIsShuffled(!isShuffled)
+    if (!isShuffled) {
+      shuffleQueue()
+    }
+  }
+
+  // Handle repeat mode
+  const handleRepeat = () => {
+    const modes: Array<"off" | "one" | "all"> = ["off", "one", "all"]
+    const currentIndex = modes.indexOf(repeatMode)
+    const nextIndex = (currentIndex + 1) % modes.length
+    setRepeatMode(modes[nextIndex])
+  }
+
+  // Handle volume change
+  const handleVolumeChange = (newVolume: number[]) => {
+    const vol = newVolume[0]
+    setVolume(vol)
+    setIsMuted(vol === 0)
+    if (vol > 0) {
+      setPreviousVolume(vol)
+    }
+  }
+
+  // Handle progress change
+  const handleProgressChange = (newProgress: number[]) => {
+    const time = (newProgress[0] / 100) * duration
+    seekTo(time)
+  }
+
+  if (!currentTrack) {
+    return (
+      <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t border-border p-4 z-50">
+        <div className="container mx-auto">
+          <div className="flex items-center justify-center text-muted-foreground">
+            <p className="text-sm">No track selected</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0
 
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border py-2 md:py-3 px-3 md:px-4 z-50 shadow-lg"
-        >
-          <div className="container mx-auto">
-            {/* Main Player Controls */}
-            <div className="flex items-center gap-3 md:gap-4 mb-2">
-              <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
-                <div className="flex-shrink-0">
-                  <Image
-                    src={currentTrack.coverImage || "/placeholder.svg"}
-                    alt={currentTrack.title}
-                    width={40}
-                    height={40}
-                    className="rounded-md w-10 h-10 md:w-12 md:h-12 object-cover"
-                  />
-                </div>
+    <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t border-border p-4 z-50">
+      <div className="container mx-auto">
+        <div className="flex items-center gap-4">
+          {/* Track Info */}
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+              <Image
+                src={currentTrack.coverImage || "/placeholder.svg?height=48&width=48"}
+                alt={currentTrack.title}
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h4 className="font-medium text-sm truncate">{currentTrack.title}</h4>
+              <p className="text-xs text-muted-foreground truncate">{currentTrack.artist}</p>
+            </div>
+          </div>
 
-                <div className="min-w-0 flex-1">
-                  <h4 className="font-bold text-xs md:text-sm truncate">{currentTrack.title}</h4>
-                  <p className="text-xs text-muted-foreground truncate">{currentTrack.artist}</p>
-                </div>
+          {/* Main Controls */}
+          <div className="flex flex-col items-center gap-2 flex-1 max-w-md">
+            {/* Control Buttons */}
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleShuffle}
+                className={`h-8 w-8 p-0 ${isShuffled ? "text-brand-500" : "text-muted-foreground"}`}
+              >
+                <Shuffle className="h-4 w-4" />
+              </Button>
 
-                {/* Desktop Controls */}
-                <div className="hidden md:flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-brand-400"
-                    onClick={toggleShuffle}
-                  >
-                    <Shuffle className={`h-4 w-4 ${shuffleMode ? "text-brand-500" : ""}`} />
-                  </Button>
+              <Button variant="ghost" size="sm" onClick={previousTrack} className="h-8 w-8 p-0">
+                <SkipBack className="h-4 w-4" />
+              </Button>
 
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-brand-400"
-                    onClick={previousTrack}
-                    disabled={currentIndex === 0 && repeatMode !== "all"}
-                  >
-                    <SkipBack className="h-4 w-4" />
-                  </Button>
+              <Button
+                onClick={togglePlayPause}
+                className="h-10 w-10 rounded-full bg-brand-600 hover:bg-brand-500 text-white"
+              >
+                {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
+              </Button>
 
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9 text-brand-500 hover:text-brand-400 hover:bg-brand-500/10"
-                    onClick={togglePlayPause}
-                  >
-                    {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
-                  </Button>
+              <Button variant="ghost" size="sm" onClick={nextTrack} className="h-8 w-8 p-0">
+                <SkipForward className="h-4 w-4" />
+              </Button>
 
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-brand-400"
-                    onClick={nextTrack}
-                    disabled={currentIndex === queue.length - 1 && repeatMode !== "all"}
-                  >
-                    <SkipForward className="h-4 w-4" />
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-brand-400"
-                    onClick={toggleRepeat}
-                  >
-                    <Repeat className={`h-4 w-4 ${repeatMode !== "off" ? "text-brand-500" : ""}`} />
-                    {repeatMode === "one" && <span className="absolute -top-1 -right-1 text-xs text-brand-500">1</span>}
-                  </Button>
-                </div>
-
-                {/* Mobile Controls */}
-                <div className="flex md:hidden items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-brand-500 hover:text-brand-400"
-                    onClick={togglePlayPause}
-                  >
-                    {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </div>
-
-              {/* Right Side Controls */}
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-brand-400 hidden sm:flex"
-                  onClick={() => setShowQueue(!showQueue)}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-
-                <div className="relative hidden sm:block" ref={volumeControlRef}>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-brand-400"
-                    onClick={() => setShowVolumeControl(!showVolumeControl)}
-                    onMouseEnter={() => setShowVolumeControl(true)}
-                  >
-                    {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-                  </Button>
-
-                  <AnimatePresence>
-                    {showVolumeControl && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute bottom-full mb-2 bg-card rounded-md p-2 shadow-lg w-24 border border-border"
-                        onMouseLeave={() => setShowVolumeControl(false)}
-                      >
-                        <Slider
-                          value={[isMuted ? 0 : volume]}
-                          min={0}
-                          max={1}
-                          step={0.01}
-                          onValueChange={handleVolumeChange}
-                          orientation="vertical"
-                          className="h-20"
-                        />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                <Button
-                  size="sm"
-                  className="bg-brand-600 hover:bg-brand-500 transition-colors text-xs h-8 hidden sm:flex"
-                  onClick={handleBuyLicense}
-                >
-                  <ExternalLink className="h-3 w-3 mr-1" />
-                  Buy
-                </Button>
-              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleRepeat}
+                className={`h-8 w-8 p-0 ${repeatMode !== "off" ? "text-brand-500" : "text-muted-foreground"}`}
+              >
+                <Repeat className="h-4 w-4" />
+                {repeatMode === "one" && (
+                  <span className="absolute -top-1 -right-1 text-xs bg-brand-500 text-white rounded-full w-4 h-4 flex items-center justify-center">
+                    1
+                  </span>
+                )}
+              </Button>
             </div>
 
             {/* Progress Bar */}
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs text-muted-foreground w-10 hidden sm:block">{formatTime(currentTime)}</span>
-              <Slider
-                value={[currentTime]}
-                min={0}
-                max={duration || 100}
-                step={0.1}
-                onValueChange={handleProgressChange}
-                onValueCommit={() => setIsDragging(false)}
-                onPointerDown={() => setIsDragging(true)}
-                className="flex-1"
-              />
-              <span className="text-xs text-muted-foreground w-10 hidden sm:block">{formatTime(duration)}</span>
+            <div className="flex items-center gap-2 w-full">
+              <span className="text-xs text-muted-foreground w-10 text-right">{formatTime(currentTime)}</span>
+              <div
+                ref={progressRef}
+                className="flex-1 h-1 bg-muted rounded-full cursor-pointer relative"
+                onClick={handleProgressClick}
+              >
+                <div className="h-full bg-brand-500 rounded-full relative" style={{ width: `${progressPercentage}%` }}>
+                  <div className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-brand-500 rounded-full opacity-0 hover:opacity-100 transition-opacity" />
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground w-10">{formatTime(duration)}</span>
             </div>
-
-            {/* Queue Panel */}
-            <AnimatePresence>
-              {showQueue && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="border-t border-border pt-2 mt-2 overflow-hidden"
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <h4 className="text-sm font-bold">Queue ({queue.length} tracks)</h4>
-                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowQueue(false)}>
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="max-h-32 overflow-y-auto space-y-1">
-                    {queue.map((track, index) => (
-                      <div
-                        key={`${track.id}-${index}`}
-                        className={`flex items-center gap-2 p-2 rounded text-sm ${
-                          index === currentIndex ? "bg-brand-500/20 text-brand-500" : "hover:bg-secondary/50"
-                        }`}
-                      >
-                        <span className="w-4 text-xs text-muted-foreground">{index + 1}</span>
-                        <Image
-                          src={track.coverImage || "/placeholder.svg"}
-                          alt={track.title}
-                          width={24}
-                          height={24}
-                          className="rounded"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="truncate">{track.title}</p>
-                          <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+
+          {/* Volume and Queue Controls */}
+          <div className="flex items-center gap-2 flex-1 justify-end">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowQueue(!showQueue)}
+              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+            >
+              <List className="h-4 w-4" />
+            </Button>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleMute}
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+              >
+                {isMuted || volume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+              </Button>
+
+              <div className="w-20">
+                <Slider
+                  value={[isMuted ? 0 : volume * 100]}
+                  onValueChange={(value) => handleVolumeChange([value[0] / 100])}
+                  max={100}
+                  step={1}
+                  className="w-full"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Queue Display */}
+        {showQueue && queue.length > 0 && (
+          <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-medium text-sm">Queue ({queue.length} tracks)</h3>
+              <Button variant="ghost" size="sm" onClick={clearQueue} className="text-xs">
+                Clear Queue
+              </Button>
+            </div>
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {queue.map((track, index) => (
+                <div
+                  key={`${track.id}-${index}`}
+                  className={`flex items-center gap-3 p-2 rounded ${
+                    track.id === currentTrack.id ? "bg-brand-500/20" : "hover:bg-muted"
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded overflow-hidden flex-shrink-0">
+                    <Image
+                      src={track.coverImage || "/placeholder.svg?height=32&width=32"}
+                      alt={track.title}
+                      width={32}
+                      height={32}
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium truncate">{track.title}</p>
+                    <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
+                  </div>
+                  {track.id === currentTrack.id && (
+                    <div className="text-brand-500">
+                      {isPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

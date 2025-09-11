@@ -1,423 +1,664 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
+import { useBeats } from "@/components/beats-context"
+import { beatOperations } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
-import { Upload, X, CheckCircle } from "lucide-react"
-import { useBeats } from "@/components/beats-context"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+import { Upload, X, Plus, Loader2, CheckCircle, AlertCircle, Music, Play, Pause } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Checkbox } from "@/components/ui/checkbox"
 
-export default function UploadBeatForm() {
+const genres = [
+  "Trap",
+  "Hip Hop",
+  "R&B",
+  "Drill",
+  "Pop",
+  "Afrobeat",
+  "Electronic",
+  "Lo-Fi",
+  "UK Drill",
+  "Synthwave",
+  "Jazz",
+  "Gospel",
+  "Boom Bap",
+  "Reggaeton",
+]
+
+const keys = [
+  "C Major",
+  "C Minor",
+  "C# Major",
+  "C# Minor",
+  "D Major",
+  "D Minor",
+  "D# Major",
+  "D# Minor",
+  "E Major",
+  "E Minor",
+  "F Major",
+  "F Minor",
+  "F# Major",
+  "F# Minor",
+  "G Major",
+  "G Minor",
+  "G# Major",
+  "G# Minor",
+  "A Major",
+  "A Minor",
+  "A# Major",
+  "A# Minor",
+  "B Major",
+  "B Minor",
+  "Bb Major",
+  "Bb Minor",
+]
+
+const categories = [
+  {
+    value: "trending",
+    label: "Trending",
+    description: "Popular beats getting attention",
+    color: "bg-orange-100 border-orange-300 text-orange-800",
+  },
+  {
+    value: "featured",
+    label: "Featured",
+    description: "Highlighted premium beats",
+    color: "bg-blue-100 border-blue-300 text-blue-800",
+  },
+  {
+    value: "new_releases",
+    label: "New Releases",
+    description: "Fresh beats just released",
+    color: "bg-green-100 border-green-300 text-green-800",
+  },
+  {
+    value: "latest",
+    label: "Latest Tracks",
+    description: "Recent additions to catalog",
+    color: "bg-purple-100 border-purple-300 text-purple-800",
+  },
+]
+
+interface UploadBeatFormProps {
+  onSuccess?: () => void
+}
+
+export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
   const { addBeat } = useBeats()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
+  const [errorMessage, setErrorMessage] = useState("")
+
+  // Form state
   const [formData, setFormData] = useState({
     title: "",
-    genre: "",
-    mood: "",
-    customMood: "",
+    producer: "Cat Matilda Beat",
+    bpm: "",
     key: "",
-    customKey: "",
+    genre: "",
+    categories: [] as string[], // Multiple categories
     description: "",
-    basicPrice: "",
-    premiumPrice: "",
-    exclusivePrice: "",
+    duration: "",
     beatstarsLink: "",
-    duration: "", // Add duration field
+    tags: [] as string[],
   })
-  const [coverImage, setCoverImage] = useState<string | null>(null)
+
+  // File upload states
+  const [coverImage, setCoverImage] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [audioFile, setAudioFile] = useState<File | null>(null)
-  const [bpm, setBpm] = useState(140)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [audioPreview, setAudioPreview] = useState<string | null>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
+  const [newTag, setNewTag] = useState("")
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
-
-  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      setCoverImage(file)
       const reader = new FileReader()
-      reader.onload = (event) => {
-        setCoverImage(event.target?.result as string)
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string)
       }
       reader.readAsDataURL(file)
     }
   }
 
-  const handleAudioFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAudioUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      // Validate file type
+      const validTypes = ["audio/mpeg", "audio/wav", "audio/mp3", "audio/x-wav"]
+      if (!validTypes.includes(file.type) && !file.name.match(/\.(mp3|wav)$/i)) {
+        setErrorMessage("Please upload a valid MP3 or WAV file")
+        return
+      }
+
       setAudioFile(file)
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const audioUrl = e.target?.result as string
+        setAudioPreview(audioUrl)
+
+        // Create audio element for preview
+        const audio = new Audio(audioUrl)
+        audio.addEventListener("loadedmetadata", () => {
+          const minutes = Math.floor(audio.duration / 60)
+          const seconds = Math.floor(audio.duration % 60)
+          const duration = `${minutes}:${seconds.toString().padStart(2, "0")}`
+          setFormData((prev) => ({ ...prev, duration }))
+        })
+        setAudioElement(audio)
+      }
+      reader.readAsDataURL(file)
     }
   }
 
-  const removeCoverImage = () => {
-    setCoverImage(null)
+  const toggleAudioPreview = () => {
+    if (!audioElement) return
+
+    if (isPlaying) {
+      audioElement.pause()
+      setIsPlaying(false)
+    } else {
+      audioElement.play()
+      setIsPlaying(true)
+
+      // Auto-pause when audio ends
+      audioElement.onended = () => {
+        setIsPlaying(false)
+      }
+    }
   }
 
-  const removeAudioFile = () => {
+  const removeImage = () => {
+    setCoverImage(null)
+    setImagePreview(null)
+  }
+
+  const removeAudio = () => {
+    if (audioElement) {
+      audioElement.pause()
+      setIsPlaying(false)
+    }
     setAudioFile(null)
+    setAudioPreview(null)
+    setAudioElement(null)
+  }
+
+  const addTag = () => {
+    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
+      setFormData((prev) => ({
+        ...prev,
+        tags: [...prev.tags, newTag.trim()],
+      }))
+      setNewTag("")
+    }
+  }
+
+  const removeTag = (tagToRemove: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
+    }))
+  }
+
+  const handleCategoryChange = (categoryValue: string, checked: boolean) => {
+    setFormData((prev) => ({
+      ...prev,
+      categories: checked ? [...prev.categories, categoryValue] : prev.categories.filter((c) => c !== categoryValue),
+    }))
+  }
+
+  const uploadAudioFile = async (file: File, beatId: string): Promise<string | null> => {
+    try {
+      const fileExt = file.name.split(".").pop()
+      const fileName = `${beatId}.${fileExt}`
+      const filePath = `audio/${fileName}`
+
+      const { error: uploadError } = await beatOperations.supabase.storage.from("beat-audio").upload(filePath, file, {
+        upsert: true,
+      })
+
+      if (uploadError) {
+        console.error("Error uploading audio:", uploadError)
+        return null
+      }
+
+      const { data } = beatOperations.supabase.storage.from("beat-audio").getPublicUrl(filePath)
+      return data.publicUrl
+    } catch (error) {
+      console.error("Unexpected error uploading audio:", error)
+      return null
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setSubmitStatus("idle")
+    setErrorMessage("")
 
-    // Simulate form submission
-    setTimeout(() => {
-      // Create the new beat
-      const newBeat = {
-        id: Date.now().toString(),
-        title: formData.title,
-        producer: "Cat Matilda Beat",
-        coverImage: coverImage || "/placeholder.svg?height=400&width=400",
-        price: Number.parseFloat(formData.basicPrice) || 29.99,
-        bpm,
-        key: formData.key === "custom" ? formData.customKey : formData.key,
-        genre: formData.genre,
-        tags: [formData.genre, formData.mood === "custom" ? formData.customMood : formData.mood, `${bpm} BPM`].filter(
-          Boolean,
-        ),
-        status: "Active",
-        beatstarsLink: formData.beatstarsLink,
-        sales: 0,
-        description: formData.description,
-        duration: formData.duration || "3:00", // Add duration
+    try {
+      // Validate required fields
+      if (!formData.title || !formData.bpm || !formData.key || !formData.genre) {
+        throw new Error("Please fill in all required fields")
       }
 
-      // Add beat to context
-      addBeat(newBeat)
+      let coverImageUrl = ""
+      let audioFileUrl = ""
 
-      setIsSubmitting(false)
-      setIsSubmitted(true)
+      // Upload cover image if provided
+      if (coverImage) {
+        const tempId = Date.now().toString()
+        coverImageUrl = await beatOperations.uploadImage(coverImage, tempId)
+        if (!coverImageUrl) {
+          throw new Error("Failed to upload cover image")
+        }
+      } else {
+        // Use placeholder image if no image uploaded
+        coverImageUrl = `/placeholder.svg?height=400&width=400&query=${encodeURIComponent(formData.title + " beat cover")}`
+      }
 
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        setIsSubmitted(false)
+      // Upload audio file if provided
+      if (audioFile) {
+        const tempId = Date.now().toString()
+        audioFileUrl = await uploadAudioFile(audioFile, tempId)
+        if (!audioFileUrl) {
+          throw new Error("Failed to upload audio file")
+        }
+      }
+
+      // Create beat object - use first selected category or default to "latest"
+      const beatData = {
+        title: formData.title,
+        producer: formData.producer,
+        cover_image: coverImageUrl,
+        audio_file: audioFileUrl, // Add audio file URL
+        bpm: Number.parseInt(formData.bpm),
+        key: formData.key,
+        genre: formData.genre,
+        tags: formData.tags,
+        status: "active" as const,
+        category:
+          formData.categories.length > 0
+            ? (formData.categories[0] as "trending" | "featured" | "new_releases" | "latest")
+            : "latest",
+        beatstars_link: formData.beatstarsLink || "https://beatstars.com/catmatildabeat",
+        sales: 0,
+        description: formData.description,
+        duration: formData.duration || "3:30",
+      }
+
+      const result = await addBeat(beatData)
+
+      if (result) {
+        setSubmitStatus("success")
+        // Reset form
         setFormData({
           title: "",
-          genre: "",
-          mood: "",
-          customMood: "",
+          producer: "Cat Matilda Beat",
+          bpm: "",
           key: "",
-          customKey: "",
+          genre: "",
+          categories: [],
           description: "",
-          basicPrice: "",
-          premiumPrice: "",
-          exclusivePrice: "",
+          duration: "",
           beatstarsLink: "",
-          duration: "", // Add duration field
+          tags: [],
         })
         setCoverImage(null)
-        setAudioFile(null)
-        setBpm(140)
-      }, 3000)
-    }, 2000)
-  }
+        setImagePreview(null)
+        removeAudio()
 
-  if (isSubmitted) {
-    return (
-      <div className="text-center py-12">
-        <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-        <h3 className="text-2xl font-bold mb-2">Beat Uploaded Successfully!</h3>
-        <p className="text-muted-foreground">
-          Your beat has been added to your collection and is now live on the website.
-        </p>
-      </div>
-    )
+        // Call success callback after a short delay to show success message
+        setTimeout(() => {
+          onSuccess?.()
+        }, 1500)
+      } else {
+        console.error("Beat creation returned null result")
+        throw new Error("Failed to create beat - no result returned")
+      }
+    } catch (error) {
+      console.error("Error creating beat:", error)
+      setSubmitStatus("error")
+      setErrorMessage(error instanceof Error ? error.message : "An unexpected error occurred")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="title">Beat Title *</Label>
+    <div className="w-full max-w-2xl mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Cover Image Upload */}
+        <div className="space-y-2">
+          <Label>Cover Image</Label>
+          <div className="border-2 border-dashed border-border rounded-lg p-6">
+            {imagePreview ? (
+              <div className="relative">
+                <img
+                  src={imagePreview || "/placeholder.svg"}
+                  alt="Cover preview"
+                  className="w-full h-48 object-cover rounded-lg"
+                />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  className="absolute top-2 right-2"
+                  onClick={removeImage}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="text-center">
+                <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <div className="space-y-2">
+                  <Label htmlFor="cover-upload" className="cursor-pointer">
+                    <span className="text-brand-500 hover:text-brand-400">Click to upload</span> or drag and drop
+                  </Label>
+                  <p className="text-sm text-muted-foreground">PNG, JPG up to 10MB</p>
+                </div>
+                <Input id="cover-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Audio File Upload */}
+        <div className="space-y-2">
+          <Label>Audio File (MP3/WAV)</Label>
+          <div className="border-2 border-dashed border-border rounded-lg p-6">
+            {audioPreview ? (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between bg-muted rounded-lg p-4">
+                  <div className="flex items-center gap-3">
+                    <Music className="h-8 w-8 text-brand-500" />
+                    <div>
+                      <p className="font-medium">{audioFile?.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {audioFile && `${(audioFile.size / 1024 / 1024).toFixed(2)} MB`} • {formData.duration}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={toggleAudioPreview}
+                      className="flex items-center gap-2 bg-transparent"
+                    >
+                      {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                      {isPlaying ? "Pause" : "Preview"}
+                    </Button>
+                    <Button type="button" variant="destructive" size="sm" onClick={removeAudio}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center">
+                <Music className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <div className="space-y-2">
+                  <Label htmlFor="audio-upload" className="cursor-pointer">
+                    <span className="text-brand-500 hover:text-brand-400">Click to upload</span> or drag and drop
+                  </Label>
+                  <p className="text-sm text-muted-foreground">MP3, WAV up to 50MB</p>
+                </div>
+                <Input
+                  id="audio-upload"
+                  type="file"
+                  accept="audio/mp3,audio/wav,audio/mpeg,.mp3,.wav"
+                  onChange={handleAudioUpload}
+                  className="hidden"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Basic Info */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="title">Title *</Label>
             <Input
               id="title"
-              name="title"
               value={formData.title}
-              onChange={handleInputChange}
+              onChange={(e) => handleInputChange("title", e.target.value)}
               placeholder="Enter beat title"
               required
             />
           </div>
 
-          <div>
-            <Label htmlFor="genre">Genre *</Label>
-            <Select value={formData.genre} onValueChange={(value) => handleSelectChange("genre", value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select genre" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Trap">Trap</SelectItem>
-                <SelectItem value="Hip Hop">Hip Hop</SelectItem>
-                <SelectItem value="R&B">R&B</SelectItem>
-                <SelectItem value="Pop">Pop</SelectItem>
-                <SelectItem value="Drill">Drill</SelectItem>
-                <SelectItem value="Boom Bap">Boom Bap</SelectItem>
-                <SelectItem value="Lo-Fi">Lo-Fi</SelectItem>
-                <SelectItem value="Ambient">Ambient</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="space-y-2">
+            <Label htmlFor="producer">Producer</Label>
+            <Input
+              id="producer"
+              value={formData.producer}
+              onChange={(e) => handleInputChange("producer", e.target.value)}
+              placeholder="Producer name"
+            />
+          </div>
+        </div>
+
+        {/* Musical Info */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="bpm">BPM *</Label>
+            <Input
+              id="bpm"
+              type="number"
+              min="60"
+              max="200"
+              value={formData.bpm}
+              onChange={(e) => handleInputChange("bpm", e.target.value)}
+              placeholder="140"
+              required
+            />
           </div>
 
-          <div>
-            <Label htmlFor="mood">Mood</Label>
-            <Select value={formData.mood} onValueChange={(value) => handleSelectChange("mood", value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select mood" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Dark">Dark</SelectItem>
-                <SelectItem value="Chill">Chill</SelectItem>
-                <SelectItem value="Energetic">Energetic</SelectItem>
-                <SelectItem value="Emotional">Emotional</SelectItem>
-                <SelectItem value="Happy">Happy</SelectItem>
-                <SelectItem value="Sad">Sad</SelectItem>
-                <SelectItem value="Aggressive">Aggressive</SelectItem>
-                <SelectItem value="Melodic">Melodic</SelectItem>
-                <SelectItem value="custom">Other (specify)</SelectItem>
-              </SelectContent>
-            </Select>
-            {formData.mood === "custom" && (
-              <Input
-                name="customMood"
-                value={formData.customMood}
-                onChange={handleInputChange}
-                placeholder="Enter custom mood"
-                className="mt-2"
-              />
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="key">Key</Label>
-            <Select value={formData.key} onValueChange={(value) => handleSelectChange("key", value)}>
+          <div className="space-y-2">
+            <Label htmlFor="key">Key *</Label>
+            <Select value={formData.key} onValueChange={(value) => handleInputChange("key", value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select key" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="C Major">C Major</SelectItem>
-                <SelectItem value="C Minor">C Minor</SelectItem>
-                <SelectItem value="D Major">D Major</SelectItem>
-                <SelectItem value="D Minor">D Minor</SelectItem>
-                <SelectItem value="E Major">E Major</SelectItem>
-                <SelectItem value="E Minor">E Minor</SelectItem>
-                <SelectItem value="F Major">F Major</SelectItem>
-                <SelectItem value="F Minor">F Minor</SelectItem>
-                <SelectItem value="G Major">G Major</SelectItem>
-                <SelectItem value="G Minor">G Minor</SelectItem>
-                <SelectItem value="A Major">A Major</SelectItem>
-                <SelectItem value="A Minor">A Minor</SelectItem>
-                <SelectItem value="custom">Other (specify)</SelectItem>
+                {keys.map((key) => (
+                  <SelectItem key={key} value={key}>
+                    {key}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
-            {formData.key === "custom" && (
-              <Input
-                name="customKey"
-                value={formData.customKey}
-                onChange={handleInputChange}
-                placeholder="Enter custom key"
-                className="mt-2"
-              />
-            )}
           </div>
 
-          <div>
-            <Label>BPM: {bpm}</Label>
-            <Slider
-              value={[bpm]}
-              min={60}
-              max={200}
-              step={1}
-              onValueChange={(value) => setBpm(value[0])}
-              className="mt-2"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="beatstarsLink">BeatStars Link *</Label>
-            <Input
-              id="beatstarsLink"
-              name="beatstarsLink"
-              value={formData.beatstarsLink}
-              onChange={handleInputChange}
-              placeholder="https://beatstars.com/beat/your-beat"
-              required
-            />
-            <p className="text-xs text-muted-foreground mt-1">This link will be used for the "Buy Now" button</p>
-          </div>
-
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              placeholder="Describe your beat..."
-              className="h-32"
-            />
-          </div>
-
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="duration">Duration</Label>
             <Input
               id="duration"
-              name="duration"
               value={formData.duration}
-              onChange={handleInputChange}
-              placeholder="3:00"
+              onChange={(e) => handleInputChange("duration", e.target.value)}
+              placeholder="3:30"
             />
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div>
-            <Label>Cover Image</Label>
-            {coverImage ? (
-              <div className="relative mt-2">
-                <img
-                  src={coverImage || "/placeholder.svg"}
-                  alt="Cover preview"
-                  className="w-full h-48 object-cover rounded-lg"
-                />
-                <button
-                  type="button"
-                  onClick={removeCoverImage}
-                  className="absolute top-2 right-2 bg-black/70 p-1 rounded-full"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-            ) : (
-              <div className="border-2 border-dashed border-zinc-700 rounded-lg p-6 mt-2 text-center">
-                <Upload className="h-10 w-10 mx-auto mb-2 text-gray-400" />
-                <p className="text-sm text-gray-400 mb-2">Drag and drop or click to upload</p>
-                <p className="text-xs text-gray-500">PNG, JPG or WEBP (1:1 ratio recommended)</p>
-                <Input
-                  id="coverImage"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleCoverImageChange}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="mt-4 bg-transparent"
-                  onClick={() => document.getElementById("coverImage")?.click()}
-                >
-                  Select File
-                </Button>
-              </div>
-            )}
-          </div>
-
-          <div>
-            <Label>Audio File</Label>
-            {audioFile ? (
-              <div className="flex items-center justify-between bg-zinc-800 p-3 rounded-lg mt-2">
-                <div className="truncate">
-                  <p className="font-medium truncate">{audioFile.name}</p>
-                  <p className="text-xs text-gray-400">{(audioFile.size / (1024 * 1024)).toFixed(2)} MB</p>
-                </div>
-                <button type="button" onClick={removeAudioFile} className="bg-zinc-700 p-1 rounded-full">
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            ) : (
-              <div className="border-2 border-dashed border-zinc-700 rounded-lg p-6 mt-2 text-center">
-                <Upload className="h-10 w-10 mx-auto mb-2 text-gray-400" />
-                <p className="text-sm text-gray-400 mb-2">Drag and drop or click to upload</p>
-                <p className="text-xs text-gray-500">MP3 or WAV files only</p>
-                <Input
-                  id="audioFile"
-                  type="file"
-                  accept="audio/*"
-                  className="hidden"
-                  onChange={handleAudioFileChange}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="mt-4 bg-transparent"
-                  onClick={() => document.getElementById("audioFile")?.click()}
-                >
-                  Select File
-                </Button>
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="basicPrice">Basic License Price ($)</Label>
-              <Input
-                id="basicPrice"
-                name="basicPrice"
-                type="number"
-                step="0.01"
-                value={formData.basicPrice}
-                onChange={handleInputChange}
-                placeholder="29.99"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="premiumPrice">Premium License Price ($)</Label>
-              <Input
-                id="premiumPrice"
-                name="premiumPrice"
-                type="number"
-                step="0.01"
-                value={formData.premiumPrice}
-                onChange={handleInputChange}
-                placeholder="79.99"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="exclusivePrice">Exclusive License Price ($)</Label>
-              <Input
-                id="exclusivePrice"
-                name="exclusivePrice"
-                type="number"
-                step="0.01"
-                value={formData.exclusivePrice}
-                onChange={handleInputChange}
-                placeholder="299.99"
-              />
-            </div>
-          </div>
+        {/* Genre */}
+        <div className="space-y-2">
+          <Label htmlFor="genre">Genre *</Label>
+          <Select value={formData.genre} onValueChange={(value) => handleInputChange("genre", value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select genre" />
+            </SelectTrigger>
+            <SelectContent>
+              {genres.map((genre) => (
+                <SelectItem key={genre} value={genre}>
+                  {genre}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      </div>
 
-      <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4">
-        <Button type="button" variant="outline" className="w-full sm:w-auto bg-transparent">
-          Save as Draft
+        {/* Categories with Checkboxes */}
+        <div className="space-y-3">
+          <Label>Categories</Label>
+          <p className="text-sm text-muted-foreground">Select one or more categories for your beat</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {categories.map((category) => (
+              <Card key={category.value} className="cursor-pointer hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  <div className="flex items-start space-x-3">
+                    <Checkbox
+                      id={category.value}
+                      checked={formData.categories.includes(category.value)}
+                      onCheckedChange={(checked) => handleCategoryChange(category.value, checked as boolean)}
+                      className="mt-1"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <Label htmlFor={category.value} className="cursor-pointer font-medium text-sm">
+                        {category.label}
+                      </Label>
+                      <p className="text-xs text-muted-foreground mt-1">{category.description}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Selected Categories Display */}
+          {formData.categories.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {formData.categories.map((categoryValue) => {
+                const category = categories.find((c) => c.value === categoryValue)
+                return (
+                  <Badge
+                    key={categoryValue}
+                    variant="secondary"
+                    className={`flex items-center gap-1 ${category?.color || "bg-gray-100"}`}
+                  >
+                    {category?.label}
+                    <X
+                      className="h-3 w-3 cursor-pointer hover:text-destructive"
+                      onClick={() => handleCategoryChange(categoryValue, false)}
+                    />
+                  </Badge>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Tags */}
+        <div className="space-y-2">
+          <Label>Tags</Label>
+          <div className="flex gap-2">
+            <Input
+              value={newTag}
+              onChange={(e) => setNewTag(e.target.value)}
+              placeholder="Add a tag"
+              onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
+            />
+            <Button type="button" onClick={addTag} size="sm">
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+          {formData.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {formData.tags.map((tag) => (
+                <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                  {tag}
+                  <X className="h-3 w-3 cursor-pointer hover:text-destructive" onClick={() => removeTag(tag)} />
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Description */}
+        <div className="space-y-2">
+          <Label htmlFor="description">Description</Label>
+          <Textarea
+            id="description"
+            value={formData.description}
+            onChange={(e) => handleInputChange("description", e.target.value)}
+            placeholder="Describe your beat..."
+            rows={3}
+          />
+        </div>
+
+        {/* BeatStars Link */}
+        <div className="space-y-2">
+          <Label htmlFor="beatstarsLink">BeatStars Link</Label>
+          <Input
+            id="beatstarsLink"
+            value={formData.beatstarsLink}
+            onChange={(e) => handleInputChange("beatstarsLink", e.target.value)}
+            placeholder="https://beatstars.com/your-beat"
+          />
+        </div>
+
+        {/* Submit Status */}
+        <AnimatePresence>
+          {submitStatus === "success" && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="flex items-center gap-2 text-green-600 bg-green-50 p-3 rounded-lg"
+            >
+              <CheckCircle className="h-5 w-5" />
+              <span>Beat uploaded successfully!</span>
+            </motion.div>
+          )}
+
+          {submitStatus === "error" && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="flex items-center gap-2 text-red-600 bg-red-50 p-3 rounded-lg"
+            >
+              <AlertCircle className="h-5 w-5" />
+              <span>{errorMessage}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Submit Button */}
+        <Button type="submit" className="w-full bg-brand-600 hover:bg-brand-500" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Uploading Beat...
+            </>
+          ) : (
+            <>
+              <Upload className="h-4 w-4 mr-2" />
+              Upload Beat
+            </>
+          )}
         </Button>
-        <Button type="submit" className="bg-purple-600 hover:bg-purple-700 w-full sm:w-auto" disabled={isSubmitting}>
-          {isSubmitting ? "Publishing..." : "Publish Beat"}
-        </Button>
-      </div>
-    </form>
+      </form>
+    </div>
   )
 }

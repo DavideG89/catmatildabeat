@@ -1,201 +1,161 @@
 "use client"
 
-import { useState } from "react"
-import { Play, Pause, Clock, Music } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Play, Pause, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { motion } from "framer-motion"
 import { useAudioPlayer } from "@/components/audio-player-context"
 import { useBeats } from "@/components/beats-context"
-import { motion } from "framer-motion"
 
 export default function TracklistSection() {
-  const { beats } = useBeats()
-  const { setCurrentTrack, setQueue, currentTrack, isPlaying } = useAudioPlayer()
-  const [playingTrackId, setPlayingTrackId] = useState<string | null>(null)
+  const { currentTrack, isPlaying, playTrack, togglePlayPause } = useAudioPlayer()
+  const { getBeatsByCategory } = useBeats()
+  const [latestBeats, setLatestBeats] = useState<any[]>([])
 
-  // Get active beats for tracklist
-  const activeBeats = beats.filter((beat) => beat.status === "Active")
+  useEffect(() => {
+    const beats = getBeatsByCategory("latest").slice(0, 8)
+    setLatestBeats(beats)
+  }, [getBeatsByCategory])
 
-  const handlePlayTrack = (beat: any, index: number) => {
-    const track = {
-      id: beat.id,
-      title: beat.title,
-      artist: beat.producer,
-      coverImage: beat.coverImage,
-      audioSrc: "/demo-beat.mp3",
-      type: "beat" as const,
-      beatstarsLink: beat.beatstarsLink,
-      duration: beat.duration || "3:00",
-      genre: beat.genre,
-      bpm: beat.bpm,
-      key: beat.key,
-    }
-
-    if (playingTrackId === beat.id && isPlaying) {
-      setPlayingTrackId(null)
-      setCurrentTrack(null)
+  const handlePlayTrack = (beat: any) => {
+    if (currentTrack?.id === beat.id) {
+      togglePlayPause()
     } else {
-      // Set up the queue with all tracks
-      const trackQueue = activeBeats.map((b) => ({
-        id: b.id,
-        title: b.title,
-        artist: b.producer,
-        coverImage: b.coverImage,
-        audioSrc: "/demo-beat.mp3",
-        type: "beat" as const,
-        beatstarsLink: b.beatstarsLink,
-        duration: b.duration || "3:00",
-        genre: b.genre,
-        bpm: b.bpm,
-        key: b.key,
-      }))
-
-      setQueue(trackQueue)
-      setPlayingTrackId(beat.id)
-      setCurrentTrack(track)
+      playTrack({
+        id: beat.id,
+        title: beat.title,
+        artist: beat.producer,
+        audioSrc: beat.audio_file || "/demo-beat.mp3", // Use uploaded audio file or fallback
+        coverImage: beat.cover_image,
+        beatstarsLink: beat.beatstars_link,
+        type: "beat",
+        duration: beat.duration,
+        genre: beat.genre,
+        bpm: beat.bpm,
+        key: beat.key,
+      })
     }
   }
 
-  const handlePlayAll = () => {
-    if (activeBeats.length === 0) return
-
-    const trackQueue = activeBeats.map((beat) => ({
-      id: beat.id,
-      title: beat.title,
-      artist: beat.producer,
-      coverImage: beat.coverImage,
-      audioSrc: "/demo-beat.mp3",
-      type: "beat" as const,
-      beatstarsLink: beat.beatstarsLink,
-      duration: beat.duration || "3:00",
-      genre: beat.genre,
-      bpm: beat.bpm,
-      key: beat.key,
-    }))
-
-    setQueue(trackQueue)
-    setCurrentTrack(trackQueue[0])
-    setPlayingTrackId(trackQueue[0].id)
+  const handleBuyBeat = (beatstarsLink: string) => {
+    window.open(beatstarsLink || "https://beatstars.com/catmatildabeat", "_blank")
   }
 
-  const formatDuration = (duration?: string) => {
-    return duration || "3:00"
-  }
-
-  const isCurrentlyPlaying = (beatId: string) => {
-    return currentTrack?.id === beatId && isPlaying
+  if (latestBeats.length === 0) {
+    return (
+      <div className="py-12 md:py-16 bg-gradient-to-b from-card/50 to-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 font-heading">Latest Tracks</h2>
+            <p className="text-muted-foreground">No tracks available at the moment.</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <section className="py-10 md:py-16 bg-gradient-to-b from-card/30 to-background animate-on-scroll">
+    <section className="py-12 md:py-16 bg-gradient-to-b from-card/50 to-background">
       <div className="container mx-auto px-4">
         <motion.div
-          className="text-center mb-8 md:mb-12"
+          className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center justify-center mb-4">
-            <Music className="h-6 w-6 md:h-8 md:w-8 text-brand-500 mr-3" />
-            <h2 className="text-2xl md:text-3xl font-bold font-heading">Latest Tracks</h2>
-          </div>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Explore our complete collection of premium beats
+          <h2 className="text-2xl md:text-3xl font-bold mb-4 font-heading">Latest Tracks</h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Fresh beats ready to elevate your next project
           </p>
         </motion.div>
 
-        <div className="max-w-4xl mx-auto">
-          {/* Header with Play All button */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <Button
-                onClick={handlePlayAll}
-                className="bg-brand-600 hover:bg-brand-500"
-                disabled={activeBeats.length === 0}
-              >
-                <Play className="h-4 w-4 mr-2" />
-                Play All
-              </Button>
-              <span className="text-sm text-muted-foreground">{activeBeats.length} tracks</span>
-            </div>
-          </div>
-
-          {/* Tracklist */}
-          <div className="bg-card rounded-xl overflow-hidden">
-            {activeBeats.length === 0 ? (
-              <div className="p-8 text-center">
-                <Music className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">No tracks available</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-border">
-                {activeBeats.map((beat, index) => (
-                  <motion.div
-                    key={beat.id}
-                    className="flex items-center gap-4 p-4 hover:bg-secondary/50 transition-colors group"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05, duration: 0.3 }}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+          {latestBeats.map((beat, index) => (
+            <motion.div
+              key={beat.id}
+              className="bg-card/80 backdrop-blur-sm rounded-xl p-4 hover:bg-card transition-all duration-300 border border-border/50"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+            >
+              <div className="flex items-center gap-4">
+                <div className="relative flex-shrink-0">
+                  <img
+                    src={beat.cover_image || "/placeholder.svg?height=64&width=64"}
+                    alt={beat.title}
+                    className="w-16 h-16 rounded-lg object-cover"
+                  />
+                  <button
+                    onClick={() => handlePlayTrack(beat)}
+                    className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg opacity-0 hover:opacity-100 transition-opacity"
                   >
-                    {/* Track Number / Play Button */}
-                    <div className="w-8 flex items-center justify-center">
-                      <span className="text-sm text-muted-foreground group-hover:hidden">{index + 1}</span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 hidden group-hover:flex text-brand-500 hover:text-brand-400"
-                        onClick={() => handlePlayTrack(beat, index)}
-                      >
-                        {isCurrentlyPlaying(beat.id) ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                      </Button>
-                    </div>
+                    {currentTrack?.id === beat.id && isPlaying ? (
+                      <Pause className="h-6 w-6 text-white" />
+                    ) : (
+                      <Play className="h-6 w-6 text-white" />
+                    )}
+                  </button>
+                </div>
 
-                    {/* Track Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3">
-                        <div className="min-w-0 flex-1">
-                          <h3
-                            className={`font-medium truncate ${
-                              isCurrentlyPlaying(beat.id) ? "text-brand-500" : "text-foreground"
-                            }`}
-                          >
-                            {beat.title}
-                          </h3>
-                          <p className="text-sm text-muted-foreground truncate">{beat.producer}</p>
-                        </div>
-                      </div>
-                    </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-lg truncate">{beat.title}</h3>
+                  <p className="text-muted-foreground text-sm truncate">{beat.producer}</p>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                    <span>{beat.genre}</span>
+                    <span>•</span>
+                    <span>{beat.bpm} BPM</span>
+                    <span>•</span>
+                    <span>{beat.key}</span>
+                    {beat.duration && (
+                      <>
+                        <span>•</span>
+                        <span>{beat.duration}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
 
-                    {/* Genre */}
-                    <div className="hidden sm:block">
-                      <Badge variant="outline" className="bg-secondary text-muted-foreground text-xs">
-                        {beat.genre}
-                      </Badge>
-                    </div>
-
-                    {/* BPM */}
-                    <div className="hidden md:block w-16 text-center">
-                      <span className="text-sm text-muted-foreground">{beat.bpm}</span>
-                    </div>
-
-                    {/* Key */}
-                    <div className="hidden md:block w-20 text-center">
-                      <span className="text-sm text-muted-foreground">{beat.key}</span>
-                    </div>
-
-                    {/* Duration */}
-                    <div className="w-16 text-right">
-                      <div className="flex items-center justify-end">
-                        <Clock className="h-3 w-3 mr-1 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">{formatDuration(beat.duration)}</span>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handlePlayTrack(beat)}
+                    className="h-10 w-10 text-brand-500 hover:text-brand-400 hover:bg-brand-500/10"
+                  >
+                    {currentTrack?.id === beat.id && isPlaying ? (
+                      <Pause className="h-5 w-5" />
+                    ) : (
+                      <Play className="h-5 w-5" />
+                    )}
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-brand-600 hover:bg-brand-500 text-xs px-3"
+                    onClick={() => handleBuyBeat(beat.beatstars_link)}
+                  >
+                    <ExternalLink className="h-3 w-3 mr-1" />
+                    Buy
+                  </Button>
+                </div>
               </div>
-            )}
-          </div>
+            </motion.div>
+          ))}
         </div>
+
+        <motion.div
+          className="text-center mt-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+        >
+          <Button
+            variant="outline"
+            className="border-brand-600 text-brand-500 hover:bg-brand-500/10 bg-transparent"
+            onClick={() => window.open("https://beatstars.com/catmatildabeat", "_blank")}
+          >
+            View All Beats on BeatStars
+          </Button>
+        </motion.div>
       </div>
     </section>
   )
