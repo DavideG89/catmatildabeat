@@ -22,6 +22,7 @@ interface Beat {
   beatstarsLink?: string
   description?: string
   audioFile?: string
+  duration?: string
 }
 
 // Mock data fallback for when Supabase data isn't available
@@ -137,6 +138,7 @@ export default function BeatDetailPage({ params }: { params: { id: string } }) {
         audioSrc: beat.audioFile || "/demo-beat.mp3",
         type: "beat",
         beatstarsLink: beat.beatstarsLink,
+        durationString: beat.duration,
       })
     }
   }

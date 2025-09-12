@@ -21,6 +21,8 @@ export default function TracklistSection() {
     if (currentTrack?.id === beat.id) {
       togglePlayPause()
     } else {
+      console.log('Latest tracks - beat data:', beat)
+      console.log('Latest tracks - duration from database:', beat.duration)
       playTrack({
         id: beat.id,
         title: beat.title,
@@ -29,10 +31,7 @@ export default function TracklistSection() {
         coverImage: beat.cover_image,
         beatstarsLink: beat.beatstars_link,
         type: "beat",
-        duration: beat.duration,
-        genre: beat.genre,
-        bpm: beat.bpm,
-        key: beat.key,
+        durationString: beat.duration, // Pass duration as string from database
       })
     }
   }

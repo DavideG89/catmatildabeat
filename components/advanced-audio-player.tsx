@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef } from "react"
+import { useState } from "react"
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Shuffle, Repeat, List } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
@@ -31,7 +31,6 @@ export default function AdvancedAudioPlayer() {
   const [showQueue, setShowQueue] = useState(false)
   const [previousVolume, setPreviousVolume] = useState(volume)
 
-  const progressRef = useRef<HTMLDivElement>(null)
 
   // Format time helper
   const formatTime = (time: number) => {
@@ -41,15 +40,6 @@ export default function AdvancedAudioPlayer() {
     return `${minutes}:${seconds.toString().padStart(2, "0")}`
   }
 
-  // Handle progress bar click
-  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!progressRef.current || !duration) return
-
-    const rect = progressRef.current.getBoundingClientRect()
-    const clickX = e.clientX - rect.left
-    const newTime = (clickX / rect.width) * duration
-    seekTo(newTime)
-  }
 
   // Handle volume toggle
   const toggleMute = () => {
@@ -107,7 +97,7 @@ export default function AdvancedAudioPlayer() {
     )
   }
 
-  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0
+  const progressPercentage = duration > 0 ? Math.min((currentTime / duration) * 100, 100) : 0
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t border-border p-4 z-50">
@@ -175,16 +165,20 @@ export default function AdvancedAudioPlayer() {
             {/* Progress Bar */}
             <div className="flex items-center gap-2 w-full">
               <span className="text-xs text-muted-foreground w-10 text-right">{formatTime(currentTime)}</span>
-              <div
-                ref={progressRef}
-                className="flex-1 h-1 bg-muted rounded-full cursor-pointer relative"
-                onClick={handleProgressClick}
-              >
-                <div className="h-full bg-brand-500 rounded-full relative" style={{ width: `${progressPercentage}%` }}>
-                  <div className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-brand-500 rounded-full opacity-0 hover:opacity-100 transition-opacity" />
-                </div>
+              <div className="flex-1">
+                <Slider
+                  key={`progress-${currentTrack.id}`}
+                  value={[progressPercentage]}
+                  min={0}
+                  max={100}
+                  step={0.1}
+                  onValueChange={handleProgressChange}
+                  className="w-full"
+                />
               </div>
-              <span className="text-xs text-muted-foreground w-10">{formatTime(duration)}</span>
+              <span className="text-xs text-muted-foreground w-10">
+                {duration > 0 ? formatTime(duration) : "0:00"}
+              </span>
             </div>
           </div>
 

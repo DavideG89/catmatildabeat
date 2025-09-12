@@ -39,9 +39,14 @@ export default function FixedAudioPlayer() {
   }, [currentTrack])
 
   const handleProgressChange = (value: number[]) => {
-    if (!isDragging) return
-    const newTime = (value[0] / 100) * duration
-    seekTo(newTime)
+    console.log('Progress change:', value, 'duration:', duration)
+    if (duration > 0) {
+      const newTime = Math.max(0, Math.min((value[0] / 100) * duration, duration))
+      console.log('Seeking to:', newTime)
+      seekTo(newTime)
+    } else {
+      console.log('Cannot seek: duration is 0')
+    }
   }
 
   const handleVolumeChange = (value: number[]) => {
@@ -76,7 +81,7 @@ export default function FixedAudioPlayer() {
     window.open(link, "_blank")
   }
 
-  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0
+  const progressPercentage = duration > 0 ? Math.min((currentTime / duration) * 100, 100) : 0
 
   if (!currentTrack) return null
 
@@ -120,7 +125,9 @@ export default function FixedAudioPlayer() {
                     >
                       {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                     </Button>
-                    <span className="text-xs text-muted-foreground w-8 hidden sm:block">{formatTime(duration)}</span>
+                    <span className="text-xs text-muted-foreground w-8 hidden sm:block">
+                      {duration > 0 ? formatTime(duration) : "0:00"}
+                    </span>
                   </div>
                 </div>
 
@@ -133,6 +140,7 @@ export default function FixedAudioPlayer() {
                     onValueChange={handleProgressChange}
                     onValueCommit={() => setIsDragging(false)}
                     onPointerDown={() => setIsDragging(true)}
+                    onPointerUp={() => setIsDragging(false)}
                     className="flex-1"
                     aria-label="Playback progress"
                   />

@@ -117,6 +117,7 @@ export default function BeatsList({ searchQuery = "", filters }: BeatsListProps)
                 tags: beat.tags,
                 beatstarsLink: beat.beatstars_link,
                 audioFile: beat.audio_file,
+                duration: beat.duration,
               }}
             />
           ))}

@@ -10,6 +10,8 @@ interface Track {
   coverImage: string
   type?: "beat" | "track"
   beatstarsLink?: string
+  duration?: number // Duration in seconds
+  durationString?: string // Duration as string from database (e.g., "3:30")
 }
 
 interface AudioPlayerContextType {
@@ -88,6 +90,27 @@ const generateDemoAudio = (frequency = 440, duration = 30): string => {
   }
 }
 
+// Parse duration string (e.g., "3:30") to seconds
+const parseDurationString = (durationString: string): number => {
+  if (!durationString || typeof durationString !== 'string') return 0
+  
+  const parts = durationString.split(':')
+  if (parts.length === 2) {
+    const minutes = parseInt(parts[0], 10) || 0
+    const seconds = parseInt(parts[1], 10) || 0
+    const totalSeconds = minutes * 60 + seconds
+    console.log(`Parsed duration: "${durationString}" -> ${totalSeconds} seconds`)
+    return totalSeconds
+  } else if (parts.length === 1) {
+    // Just seconds
+    const seconds = parseInt(parts[0], 10) || 0
+    console.log(`Parsed duration: "${durationString}" -> ${seconds} seconds`)
+    return seconds
+  }
+  console.log(`Failed to parse duration: "${durationString}"`)
+  return 0
+}
+
 // Get frequency from musical key
 const getFrequencyFromKey = (key: string): number => {
   const keyMap: { [key: string]: number } = {
@@ -120,12 +143,39 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [volume, setVolumeState] = useState(0.7)
   const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
+  const [duration, setDurationState] = useState(0)
+  
+  // Custom setDuration that also updates the ref
+  const setDuration = useCallback((newDuration: number) => {
+    durationRef.current = newDuration
+    setDurationState(newDuration)
+  }, [])
   const [queue, setQueue] = useState<Track[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const demoAudioCache = useRef<Map<string, string>>(new Map())
+  const durationRef = useRef<number>(0)
+  const rafRef = useRef<number | null>(null)
+
+  const startProgressUpdater = useCallback(() => {
+    const tick = () => {
+      if (audioRef.current && !isNaN(audioRef.current.currentTime)) {
+        setCurrentTime(audioRef.current.currentTime)
+      }
+      rafRef.current = requestAnimationFrame(tick)
+    }
+    if (rafRef.current == null) {
+      rafRef.current = requestAnimationFrame(tick)
+    }
+  }, [])
+
+  const stopProgressUpdater = useCallback(() => {
+    if (rafRef.current != null) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
+    }
+  }, [])
 
   // Initialize audio element
   useEffect(() => {
@@ -134,27 +184,44 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       audioRef.current = audio
       audio.volume = volume
       audio.preload = "metadata"
+      // Allow metadata/time updates with cross-origin sources (Supabase)
+      audio.crossOrigin = "anonymous"
 
       const handleLoadedMetadata = () => {
-        setDuration(audio.duration || 0)
+        const audioDuration = audio.duration
+        console.log('Audio metadata loaded, audio duration:', audioDuration, 'current duration state:', durationRef.current)
+        if (audioDuration && !isNaN(audioDuration) && isFinite(audioDuration)) {
+          // Prefer actual audio metadata for precise progress/minutes
+          if (Math.abs(audioDuration - durationRef.current) > 0.25) {
+            console.log('Updating duration from audio metadata:', audioDuration)
+            setDuration(audioDuration)
+          }
+        }
       }
 
       const handleTimeUpdate = () => {
-        setCurrentTime(audio.currentTime || 0)
+        const newTime = audio.currentTime || 0
+        setCurrentTime(newTime)
+        console.log('Time update - currentTime:', newTime, 'duration:', durationRef.current)
       }
 
       const handleEnded = () => {
         setIsPlaying(false)
         nextTrack()
+        stopProgressUpdater()
       }
 
       const handleError = (e: Event) => {
         console.error("Audio error:", e)
-        // Try to generate demo audio as fallback
+        // Fallback to generated demo audio and attempt to play
         if (currentTrack) {
           const demoAudio = generateDemoAudio(440, 30)
           audio.src = demoAudio
           audio.load()
+          if (isPlaying) {
+            const p = audio.play()
+            if (p) p.catch(console.error)
+          }
         }
       }
 
@@ -166,15 +233,18 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
 
       const handleLoadStart = () => {
         setCurrentTime(0)
-        setDuration(0)
+        console.log('Audio load started, current duration:', durationRef.current)
+        // Avoid forcing fallback duration here; wait for metadata for accuracy
       }
 
       const handlePlay = () => {
         setIsPlaying(true)
+        startProgressUpdater()
       }
 
       const handlePause = () => {
         setIsPlaying(false)
+        stopProgressUpdater()
       }
 
       audio.addEventListener("loadedmetadata", handleLoadedMetadata)
@@ -182,8 +252,11 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       audio.addEventListener("ended", handleEnded)
       audio.addEventListener("error", handleError)
       audio.addEventListener("canplay", handleCanPlay)
+      audio.addEventListener("canplaythrough", handleCanPlay)
+      audio.addEventListener("durationchange", handleLoadedMetadata)
       audio.addEventListener("loadstart", handleLoadStart)
       audio.addEventListener("play", handlePlay)
+      audio.addEventListener("playing", handlePlay)
       audio.addEventListener("pause", handlePause)
 
       return () => {
@@ -194,10 +267,14 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
           audio.removeEventListener("ended", handleEnded)
           audio.removeEventListener("error", handleError)
           audio.removeEventListener("canplay", handleCanPlay)
+          audio.removeEventListener("canplaythrough", handleCanPlay)
+          audio.removeEventListener("durationchange", handleLoadedMetadata)
           audio.removeEventListener("loadstart", handleLoadStart)
           audio.removeEventListener("play", handlePlay)
+          audio.removeEventListener("playing", handlePlay)
           audio.removeEventListener("pause", handlePause)
         }
+        stopProgressUpdater()
       }
     }
   }, [])
@@ -226,48 +303,48 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
     return demoAudio
   }, [])
 
-  // Update audio source when track changes
+  // Update audio source when track changes (non-interruptive)
   useEffect(() => {
     if (audioRef.current && currentTrack) {
       const audio = audioRef.current
 
-      // Stop current playback
-      audio.pause()
-      audio.currentTime = 0
-
-      // Try original source first, then fallback to demo
-      const tryLoadAudio = async (src: string) => {
-        return new Promise<boolean>((resolve) => {
-          const testAudio = new Audio()
-          testAudio.oncanplaythrough = () => resolve(true)
-          testAudio.onerror = () => resolve(false)
-          testAudio.src = src
-        })
-      }
-
-      const loadAudio = async () => {
-        let audioSrc = currentTrack.audioSrc
-
-        // If the original source fails or doesn't exist, use demo audio
-        if (!audioSrc || audioSrc === "/demo-beat.mp3" || !(await tryLoadAudio(audioSrc))) {
-          audioSrc = getDemoAudioSrc(currentTrack)
+      const updateSrc = async () => {
+        let desiredSrc = currentTrack.audioSrc
+        if (!desiredSrc || desiredSrc === '/demo-beat.mp3') {
+          desiredSrc = getDemoAudioSrc(currentTrack)
         }
 
-        audio.src = audioSrc
+        // Skip if already set to desired source (normalize to absolute URL)
+        let absDesired = desiredSrc
+        try {
+          absDesired = new URL(desiredSrc, window.location.href).toString()
+        } catch {}
+        if (audio.src === absDesired) {
+          return
+        }
+
+        const currentDuration = durationRef.current
+        console.log('Track changed - setting src (non-interruptive):', desiredSrc)
+
+        audio.src = desiredSrc
         audio.load()
 
-        // Auto-play if isPlaying is true
+        if (desiredSrc === getDemoAudioSrc(currentTrack)) {
+          setDuration(30)
+        } else if (currentDuration === 0 && !currentTrack.duration && !currentTrack.durationString) {
+          setDuration(0)
+        }
+
         if (isPlaying) {
           try {
             await audio.play()
           } catch (error) {
-            console.error("Error playing audio:", error)
-            setIsPlaying(false)
+            console.error('Error auto-playing after src update:', error)
           }
         }
       }
 
-      loadAudio()
+      updateSrc()
     }
   }, [currentTrack, getDemoAudioSrc])
 
@@ -277,6 +354,7 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       const audio = audioRef.current
 
       if (isPlaying) {
+        console.log('Attempting to play audio:', audio.src)
         const playPromise = audio.play()
         if (playPromise !== undefined) {
           playPromise.catch((error) => {
@@ -285,10 +363,38 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
           })
         }
       } else {
+        console.log('Pausing audio')
         audio.pause()
       }
     }
   }, [isPlaying, currentTrack])
+
+  // Ensure progress updates while playing (cross-browser)
+  useEffect(() => {
+    if (isPlaying) {
+      // Start updater loop
+      const tick = () => {
+        if (audioRef.current && !isNaN(audioRef.current.currentTime)) {
+          setCurrentTime(audioRef.current.currentTime)
+        }
+        rafRef.current = requestAnimationFrame(tick)
+      }
+      if (!rafRef.current) {
+        rafRef.current = requestAnimationFrame(tick)
+      }
+      return () => {
+        if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current)
+          rafRef.current = null
+        }
+      }
+    } else {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+      }
+    }
+  }, [isPlaying])
 
   // Update volume
   useEffect(() => {
@@ -298,8 +404,55 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
   }, [volume])
 
   const playTrack = useCallback((track: Track) => {
+    console.log('Playing track (user action):', track)
+
+    // Ensure duration is set ASAP for UI feedback
+    if (track.duration) {
+      console.log('Setting duration from track.duration:', track.duration)
+      setDuration(track.duration)
+    } else if (track.durationString) {
+      console.log('Setting duration from track.durationString:', track.durationString)
+      const parsedDuration = parseDurationString(track.durationString)
+      setDuration(parsedDuration > 0 ? parsedDuration : 30)
+    } else {
+      console.log('No duration info, using fallback')
+      setDuration(30)
+    }
+
+    // Set state
     setCurrentTrack(track)
     setIsPlaying(true)
+
+    // Synchronous playback to satisfy autoplay policies (Safari/iOS)
+    const audio = audioRef.current
+    if (audio) {
+      try {
+        // Prefer provided src, otherwise generate a demo tone
+        let src = track.audioSrc
+        if (!src || src === '/demo-beat.mp3') {
+          src = getDemoAudioSrc(track)
+          // If using demo, we know duration ~30s
+          setDuration(30)
+        }
+
+        console.log('Immediate play - setting src:', src)
+        audio.pause()
+        audio.currentTime = 0
+        audio.src = src
+        audio.load()
+
+        const playPromise = audio.play()
+        if (playPromise !== undefined) {
+          playPromise.catch((error) => {
+            console.error('Immediate play failed:', error)
+            setIsPlaying(false)
+          })
+        }
+      } catch (err) {
+        console.error('Error during immediate playback setup:', err)
+        setIsPlaying(false)
+      }
+    }
 
     // Add to queue if not already there
     setQueue((prevQueue) => {
@@ -313,20 +466,28 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
         return prevQueue
       }
     })
-  }, [])
+  }, [getDemoAudioSrc])
 
   const togglePlayPause = useCallback(() => {
     if (!audioRef.current || !currentTrack) return
 
     if (isPlaying) {
       audioRef.current.pause()
+      setIsPlaying(false)
     } else {
       const playPromise = audioRef.current.play()
       if (playPromise !== undefined) {
-        playPromise.catch((error) => {
-          console.error("Error playing audio:", error)
-          setIsPlaying(false)
-        })
+        playPromise
+          .then(() => {
+            setIsPlaying(true)
+          })
+          .catch((error) => {
+            console.error("Error playing audio:", error)
+            setIsPlaying(false)
+          })
+      } else {
+        // Older browsers
+        setIsPlaying(true)
       }
     }
   }, [isPlaying, currentTrack])
@@ -355,9 +516,13 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const seekTo = useCallback((time: number) => {
+    console.log('SeekTo called with time:', time)
     if (audioRef.current) {
       audioRef.current.currentTime = time
       setCurrentTime(time)
+      console.log('Audio currentTime set to:', time)
+    } else {
+      console.log('No audio ref available for seeking')
     }
   }, [])
 

@@ -23,6 +23,7 @@ interface BeatCardProps {
     tags: string[]
     beatstarsLink?: string
     audioFile?: string
+    duration?: string
   }
   onClick?: (e: React.MouseEvent) => void
 }
@@ -42,6 +43,8 @@ export default function BeatCard({ beat, onClick }: BeatCardProps) {
     if (currentTrack?.id === beat.id) {
       togglePlayPause()
     } else {
+      console.log('Beat card - beat data:', beat)
+      console.log('Beat card - duration from database:', beat.duration)
       playTrack({
         id: beat.id,
         title: beat.title,
@@ -49,6 +52,7 @@ export default function BeatCard({ beat, onClick }: BeatCardProps) {
         audioSrc: beat.audioFile || "/demo-beat.mp3",
         coverImage: beat.coverImage,
         beatstarsLink: beat.beatstarsLink,
+        durationString: beat.duration,
       })
     }
   }

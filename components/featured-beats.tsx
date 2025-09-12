@@ -28,6 +28,7 @@ export default function FeaturedBeats() {
         audioSrc: beat.audio_file || "/demo-beat.mp3",
         coverImage: beat.cover_image,
         beatstarsLink: beat.beatstars_link,
+        durationString: beat.duration,
       })
     }
   }
