@@ -147,18 +147,18 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative min-h-[80vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="w-full h-full bg-gradient-to-br from-background via-background/90 to-card/80" />
+          <div className="w-full h-full from-background via-background/90 to-card/80" />
           <video
             autoPlay
             muted
             loop
             playsInline
             className="object-cover w-full h-full opacity-40 absolute inset-0"
-            poster="/placeholder.svg?height=1080&width=1920"
+            poster="/img/CatMatildaStudio.png"
           >
             <source src="/placeholder.mp4" type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/50 to-background" />
+          <div className="absolute inset-0 from-background/70 via-background/50 to-background" />
         </div>
 
         <div className="container mx-auto px-4 z-10 relative">
@@ -169,11 +169,11 @@ export default function Home() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 md:mb-6 leading-tight font-heading">
-              Discover Premium Beats by <span className="gradient-text">Cat Matilda Beat</span>
+            Feel the Beat and get Inspired.
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl mb-6 md:mb-8 text-muted-foreground max-w-2xl mx-auto">
-              Elevate your sound with professionally crafted beats for your next project
-            </p>
+              No curse, just beat
+              </p>
             <motion.div
               className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center"
               initial={{ opacity: 0 }}
@@ -208,14 +208,16 @@ export default function Home() {
           >
             <form onSubmit={handleSearchSubmit}>
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 md:h-5 md:w-5" />
+                <div className="absolute left-3 top-0 h-full flex items-center">
+                  <Search className="text-brand-900/80 h-4 w-4 md:h-5 md:w-5" />
+                </div>
                 <input
                   ref={searchInputRef}
                   type="text"
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder="Search beats, genres, moods, BPM..."
-                  className="w-full bg-card/80 backdrop-blur-sm border border-border rounded-full py-3 md:py-4 pl-10 md:pl-12 pr-20 text-foreground focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm md:text-base"
+                  className="w-full bg-white text-brand-500 placeholder:text-gray-400 border border-brand-300 rounded-full py-3 md:py-4 pl-10 md:pl-12 pr-20 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm md:text-base"
                 />
                 {searchQuery && (
                   <button
@@ -324,27 +326,27 @@ export default function Home() {
       </section>
 
       {/* Featured Content Tabs - Horizontal Scrolling for All Devices */}
-      <section className="py-12 md:py-16 bg-gradient-to-b from-background to-card/50">
+      <section className="py-12 md:py-16 from-background to-card/50">
         <div className="container mx-auto px-4">
           <Tabs defaultValue="trending" className="w-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
               <h2 className="text-2xl md:text-3xl font-bold font-heading">Discover Music</h2>
-              <TabsList className="bg-card h-auto p-1">
+              <TabsList className="bg-brand-100 text-brand-900 rounded-md h-auto p-1">
                 <TabsTrigger
                   value="trending"
-                  className="data-[state=active]:bg-brand-500 data-[state=active]:text-white text-xs md:text-sm py-2 px-4"
+                  className="text-brand-900 data-[state=active]:bg-brand-600 data-[state=active]:text-white text-xs md:text-sm py-2 px-4"
                 >
                   Trending
                 </TabsTrigger>
                 <TabsTrigger
                   value="featured"
-                  className="data-[state=active]:bg-brand-500 data-[state=active]:text-white text-xs md:text-sm py-2 px-4"
+                  className="text-brand-900 data-[state=active]:bg-brand-600 data-[state=active]:text-white text-xs md:text-sm py-2 px-4"
                 >
                   Featured
                 </TabsTrigger>
                 <TabsTrigger
                   value="new"
-                  className="data-[state=active]:bg-brand-500 data-[state=active]:text-white text-xs md:text-sm py-2 px-4"
+                  className="text-brand-900 data-[state=active]:bg-brand-600 data-[state=active]:text-white text-xs md:text-sm py-2 px-4"
                 >
                   New Releases
                 </TabsTrigger>
@@ -435,7 +437,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-12 md:py-16 bg-gradient-to-b from-background to-card/50">
+      <section className="py-12 md:py-16 from-background to-card/50">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl font-bold mb-12 text-center font-heading">What Artists Say</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -464,7 +466,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-20 bg-gradient-to-r from-brand-600 to-accent2-600">
+      <section className="py-16 md:py-20 from-brand-600 to-accent2-600">
         <div className="container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <h2 className="text-3xl md:text-4xl font-bold mb-6 font-heading">Ready to Elevate Your Sound?</h2>
@@ -524,7 +526,7 @@ function NewReleaseBeats() {
               alt={beat.title}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <button
               onClick={() => handlePlayTrack(beat)}
               className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-brand-600 hover:bg-brand-500 rounded-full p-3 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"

@@ -188,7 +188,8 @@ export default function FixedAudioPlayer() {
             <div className="hidden sm:block">
               <Button
                 size="sm"
-                className="bg-brand-600 hover:bg-brand-500 transition-colors text-xs h-8"
+                variant="cta"
+                className="transition-colors text-xs h-8"
                 onClick={handleBuyLicense}
               >
                 <ExternalLink className="h-3 w-3 mr-1 md:mr-2 md:h-4 md:w-4" />

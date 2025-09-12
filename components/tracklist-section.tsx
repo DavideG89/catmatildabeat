@@ -1,5 +1,6 @@
 "use client"
 
+import type React from "react"
 import { useState, useEffect } from "react"
 import { Play, Pause, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -42,7 +43,14 @@ export default function TracklistSection() {
 
   if (latestBeats.length === 0) {
     return (
-      <div className="py-12 md:py-16 bg-gradient-to-b from-card/50 to-background">
+      <div
+        className="py-12 md:py-16 bg-gradient-to-b from-card/50 to-background"
+        style={{
+          "--card": "0 0% 100%",
+          "--card-foreground": "0 0% 10%",
+          "--muted-foreground": "0 0% 40%",
+        } as React.CSSProperties}
+      >
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h2 className="text-2xl md:text-3xl font-bold mb-4 font-heading">Latest Tracks</h2>
@@ -54,7 +62,14 @@ export default function TracklistSection() {
   }
 
   return (
-    <section className="py-12 md:py-16 bg-gradient-to-b from-card/50 to-background">
+    <section
+      className="py-12 md:py-16 bg-gradient-to-b from-card/50 to-background"
+      style={{
+        "--card": "0 0% 100%",
+        "--card-foreground": "0 0% 10%",
+        "--muted-foreground": "0 0% 40%",
+      } as React.CSSProperties}
+    >
       <div className="container mx-auto px-4">
         <motion.div
           className="text-center mb-12"
@@ -72,7 +87,7 @@ export default function TracklistSection() {
           {latestBeats.map((beat, index) => (
             <motion.div
               key={beat.id}
-              className="bg-card/80 backdrop-blur-sm rounded-xl p-4 hover:bg-card transition-all duration-300 border border-border/50"
+              className="group bg-card rounded-xl p-4 border border-black transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
@@ -97,7 +112,9 @@ export default function TracklistSection() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-lg truncate">{beat.title}</h3>
+                  <h3 className="font-bold text-lg truncate text-card-foreground transition-colors group-hover:text-black">
+                    {beat.title}
+                  </h3>
                   <p className="text-muted-foreground text-sm truncate">{beat.producer}</p>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
                     <span>{beat.genre}</span>
@@ -129,7 +146,8 @@ export default function TracklistSection() {
                   </Button>
                   <Button
                     size="sm"
-                    className="bg-brand-600 hover:bg-brand-500 text-xs px-3"
+                    variant="cta"
+                    className="text-xs px-3"
                     onClick={() => handleBuyBeat(beat.beatstars_link)}
                   >
                     <ExternalLink className="h-3 w-3 mr-1" />

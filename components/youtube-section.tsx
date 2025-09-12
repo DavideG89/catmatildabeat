@@ -25,7 +25,7 @@ export default function YouTubeSection() {
   ]
 
   return (
-    <section className="py-10 md:py-16 bg-gradient-to-b from-card/50 to-background animate-on-scroll">
+    <section className="py-10 md:py-16  from-card/50 to-background animate-on-scroll">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <motion.div
@@ -52,7 +52,7 @@ export default function YouTubeSection() {
             >
               <Card className="bg-gradient-to-br from-red-500/10 to-red-600/5 border-red-500/20 overflow-hidden">
                 <CardContent className="p-0">
-                  <div className="relative aspect-video bg-gradient-to-br from-red-500/20 to-red-600/10 flex items-center justify-center">
+                  <div className="relative aspect-video from-red-500/20 to-red-600/10 flex items-center justify-center">
                     <div className="text-center">
                       <Youtube className="h-16 w-16 md:h-20 md:w-20 text-red-500 mx-auto mb-4" />
                       <h3 className="text-xl md:text-2xl font-bold mb-2">Cat Matilda Beat</h3>

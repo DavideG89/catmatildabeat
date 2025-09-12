@@ -4,23 +4,23 @@
 
 @layer base {
   :root {
-    --background: 210 50% 3%;
-    --foreground: 210 20% 98%;
+    --background: 344 74% 94%;
+    --foreground: 0 0% 17%;
 
-    --card: 210 40% 6.9%;
+    --card: 0, 0%, 100%;
     --card-foreground: 210 20% 98%;
 
     --popover: 210 40% 6.9%;
     --popover-foreground: 210 20% 98%;
 
-    --primary: 196 80% 45%;
+    --primary: 340 72% 42%;
     --primary-foreground: 210 20% 98%;
 
     --secondary: 210 30% 15.9%;
     --secondary-foreground: 210 20% 98%;
 
     --muted: 210 30% 15.9%;
-    --muted-foreground: 210 10% 64.9%;
+    --muted-foreground: 0, 0%, 100%;
 
     --accent: 262 80% 50%;
     --accent-foreground: 210 20% 98%;
@@ -33,6 +33,11 @@
     --ring: 196 80% 45%;
 
     --radius: 0.75rem;
+
+    /* CTA tokens */
+    --cta-bg: 340 72% 42%;
+    --cta-hover: 340 72% 36%;
+    --cta-fg: 210 20% 98%;
   }
 }
 
@@ -53,11 +58,11 @@
 
   /* Font variables */
   .font-heading {
-    font-family: var(--font-montserrat), system-ui, sans-serif;
+    font-family: var(--font-gafata), system-ui, sans-serif;
   }
 
   .font-sans {
-    font-family: var(--font-inter), system-ui, sans-serif;
+    font-family: var(--font-gafata), var(--font-inter), system-ui, sans-serif;
   }
 
   /* Improve touch targets on mobile */

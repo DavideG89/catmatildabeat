@@ -272,7 +272,7 @@ export default function BeatDetailPage({ params }: { params: { id: string } }) {
               <p className="text-2xl font-bold text-brand-600 mt-2">${beat.price}</p>
             </div>
 
-            <Button size="lg" className="w-full bg-brand-600 hover:bg-brand-500 mb-4" onClick={handleBuyNow}>
+            <Button size="lg" variant="cta" className="w-full mb-4" onClick={handleBuyNow}>
               <ExternalLink className="mr-2 h-5 w-5" />
               Buy on BeatStars
             </Button>

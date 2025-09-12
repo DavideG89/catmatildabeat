@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter, Montserrat } from "next/font/google"
+import { Inter, Montserrat, Gafata } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
@@ -13,6 +13,12 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const montserrat = Montserrat({
   subsets: ["latin"],
   variable: "--font-montserrat",
+  display: "swap",
+})
+const gafata = Gafata({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-gafata",
   display: "swap",
 })
 
@@ -30,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${montserrat.variable} font-sans bg-background text-foreground min-h-screen flex flex-col`}
+        className={`${inter.variable} ${montserrat.variable} ${gafata.variable} font-sans bg-background text-foreground min-h-screen flex flex-col`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <BeatsProvider>

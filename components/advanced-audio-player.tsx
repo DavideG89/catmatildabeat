@@ -87,7 +87,7 @@ export default function AdvancedAudioPlayer() {
 
   if (!currentTrack) {
     return (
-      <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t border-border p-4 z-50">
+      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border/80 p-4 z-50 shadow-2xl shadow-black/20 ring-1 ring-black/20">
         <div className="container mx-auto">
           <div className="flex items-center justify-center text-muted-foreground">
             <p className="text-sm">No track selected</p>
@@ -100,7 +100,7 @@ export default function AdvancedAudioPlayer() {
   const progressPercentage = duration > 0 ? Math.min((currentTime / duration) * 100, 100) : 0
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t border-border p-4 z-50">
+    <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border/80 p-4 z-50 shadow-2xl shadow-black/20 ring-1 ring-black/20">
       <div className="container mx-auto">
         <div className="flex items-center gap-4">
           {/* Track Info */}
@@ -127,7 +127,7 @@ export default function AdvancedAudioPlayer() {
                 variant="ghost"
                 size="sm"
                 onClick={handleShuffle}
-                className={`h-8 w-8 p-0 ${isShuffled ? "text-brand-500" : "text-muted-foreground"}`}
+                className="h-8 w-8 p-0 text-black"
               >
                 <Shuffle className="h-4 w-4" />
               </Button>
@@ -138,12 +138,12 @@ export default function AdvancedAudioPlayer() {
 
               <Button
                 onClick={togglePlayPause}
-                className="h-10 w-10 rounded-full bg-brand-600 hover:bg-brand-500 text-white"
+                className="h-10 w-10 rounded-full bg-white hover:bg-gray-100 text-black"
               >
                 {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
               </Button>
 
-              <Button variant="ghost" size="sm" onClick={nextTrack} className="h-8 w-8 p-0">
+              <Button variant="ghost" size="sm" onClick={nextTrack} className="h-8 w-8 p-0 text-black">
                 <SkipForward className="h-4 w-4" />
               </Button>
 
@@ -151,7 +151,7 @@ export default function AdvancedAudioPlayer() {
                 variant="ghost"
                 size="sm"
                 onClick={handleRepeat}
-                className={`h-8 w-8 p-0 ${repeatMode !== "off" ? "text-brand-500" : "text-muted-foreground"}`}
+                className="h-8 w-8 p-0 text-black"
               >
                 <Repeat className="h-4 w-4" />
                 {repeatMode === "one" && (
@@ -164,7 +164,7 @@ export default function AdvancedAudioPlayer() {
 
             {/* Progress Bar */}
             <div className="flex items-center gap-2 w-full">
-              <span className="text-xs text-muted-foreground w-10 text-right">{formatTime(currentTime)}</span>
+              <span className="text-xs text-black w-10 text-right">{formatTime(currentTime)}</span>
               <div className="flex-1">
                 <Slider
                   key={`progress-${currentTrack.id}`}
@@ -176,7 +176,7 @@ export default function AdvancedAudioPlayer() {
                   className="w-full"
                 />
               </div>
-              <span className="text-xs text-muted-foreground w-10">
+              <span className="text-xs text-black w-10">
                 {duration > 0 ? formatTime(duration) : "0:00"}
               </span>
             </div>
@@ -188,7 +188,7 @@ export default function AdvancedAudioPlayer() {
               variant="ghost"
               size="sm"
               onClick={() => setShowQueue(!showQueue)}
-              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+              className="h-8 w-8 p-0 text-black hover:text-black"
             >
               <List className="h-4 w-4" />
             </Button>
@@ -198,7 +198,7 @@ export default function AdvancedAudioPlayer() {
                 variant="ghost"
                 size="sm"
                 onClick={toggleMute}
-                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                className="h-8 w-8 p-0 text-black hover:text-black"
               >
                 {isMuted || volume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
               </Button>
