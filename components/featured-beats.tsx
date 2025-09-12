@@ -50,7 +50,7 @@ export default function FeaturedBeats() {
       {featuredBeats.map((beat, index) => (
         <motion.div
           key={beat.id}
-          className="group bg-card rounded-xl overflow-hidden border border-black hover:shadow-xl transition-all duration-300 min-w-[280px] md:min-w-[320px] flex-shrink-0"
+          className="group bg-card rounded-xl overflow-hidden border border-black hover:shadow-xl transition-all duration-300 min-w-[240px] sm:min-w-[280px] md:min-w-[320px] flex-shrink-0"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1, duration: 0.5 }}

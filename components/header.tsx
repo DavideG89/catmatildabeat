@@ -139,7 +139,7 @@ export default function Header() {
                   >
                     <Link
                       href={item.href}
-                      className={`text-sm block py-2 ${isActive(item.href) ? "text-brand-500" : "text-muted-foreground"}`}
+                      className={`text-sm block py-2 ${isActive(item.href) ? "text-black" : "text-black"}`}
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {item.label}
@@ -155,7 +155,7 @@ export default function Header() {
                 >
                   <Link
                     href="/login"
-                    className="text-sm block py-2 text-muted-foreground"
+                    className="text-sm block py-2 text-black"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Login

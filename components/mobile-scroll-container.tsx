@@ -65,7 +65,7 @@ export default function MobileScrollContainer({ children, className = "" }: Mobi
         className={`overflow-x-auto scrollbar-hide ${className}`}
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
-        <div className="flex gap-4 md:grid md:grid-cols-1 sm:md:grid-cols-2 lg:md:grid-cols-3 md:gap-6">{children}</div>
+        <div className="flex gap-4 md:grid md:grid-cols-3 md:gap-6">{children}</div>
       </div>
 
       {/* Right scroll button */}
