@@ -245,7 +245,7 @@ export default function BeatsDashboard() {
             placeholder="Search beats..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 border-black"
           />
         </div>
         {/* Mobile: category select */}

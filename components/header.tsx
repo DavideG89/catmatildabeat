@@ -57,7 +57,7 @@ export default function Header() {
       }`}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-14 md:h-16">
+        <div className="flex items-center justify-between h-16 md:h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 z-10">
             <img src="/img/logo_Cat_Matilda.png" alt="Cat Matilda Logo" width={120} />

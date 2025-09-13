@@ -47,7 +47,7 @@ function BeatsPageContent() {
               placeholder="Search beats, genres, moods..."
               value={searchQuery}
               onChange={handleSearchChange}
-              className="pl-10"
+              className="pl-10 border-black"
             />
           </div>
           <div className="sm:hidden">
