@@ -1,7 +1,9 @@
 import { createClient } from "@supabase/supabase-js"
 
-const supabaseUrl = "https://tdaoebkpidwdhwevospu.supabase.co"
+// Prefer env vars; fallback to existing values (replace these in .env.local)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://tdaoebkpidwdhwevospu.supabase.co"
 const supabaseAnonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkYW9lYmtwaWR3ZGh3ZXZvc3B1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0NzQzNjUsImV4cCI6MjA3MzA1MDM2NX0.2pF02bCD90FZfGuSjCB2Prs7BFMBnPLLyJ50F9RmEEM"
 
 // Create Supabase client with real-time configuration

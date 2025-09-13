@@ -9,6 +9,8 @@ import BeatsDashboard from "@/components/beats-dashboard"
 import UploadBeatForm from "@/components/upload-beat-form"
 import { useBeats } from "@/components/beats-context"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { supabase } from "@/lib/supabase"
+import { useCallback } from "react"
 
 export default function DashboardPage() {
   const [showUploadForm, setShowUploadForm] = useState(false)
@@ -22,6 +24,16 @@ export default function DashboardPage() {
   const latestBeats = getBeatsByCategory("latest")
   const totalSales = beats.reduce((sum, beat) => sum + (beat.sales || 0), 0)
 
+  const handleSignOut = useCallback(async () => {
+    try {
+      await supabase.auth.signOut()
+    } catch {}
+    try {
+      document.cookie = "is-logged-in=; Path=/; Max-Age=0; SameSite=Lax"
+    } catch {}
+    window.location.href = "/login"
+  }, [])
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -29,20 +41,23 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold">Producer Dashboard</h1>
           <p className="text-muted-foreground">Manage your beats and track performance</p>
         </div>
-        <Dialog open={showUploadForm} onOpenChange={setShowUploadForm}>
-          <DialogTrigger asChild>
-            <Button className="bg-purple-600 hover:bg-purple-700 w-full sm:w-auto">
-              <Plus className="h-4 w-4 mr-2" />
-              Upload New Beat
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Upload New Beat</DialogTitle>
-            </DialogHeader>
-            <UploadBeatForm onSuccess={() => setShowUploadForm(false)} />
-          </DialogContent>
-        </Dialog>
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <Dialog open={showUploadForm} onOpenChange={setShowUploadForm}>
+            <DialogTrigger asChild>
+              <Button className="bg-brand-600 hover:bg-brand-500 w-full sm:w-auto">
+                <Plus className="h-4 w-4 mr-2" />
+                Upload New Beat
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Upload New Beat</DialogTitle>
+              </DialogHeader>
+              <UploadBeatForm onSuccess={() => setShowUploadForm(false)} />
+            </DialogContent>
+          </Dialog>
+          <Button variant="outline" onClick={handleSignOut} className="w-full sm:w-auto">Sign Out</Button>
+        </div>
       </div>
 
       {/* Stats Cards */}

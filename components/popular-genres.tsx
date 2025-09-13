@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -92,12 +91,11 @@ export default function PopularGenres() {
             >
               <Link href={`/beats?genre=${genre.name.toLowerCase()}`}>
                 <div className="group relative overflow-hidden rounded-xl aspect-square">
-                  <Image
+                  <img
                     src={genre.image || "/placeholder.svg"}
                     alt={genre.name}
-                    fill
-                    sizes="256px"
-                    className="object-cover transition-transform duration-300 group-hover:scale-110"
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -127,12 +125,11 @@ export default function PopularGenres() {
             >
               <Link href={`/beats?genre=${genre.name.toLowerCase()}`}>
                 <div className="group relative overflow-hidden rounded-xl aspect-square">
-                  <Image
+                  <img
                     src={genre.image || "/placeholder.svg"}
                     alt={genre.name}
-                    fill
-                    sizes="128px"
-                    className="object-cover transition-transform duration-300 group-hover:scale-110"
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-3">

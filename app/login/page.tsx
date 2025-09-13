@@ -3,13 +3,14 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
+import { supabase } from "@/lib/supabase"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -17,22 +18,28 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-
-    // Simulate login process
-    setTimeout(() => {
-      // For demo purposes, accept any email/password combination
-      if (email && password) {
-        // In a real app, you would validate credentials here
-        router.push("/dashboard")
-      } else {
-        alert("Please enter both email and password")
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) {
+        alert(error.message)
+        return
       }
+      // Temporary gate cookie for middleware
+      try {
+        document.cookie = `is-logged-in=1; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Lax`
+      } catch {}
+      const from = searchParams.get("from") || "/dashboard"
+      router.push(from)
+    } catch (err) {
+      alert("Login failed. Please try again.")
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
 
   return (
@@ -89,9 +96,7 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-sm text-foreground">
-                Demo credentials: Use any email and password to access the dashboard
-              </p>
+              <p className="text-sm text-foreground"></p>
             </div>
 
             <div className="mt-4 text-center">
