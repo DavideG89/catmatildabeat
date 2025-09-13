@@ -35,7 +35,9 @@ export default function BeatsDashboard() {
     key: "",
     category: "",
     beatstarsLink: "",
+    tags: [] as string[],
   })
+  const [newEditTag, setNewEditTag] = useState("")
 
   // Filter beats based on search and category
   const filteredBeats = useMemo(() => {
@@ -89,6 +91,7 @@ export default function BeatsDashboard() {
       key: beat.key || "",
       category: beat.category || "",
       beatstarsLink: beat.beatstars_link || "",
+      tags: Array.isArray(beat.tags) ? beat.tags : [],
     })
     setIsEditModalOpen(true)
   }
@@ -111,6 +114,7 @@ export default function BeatsDashboard() {
         key: editForm.key,
         category: editForm.category as "trending" | "featured" | "new_releases" | "latest",
         beatstars_link: editForm.beatstarsLink,
+        tags: editForm.tags,
       })
       setIsEditModalOpen(false)
       setEditingBeat(null)
@@ -130,7 +134,9 @@ export default function BeatsDashboard() {
       key: "",
       category: "",
       beatstarsLink: "",
+      tags: [],
     })
+    setNewEditTag("")
   }
 
   const getStatusBadge = (status: string) => {
@@ -368,46 +374,46 @@ export default function BeatsDashboard() {
 
       {/* Edit Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Edit Beat</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="title" className="text-right">
+          <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
+              <Label htmlFor="title" className="sm:text-right">
                 Title
               </Label>
               <Input
                 id="title"
                 value={editForm.title}
                 onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                className="col-span-3"
+                className="sm:col-span-3"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="producer" className="text-right">
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
+              <Label htmlFor="producer" className="sm:text-right">
                 Artist
               </Label>
               <Input
                 id="producer"
                 value={editForm.producer}
                 onChange={(e) => setEditForm({ ...editForm, producer: e.target.value })}
-                className="col-span-3"
+                className="sm:col-span-3"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="genre" className="text-right">
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
+              <Label htmlFor="genre" className="sm:text-right">
                 Genre
               </Label>
               <Input
                 id="genre"
                 value={editForm.genre}
                 onChange={(e) => setEditForm({ ...editForm, genre: e.target.value })}
-                className="col-span-3"
+                className="sm:col-span-3"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="bpm" className="text-right">
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
+              <Label htmlFor="bpm" className="sm:text-right">
                 BPM
               </Label>
               <Input
@@ -415,29 +421,29 @@ export default function BeatsDashboard() {
                 type="number"
                 value={editForm.bpm}
                 onChange={(e) => setEditForm({ ...editForm, bpm: e.target.value })}
-                className="col-span-3"
+                className="sm:col-span-3"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="key" className="text-right">
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
+              <Label htmlFor="key" className="sm:text-right">
                 Key
               </Label>
               <Input
                 id="key"
                 value={editForm.key}
                 onChange={(e) => setEditForm({ ...editForm, key: e.target.value })}
-                className="col-span-3"
+                className="sm:col-span-3"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="category" className="text-right">
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
+              <Label htmlFor="category" className="sm:text-right">
                 Category
               </Label>
               <Select
                 value={editForm.category}
                 onValueChange={(value) => setEditForm({ ...editForm, category: value })}
               >
-                <SelectTrigger className="col-span-3">
+                <SelectTrigger className="sm:col-span-3">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -449,8 +455,8 @@ export default function BeatsDashboard() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="beatstarsLink" className="text-right">
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
+              <Label htmlFor="beatstarsLink" className="sm:text-right">
                 BeatStars Link
               </Label>
               <Input
@@ -458,8 +464,59 @@ export default function BeatsDashboard() {
                 value={editForm.beatstarsLink}
                 onChange={(e) => setEditForm({ ...editForm, beatstarsLink: e.target.value })}
                 placeholder="https://beatstars.com/your-beat"
-                className="col-span-3"
+                className="sm:col-span-3"
               />
+            </div>
+
+            {/* Tags editor */}
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-start gap-3">
+              <Label className="sm:text-right">Tags</Label>
+              <div className="sm:col-span-3 space-y-2">
+                <div className="flex gap-2">
+                  <Input
+                    value={newEditTag}
+                    onChange={(e) => setNewEditTag(e.target.value)}
+                    placeholder="Add a tag"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (newEditTag.trim() && !editForm.tags.includes(newEditTag.trim())) {
+                          setEditForm({ ...editForm, tags: [...editForm.tags, newEditTag.trim()] })
+                          setNewEditTag("")
+                        }
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      if (newEditTag.trim() && !editForm.tags.includes(newEditTag.trim())) {
+                        setEditForm({ ...editForm, tags: [...editForm.tags, newEditTag.trim()] })
+                        setNewEditTag("")
+                      }
+                    }}
+                  >
+                    Add
+                  </Button>
+                </div>
+                {editForm.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {editForm.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                        {tag}
+                        <span
+                          role="button"
+                          aria-label={`Remove ${tag}`}
+                          className="ml-1 cursor-pointer"
+                          onClick={() => setEditForm({ ...editForm, tags: editForm.tags.filter((t) => t !== tag) })}
+                        >
+                          ×
+                        </span>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex justify-end space-x-2">

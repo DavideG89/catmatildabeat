@@ -120,6 +120,8 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
   const [newTag, setNewTag] = useState("")
+  const [audioDurationSec, setAudioDurationSec] = useState<number>(0)
+  const [trimStartSec, setTrimStartSec] = useState<number>(0)
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -156,6 +158,8 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
         // Create audio element for preview
         const audio = new Audio(audioUrl)
         audio.addEventListener("loadedmetadata", () => {
+          setAudioDurationSec(audio.duration || 0)
+          setTrimStartSec(0)
           const minutes = Math.floor(audio.duration / 60)
           const seconds = Math.floor(audio.duration % 60)
           const duration = `${minutes}:${seconds.toString().padStart(2, "0")}`
@@ -174,6 +178,18 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
       audioElement.pause()
       setIsPlaying(false)
     } else {
+      try {
+        audioElement.currentTime = Math.max(0, Math.min(trimStartSec, Math.max(0, audioDurationSec - 0.1)))
+      } catch {}
+      const endAt = Math.min(audioDurationSec, trimStartSec + 40)
+      const onTimeUpdate = () => {
+        if (audioElement.currentTime >= endAt) {
+          audioElement.pause()
+          setIsPlaying(false)
+          audioElement.removeEventListener("timeupdate", onTimeUpdate)
+        }
+      }
+      audioElement.addEventListener("timeupdate", onTimeUpdate)
       audioElement.play()
       setIsPlaying(true)
 
@@ -198,6 +214,117 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
     setAudioPreview(null)
     setAudioElement(null)
   }
+
+  // ffmpeg.wasm loader (singleton) supporting both new and legacy APIs
+  let _ffmpeg: any = null
+  let _fetchFile: ((src: any) => Promise<Uint8Array>) | null = null
+  let _ffmpegApiKind: 'new' | 'legacy' | null = null
+  const getFFmpeg = async () => {
+    if (_ffmpeg && _fetchFile) return { ffmpeg: _ffmpeg, fetchFile: _fetchFile, api: _ffmpegApiKind }
+
+    // Load ffmpeg module
+    const mod: any = await import("@ffmpeg/ffmpeg")
+
+    // Resolve fetchFile from module, or use custom polyfill
+    let fetchFile: any = mod?.fetchFile
+    if (!fetchFile) {
+      fetchFile = async (input: any): Promise<Uint8Array> => {
+        if (input instanceof Uint8Array) return input
+        if (typeof window !== 'undefined') {
+          if (input instanceof File || input instanceof Blob) {
+            const buf = await (input as Blob).arrayBuffer()
+            return new Uint8Array(buf)
+          }
+          if (typeof input === 'string') {
+            const res = await fetch(input)
+            const buf = await res.arrayBuffer()
+            return new Uint8Array(buf)
+          }
+          if (input instanceof ArrayBuffer) return new Uint8Array(input)
+        }
+        throw new Error('Unsupported input for fetchFile polyfill')
+      }
+    }
+
+    // Initialize ffmpeg with legacy or new API
+    if (mod.createFFmpeg) {
+      const ffmpeg = mod.createFFmpeg({ log: false })
+      await ffmpeg.load()
+      _ffmpeg = ffmpeg
+      _fetchFile = fetchFile
+      _ffmpegApiKind = 'legacy'
+      return { ffmpeg, fetchFile, api: 'legacy' as const }
+    }
+    if (mod.FFmpeg) {
+      const ffmpeg = new mod.FFmpeg()
+      await ffmpeg.load()
+      _ffmpeg = ffmpeg
+      _fetchFile = fetchFile
+      _ffmpegApiKind = 'new'
+      return { ffmpeg, fetchFile, api: 'new' as const }
+    }
+    throw new Error('FFmpeg module did not expose a supported API')
+  }
+
+  // Process audio client-side with ffmpeg.wasm: trim 40s with fade in/out, keep SR & channels, export MP3
+  const processAudioForPreview = async (file: File): Promise<{ file: File; durationSeconds: number }> => {
+    const arrayBuffer = await file.arrayBuffer()
+    const tempCtx = new (window.AudioContext || (window as any).webkitAudioContext)()
+    const decodedBuffer: AudioBuffer = await tempCtx.decodeAudioData(arrayBuffer.slice(0))
+    const start = Math.max(0, Math.min(trimStartSec, Math.max(0, decodedBuffer.duration - 0.1)))
+    const targetDuration = Math.min(40, Math.max(0.1, decodedBuffer.duration - start))
+    const fadeIn = Math.min(2, targetDuration / 10)
+    const fadeOut = Math.min(2, targetDuration / 10)
+    const sampleRate = decodedBuffer.sampleRate
+    const numChannels = decodedBuffer.numberOfChannels || 1
+
+    const { ffmpeg, fetchFile, api } = await getFFmpeg()
+    const inputExt = (file.name.split('.').pop() || 'mp3').toLowerCase()
+    const inputName = `input.${inputExt}`
+    const outputName = `output.mp3`
+
+    if (api === 'legacy') {
+      await ffmpeg.FS('writeFile', inputName, await fetchFile(file))
+    } else {
+      await ffmpeg.writeFile(inputName, await fetchFile(file))
+    }
+
+    const fadeFilter = `afade=t=in:st=0:d=${fadeIn.toFixed(3)},afade=t=out:st=${(targetDuration - fadeOut).toFixed(3)}:d=${fadeOut.toFixed(3)}`
+
+    const args = [
+      '-i', inputName,
+      '-ss', start.toFixed(3),
+      '-t', targetDuration.toFixed(3),
+      '-af', fadeFilter,
+      '-ac', String(numChannels),
+      '-ar', String(sampleRate),
+      '-c:a', 'libmp3lame',
+      '-b:a', '128k',
+      outputName,
+    ]
+    if (api === 'legacy') {
+      await ffmpeg.run(...args)
+    } else {
+      await ffmpeg.exec(args)
+    }
+
+    const data = api === 'legacy' ? ffmpeg.FS('readFile', outputName) : await ffmpeg.readFile(outputName)
+    const outName = file.name.replace(/\.[^.]+$/, "") + "_preview.mp3"
+    const previewFile = new File([data], outName, { type: 'audio/mpeg' })
+    try {
+      if (api === 'legacy') {
+        ffmpeg.FS('unlink', inputName)
+        ffmpeg.FS('unlink', outputName)
+      } else {
+        await ffmpeg.deleteFile(inputName)
+        await ffmpeg.deleteFile(outputName)
+      }
+    } catch {}
+
+    return { file: previewFile, durationSeconds: targetDuration }
+  }
+
+  // lamejs helpers removed in favor of ffmpeg.wasm
 
   const addTag = () => {
     if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
@@ -260,6 +387,7 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
 
       let coverImageUrl = ""
       let audioFileUrl = ""
+      let previewDurationString: string | null = null
 
       // Upload cover image if provided
       if (coverImage) {
@@ -273,17 +401,25 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
         coverImageUrl = `/placeholder.svg?height=400&width=400&query=${encodeURIComponent(formData.title + " beat cover")}`
       }
 
-      // Upload audio file if provided
+      // Upload audio file if provided (process to 40s preview with fade)
       if (audioFile) {
         const tempId = Date.now().toString()
-        audioFileUrl = await uploadAudioFile(audioFile, tempId)
+        const { file: previewFile, durationSeconds } = await processAudioForPreview(audioFile)
+        // Compute human-readable duration from actual preview length
+        const minutes = Math.floor(durationSeconds / 60)
+        const seconds = Math.round(durationSeconds % 60)
+        const finalDurationString = `${minutes}:${seconds.toString().padStart(2, "0")}`
+        audioFileUrl = await uploadAudioFile(previewFile, tempId)
         if (!audioFileUrl) {
           throw new Error("Failed to upload audio file")
         }
+        // Set form field for consistency (not relied upon for payload)
+        setFormData((prev) => ({ ...prev, duration: finalDurationString }))
+        previewDurationString = finalDurationString
       }
 
       // Create beat object - use first selected category or default to "latest"
-      const beatData = {
+      const beatData: any = {
         title: formData.title,
         producer: formData.producer,
         cover_image: coverImageUrl,
@@ -300,7 +436,7 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
         beatstars_link: formData.beatstarsLink || "https://beatstars.com/catmatildabeat",
         sales: 0,
         description: formData.description,
-        duration: formData.duration || "3:30",
+        duration: previewDurationString || formData.duration || "0:40",
       }
 
       const result = await addBeat(beatData)
@@ -383,6 +519,7 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
         {/* Audio File Upload */}
         <div className="space-y-2">
           <Label>Audio File (MP3/WAV)</Label>
+          <p className="text-xs text-muted-foreground">Creeremo una preview di 40s in MP3 con fade in/out. Nessun ricampionamento e nessuna conversione in mono. Puoi scegliere il punto di inizio.</p>
           <div className="border-2 border-dashed border-border rounded-lg p-6">
             {audioPreview ? (
               <div className="space-y-4">
@@ -411,6 +548,36 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
+                </div>
+
+                {/* Trim controls */}
+                {audioDurationSec > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-sm">Trim range (40s)</Label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={Math.max(0, audioDurationSec - 40)}
+                      step={0.1}
+                      value={Math.min(trimStartSec, Math.max(0, audioDurationSec - 40))}
+                      onChange={(e) => setTrimStartSec(Number(e.target.value))}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>
+                        Start: {new Date(Math.floor(Math.min(trimStartSec, audioDurationSec) * 1000)).toISOString().substr(14, 5)}
+                      </span>
+                      <span>
+                        End: {new Date(Math.floor(Math.min(trimStartSec + 40, audioDurationSec) * 1000)).toISOString().substr(14, 5)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* MP3 only export (no selector) */}
+                <div className="space-y-1">
+                  <Label className="text-sm">Formato esportazione</Label>
+                  <p className="text-xs">MP3 128 kbps (nessun ricampionamento, nessuna conversione in mono)</p>
                 </div>
               </div>
             ) : (

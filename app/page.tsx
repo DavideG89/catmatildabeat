@@ -277,9 +277,7 @@ export default function Home() {
                                     </div>
                                   )}
                                 </div>
-                                <div className="text-right">
-                                  <div className="text-sm font-medium">${beat.price || "29"}</div>
-                                </div>
+                                {/* Price removed in search dropdown */}
                               </div>
                             ))}
                           </div>

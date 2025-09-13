@@ -116,24 +116,25 @@ export default function BeatCard({ beat, onClick }: BeatCardProps) {
                 <Badge className="bg-white/20 backdrop-blur-sm text-white text-xs border-0">{beat.genre}</Badge>
               </div>
             </div>
+            {/* Tags chips above title */}
+            {beat.tags && beat.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mb-1">
+                {beat.tags.slice(0, 2).map((tag, index) => (
+                  <Badge key={index} className="bg-white/15 backdrop-blur-sm text-white text-[10px] border-0">
+                    {tag}
+                  </Badge>
+                ))}
+                {beat.tags.length > 2 && (
+                  <Badge className="bg-white/10 text-white text-[10px] border-0">+{beat.tags.length - 2}</Badge>
+                )}
+              </div>
+            )}
             <h3 className="font-bold text-base md:text-lg text-white line-clamp-1">{beat.title}</h3>
             <p className="text-xs md:text-sm text-gray-300">{beat.producer}</p>
           </div>
         </div>
 
         <div className="p-3 md:p-4 bg-card">
-          <div className="flex flex-wrap gap-1 md:gap-2 mb-3">
-            {beat.tags.slice(0, 2).map((tag, index) => (
-              <Badge key={index} variant="outline" className="bg-secondary text-muted-foreground text-xs">
-                {tag}
-              </Badge>
-            ))}
-            {beat.tags.length > 2 && (
-              <Badge variant="outline" className="bg-secondary text-muted-foreground text-xs">
-                +{beat.tags.length - 2}
-              </Badge>
-            )}
-          </div>
 
           <div className="flex items-center justify-between">
             <Button

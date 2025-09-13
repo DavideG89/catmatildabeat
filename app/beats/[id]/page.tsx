@@ -269,7 +269,6 @@ export default function BeatDetailPage({ params }: { params: { id: string } }) {
 
             <div className="text-center mb-6">
               <p className="text-muted-foreground text-sm">Available on BeatStars</p>
-              <p className="text-2xl font-bold text-brand-600 mt-2">${beat.price}</p>
             </div>
 
             <Button size="lg" variant="cta" className="w-full mb-4" onClick={handleBuyNow}>
