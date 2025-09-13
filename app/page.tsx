@@ -218,7 +218,7 @@ export default function Home() {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder="Search beats, genres, moods, BPM..."
-                  className="w-full bg-white text-brand-500 placeholder:text-gray-400 border border-brand-300 rounded-full py-3 md:py-4 pl-10 md:pl-12 pr-28 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm md:text-base"
+                  className="w-full bg-white text-brand-500 placeholder:text-gray-400 border border-brand-300 rounded-full py-3 md:py-4 pl-10 md:pl-12 pr-28 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-base"
                 />
                 {searchQuery && (
                   <button
