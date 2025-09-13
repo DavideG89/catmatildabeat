@@ -50,7 +50,7 @@ export default function FeaturedBeats() {
       {featuredBeats.map((beat, index) => (
         <motion.div
           key={beat.id}
-          className="group bg-card rounded-xl overflow-hidden border border-black hover:shadow-xl transition-all duration-300 min-w-[240px] sm:min-w-[280px] md:min-w-[320px] flex-shrink-0"
+          className="group bg-card rounded-xl overflow-hidden border border-black hover:shadow-xl transition-all duration-300 w-[85vw] sm:w-[75vw] flex-shrink-0 snap-start md:w-auto md:min-w-0 md:flex-shrink md:snap-align-none"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1, duration: 0.5 }}
@@ -78,10 +78,10 @@ export default function FeaturedBeats() {
           </div>
 
           <div className="p-4">
-            <h3 className="font-bold text-lg mb-1 truncate">{beat.title}</h3>
-            <p className="text-muted-foreground text-sm mb-3 truncate">{beat.producer}</p>
+            <h3 className="font-bold text-lg mb-1 truncate text-black">{beat.title}</h3>
+            <p className="text-black text-sm mb-3 truncate">{beat.producer}</p>
 
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+            <div className="flex items-center gap-2 text-xs text-black mb-4">
               <span>{beat.genre}</span>
               <span>•</span>
               <span>{beat.bpm} BPM</span>

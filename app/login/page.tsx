@@ -44,13 +44,13 @@ export default function LoginPage() {
             <span className="text-2xl font-bold gradient-text font-heading">Cat Matilda Beat</span>
           </Link>
           <h1 className="text-2xl font-bold mb-2">Welcome Back</h1>
-          <p className="text-muted-foreground">Sign in to access your producer dashboard</p>
+          <p className="text-foreground">Sign in to access your producer dashboard</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Sign In</CardTitle>
-            <CardDescription>Enter your credentials to access the dashboard</CardDescription>
+            <CardTitle className="text-foreground">Sign In</CardTitle>
+            <CardDescription className="text-foreground">Enter your credentials to access the dashboard</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -93,7 +93,7 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-foreground">
                 Demo credentials: Use any email and password to access the dashboard
               </p>
             </div>

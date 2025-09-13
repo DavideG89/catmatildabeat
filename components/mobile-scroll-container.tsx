@@ -62,7 +62,7 @@ export default function MobileScrollContainer({ children, className = "" }: Mobi
       {/* Scrollable container */}
       <div
         ref={scrollRef}
-        className={`overflow-x-auto scrollbar-hide ${className}`}
+        className={`overflow-x-auto scrollbar-hide snap-x snap-mandatory ${className}`}
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         <div className="flex gap-4 md:grid md:grid-cols-3 md:gap-6">{children}</div>

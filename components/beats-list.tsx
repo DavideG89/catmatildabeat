@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import BeatCard from "@/components/beat-card"
+import MobileScrollContainer from "@/components/mobile-scroll-container"
 import { beatOperations } from "@/lib/supabase"
 import { Loader2 } from "lucide-react"
 import type { Beat } from "@/lib/supabase"
@@ -89,7 +90,7 @@ export default function BeatsList({ searchQuery = "", filters }: BeatsListProps)
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="bg-secondary text-foreground px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm w-full sm:w-auto"
+          className="bg-zinc-900 text-zinc-300 border border-zinc-700 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 hover:bg-zinc-800 text-sm w-full sm:w-auto"
         >
           <option value="newest">Sort by: Newest</option>
           <option value="price-low">Sort by: Price (Low to High)</option>
@@ -101,27 +102,56 @@ export default function BeatsList({ searchQuery = "", filters }: BeatsListProps)
       </div>
 
       {beats.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {beats.map((beat) => (
-            <BeatCard
-              key={beat.id}
-              beat={{
-                id: beat.id,
-                title: beat.title,
-                producer: beat.producer,
-                coverImage: beat.cover_image,
-                price: beat.price || 0,
-                bpm: beat.bpm,
-                key: beat.key,
-                genre: beat.genre,
-                tags: beat.tags,
-                beatstarsLink: beat.beatstars_link,
-                audioFile: beat.audio_file,
-                duration: beat.duration,
-              }}
-            />
-          ))}
-        </div>
+        <>
+          {/* Mobile: horizontal scroll */}
+          <div className="sm:hidden -mx-4 px-4">
+            <MobileScrollContainer>
+              {beats.map((beat) => (
+                <div key={beat.id} className="w-[85vw] flex-shrink-0 snap-start">
+                  <BeatCard
+                    beat={{
+                      id: beat.id,
+                      title: beat.title,
+                      producer: beat.producer,
+                      coverImage: beat.cover_image,
+                      price: beat.price || 0,
+                      bpm: beat.bpm,
+                      key: beat.key,
+                      genre: beat.genre,
+                      tags: beat.tags,
+                      beatstarsLink: beat.beatstars_link,
+                      audioFile: beat.audio_file,
+                      duration: beat.duration,
+                    }}
+                  />
+                </div>
+              ))}
+            </MobileScrollContainer>
+          </div>
+
+          {/* Tablet/Desktop: grid */}
+          <div className="hidden sm:grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {beats.map((beat) => (
+              <BeatCard
+                key={beat.id}
+                beat={{
+                  id: beat.id,
+                  title: beat.title,
+                  producer: beat.producer,
+                  coverImage: beat.cover_image,
+                  price: beat.price || 0,
+                  bpm: beat.bpm,
+                  key: beat.key,
+                  genre: beat.genre,
+                  tags: beat.tags,
+                  beatstarsLink: beat.beatstars_link,
+                  audioFile: beat.audio_file,
+                  duration: beat.duration,
+                }}
+              />
+            ))}
+          </div>
+        </>
       ) : (
         <div className="text-center py-12">
           <p className="text-muted-foreground text-lg mb-2">No beats found</p>
