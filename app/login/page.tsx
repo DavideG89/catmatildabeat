@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Music, Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 
 export default function LoginPage() {
@@ -39,10 +39,6 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-card/50 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-2 mb-6">
-            <Music className="h-8 w-8 text-brand-500" />
-            <span className="text-2xl font-bold gradient-text font-heading">Cat Matilda Beat</span>
-          </Link>
           <h1 className="text-2xl font-bold mb-2">Welcome Back</h1>
           <p className="text-foreground">Sign in to access your producer dashboard</p>
         </div>

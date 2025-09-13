@@ -38,7 +38,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${montserrat.variable} ${gafata.variable} font-sans text-foreground min-h-screen flex flex-col`}
       >
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <BeatsProvider>
             <AudioPlayerProvider>
               <Header />
