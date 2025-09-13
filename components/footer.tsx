@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Instagram, Twitter, Youtube, Music } from "lucide-react"
+import { Instagram, Twitter, Youtube } from "lucide-react"
 
 export default function Footer() {
   return (
@@ -8,8 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <Music className="h-5 w-5 md:h-6 md:w-6 text-brand-500" />
-              <h3 className="text-lg md:text-xl font-bold gradient-text font-heading">Cat Matilda Beat</h3>
+              <img src="/img/logo_Cat_Matilda.png" alt="Cat Matilda Logo" className="h-8 w-auto md:h-10" />
             </div>
             <p className="text-sm text-muted-foreground mb-4">Premium beats for producers and artists.</p>
             <div className="flex space-x-4">

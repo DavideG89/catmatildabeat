@@ -36,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${montserrat.variable} ${gafata.variable} font-sans bg-brand-50 text-foreground min-h-screen flex flex-col`}
+        className={`${inter.variable} ${montserrat.variable} ${gafata.variable} font-sans text-foreground min-h-screen flex flex-col`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <BeatsProvider>
