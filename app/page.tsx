@@ -146,7 +146,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen mb-24 overflow-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-[80vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[90vh] min-h-[90vh] flex items-center justify-center overflow-visible">
         <div className="absolute inset-0 z-0">
           <div className="w-full h-full from-background via-background/90 to-card/80" />
           <video
@@ -164,26 +164,26 @@ export default function Home() {
 
         <div className="container mx-auto px-4 z-10 relative">
           <motion.div
-            className="max-w-4xl mx-auto text-center mb-8 md:mb-12"
+            className="max-w-4xl mx-auto text-center mb-6 md:mb-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 md:mb-6 leading-tight font-heading">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-3 md:mb-5 leading-tight font-heading">
             Feel the Beat and get Inspired.
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl mb-6 md:mb-8 text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl md:text-2xl mb-4 md:mb-6 text-muted-foreground max-w-2xl mx-auto">
               No curse, just beat
               </p>
             <motion.div
-              className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center"
+              className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.5 }}
             >
               <Button
                 size="lg"
-                className="bg-brand-600 hover:bg-brand-500 text-base md:text-lg px-6 md:px-8 transition-all"
+                className="bg-brand-600 hover:bg-brand-500 text-base md:text-lg px-5 md:px-7 transition-all"
                 onClick={handleBrowseBeats}
               >
                 Browse Beats on BeatStars
@@ -191,7 +191,7 @@ export default function Home() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-brand-600 text-brand-500 hover:bg-brand-500/10 text-base md:text-lg px-6 md:px-8 bg-transparent"
+                className="border-brand-600 text-brand-500 hover:bg-brand-500/10 text-base md:text-lg px-5 md:px-7 bg-transparent"
                 asChild
               >
                 <Link href="/beats">Preview Beats</Link>
@@ -240,7 +240,7 @@ export default function Home() {
 
             {/* Search Results Dropdown */}
             {showSearchResults && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-card/95 backdrop-blur-sm border border-border rounded-xl shadow-xl z-50 max-h-96 overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border border-border/60 rounded-xl shadow-2xl ring-1 ring-black/10 dark:ring-white/10 z-50 max-h-96 overflow-y-auto">
                 {isSearching ? (
                   <div className="p-6 text-center">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-500 mx-auto mb-2" />
@@ -252,12 +252,12 @@ export default function Home() {
                       <h3 className="text-sm font-medium text-muted-foreground mb-3">
                         Search Results for "{searchQuery}"
                       </h3>
-                      <div className="space-y-2">
+                      <div className="space-y-1">
                         {searchResults.map((beat) => (
                           <div
                             key={beat.id}
                             onClick={() => handleBeatClick(beat.id)}
-                            className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                            className="flex items-center gap-3 p-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors"
                           >
                             <img
                               src={beat.cover_image || beat.coverImage || "/placeholder.svg?height=48&width=48"}
@@ -332,7 +332,7 @@ export default function Home() {
           <Tabs defaultValue="trending" className="w-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
               <h2 className="text-2xl md:text-3xl font-bold font-heading">Discover Music</h2>
-              <TabsList className="bg-brand-100 text-brand-900 rounded-md h-auto p-1">
+              <TabsList className="bg-white/80 text-brand-900 rounded-md h-auto p-1 border border-black/10 shadow-sm">
                 <TabsTrigger
                   value="trending"
                   className="text-brand-900 data-[state=active]:bg-brand-600 data-[state=active]:text-white text-xs md:text-sm py-2 px-4"

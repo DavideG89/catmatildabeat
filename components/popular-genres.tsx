@@ -7,68 +7,36 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useRef } from "react"
 
-const genres = [
-  {
-    name: "Trap",
-    image: "/placeholder.svg?height=400&width=400&text=Trap",
-    count: 124,
-    description: "Hard-hitting trap beats",
-  },
-  {
-    name: "Hip Hop",
-    image: "/placeholder.svg?height=400&width=400&text=Hip+Hop",
-    count: 98,
-    description: "Classic hip hop vibes",
-  },
-  {
-    name: "R&B",
-    image: "/placeholder.svg?height=400&width=400&text=R%26B",
-    count: 76,
-    description: "Smooth R&B grooves",
-  },
-  {
-    name: "Drill",
-    image: "/placeholder.svg?height=400&width=400&text=Drill",
-    count: 60,
-    description: "Aggressive drill energy",
-  },
-  {
-    name: "Pop",
-    image: "/placeholder.svg?height=400&width=400&text=Pop",
-    count: 85,
-    description: "Radio-ready pop hits",
-  },
-  {
-    name: "Afrobeat",
-    image: "/placeholder.svg?height=400&width=400&text=Afrobeat",
-    count: 45,
-    description: "African rhythms",
-  },
-  {
-    name: "Electronic",
-    image: "/placeholder.svg?height=400&width=400&text=Electronic",
-    count: 70,
-    description: "Electronic soundscapes",
-  },
-  {
-    name: "Lo-Fi",
-    image: "/placeholder.svg?height=400&width=400&text=Lo-Fi",
-    count: 55,
-    description: "Chill lo-fi vibes",
-  },
-  {
-    name: "UK Drill",
-    image: "/placeholder.svg?height=400&width=400&text=UK+Drill",
-    count: 42,
-    description: "UK drill energy",
-  },
-  {
-    name: "Synthwave",
-    image: "/placeholder.svg?height=400&width=400&text=Synthwave",
-    count: 38,
-    description: "Retro synthwave vibes",
-  },
+// Backgrounds from public/img
+const genreImages = [
+  "/img/Cat_Genre_u9585422994_keep_realistic_black_cat_and_change_solid_color_b_a9450805-76b3-4753-9be2-cd4d413497df_0.png",
+  "/img/Cat_Genre_u9585422994_keep_realistic_black_cat_and_change_color_backgro_618cfb61-328d-41a3-a19b-ff777c110abf_1.png",
+  "/img/Cat_Genre_u9585422994_realistic_black_cat_and_solid_color_background_--_7353baf1-5db6-494a-95d6-868f93e63e40_0.png",
+  "/img/Cat_Genre_u9585422994_keep_realistic_black_cat_and_change_solid_color_b_bae04826-da40-4261-a588-cd65f0c56282_2.png",
+  "/img/Cat_Genre_u9585422994_keep_realistic_black_cat_and_change_color_backgro_23cc16e6-eb15-4165-9239-f18e7d3eaa25_2.png",
+  "/img/Cat_Genre_u9585422994_keep_realistic_black_cat_and_change_solid_green_c_14c08551-d0e2-4f2d-86d9-db3005094aa1_1.png",
+  "/img/Cat_Genre_u9585422994_realistic_black_cat_and_solid_color_background_--_7353baf1-5db6-494a-95d6-868f93e63e40_2.png",
+  "/img/Cat_Genre_u9585422994_realistic_black_cat_and_solid_color_background_--_7353baf1-5db6-494a-95d6-868f93e63e40_3.png",
+  "/img/Cat_Genre_u9585422994_realistic_black_cat_and_solid_color_background_--_f153c4db-515f-458e-9235-85365e31174d_1.png",
 ]
+
+const baseGenres = [
+  { name: "Trap", count: 124, description: "Hard-hitting trap beats" },
+  { name: "Hip Hop", count: 98, description: "Classic hip hop vibes" },
+  { name: "R&B", count: 76, description: "Smooth R&B grooves" },
+  { name: "Drill", count: 60, description: "Aggressive drill energy" },
+  { name: "Pop", count: 85, description: "Radio-ready pop hits" },
+  { name: "Afrobeat", count: 45, description: "African rhythms" },
+  { name: "Electronic", count: 70, description: "Electronic soundscapes" },
+  { name: "Lo-Fi", count: 55, description: "Chill lo-fi vibes" },
+  { name: "UK Drill", count: 42, description: "UK drill energy" },
+  { name: "Synthwave", count: 38, description: "Retro synthwave vibes" },
+]
+
+const genres = baseGenres.map((g, i) => ({
+  ...g,
+  image: genreImages[i % genreImages.length],
+}))
 
 export default function PopularGenres() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)

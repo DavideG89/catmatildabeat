@@ -83,7 +83,7 @@ export default function BeatsList({ searchQuery = "", filters }: BeatsListProps)
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <p className="text-muted-foreground text-sm">
+        <p className="text-foreground text-sm font-medium">
           Showing {beats.length} beat{beats.length !== 1 ? "s" : ""}
           {searchQuery && ` for "${searchQuery}"`}
         </p>
@@ -154,14 +154,14 @@ export default function BeatsList({ searchQuery = "", filters }: BeatsListProps)
         </>
       ) : (
         <div className="text-center py-12">
-          <p className="text-muted-foreground text-lg mb-2">No beats found</p>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-foreground text-lg mb-2">No beats found</p>
+          <p className="text-foreground text-sm">
             {searchQuery || (memoizedFilters && Object.keys(memoizedFilters).length > 0)
               ? "Try adjusting your search or filters"
               : "No beats available at the moment"}
           </p>
           {searchQuery && (
-            <div className="mt-4 text-sm text-muted-foreground">
+            <div className="mt-4 text-sm text-foreground">
               <p>Search tips:</p>
               <ul className="list-disc list-inside mt-2 space-y-1">
                 <li>Try searching by genre (trap, hip hop, r&b)</li>

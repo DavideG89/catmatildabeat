@@ -138,7 +138,7 @@ export default function BeatFilters({ onFiltersChange }: BeatFiltersProps) {
   }
 
   return (
-    <div className="bg-zinc-900 rounded-xl p-4 sticky top-4">
+    <div className="bg-zinc-900 rounded-xl p-4 lg:sticky lg:top-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-white">Filters</h3>
         {hasActiveFilters && (
@@ -156,7 +156,7 @@ export default function BeatFilters({ onFiltersChange }: BeatFiltersProps) {
       <Accordion type="multiple" defaultValue={["genres", "keys", "bpm"]} className="w-full">
         {/* Genres */}
         <AccordionItem value="genres" className="border-zinc-800">
-          <AccordionTrigger className="text-white hover:text-brand-400 py-3">
+          <AccordionTrigger className="text-white hover:text-brand-400 py-2 sm:py-3">
             <span className="flex items-center gap-2">
               Genres
               {selectedGenres.length > 0 && (
@@ -167,7 +167,7 @@ export default function BeatFilters({ onFiltersChange }: BeatFiltersProps) {
             </span>
           </AccordionTrigger>
           <AccordionContent className="pb-4">
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {availableGenres.map((genre) => (
                 <Button
                   key={genre}
@@ -189,7 +189,7 @@ export default function BeatFilters({ onFiltersChange }: BeatFiltersProps) {
 
         {/* Keys */}
         <AccordionItem value="keys" className="border-zinc-800">
-          <AccordionTrigger className="text-white hover:text-brand-400 py-3">
+          <AccordionTrigger className="text-white hover:text-brand-400 py-2 sm:py-3">
             <span className="flex items-center gap-2">
               Keys
               {selectedKeys.length > 0 && (
@@ -198,7 +198,7 @@ export default function BeatFilters({ onFiltersChange }: BeatFiltersProps) {
             </span>
           </AccordionTrigger>
           <AccordionContent className="pb-4">
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {availableKeys.map((key) => (
                 <Button
                   key={key}
@@ -220,7 +220,7 @@ export default function BeatFilters({ onFiltersChange }: BeatFiltersProps) {
 
         {/* BPM Range */}
         <AccordionItem value="bpm" className="border-zinc-800">
-          <AccordionTrigger className="text-white hover:text-brand-400 py-3">
+          <AccordionTrigger className="text-white hover:text-brand-400 py-2 sm:py-3">
             <span className="flex items-center gap-2">
               BPM Range
               {(bpmRange[0] !== 60 || bpmRange[1] !== 200) && (
