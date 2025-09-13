@@ -181,9 +181,10 @@ export default function BeatsDashboard() {
       {/* Header */}
 
       {/* Category Overview Cards - Single instance of each */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+        <div className="flex gap-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-4 min-w-max md:min-w-0">
         {/* Trending Card */}
-        <Card className="border-orange-200 bg-orange-50">
+        <Card className="border-orange-200 bg-orange-50 min-w-[220px]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -196,7 +197,7 @@ export default function BeatsDashboard() {
         </Card>
 
         {/* Featured Card */}
-        <Card className="border-blue-200 bg-blue-50">
+        <Card className="border-blue-200 bg-blue-50 min-w-[220px]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -209,7 +210,7 @@ export default function BeatsDashboard() {
         </Card>
 
         {/* New Releases Card */}
-        <Card className="border-green-200 bg-green-50">
+        <Card className="border-green-200 bg-green-50 min-w-[220px]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -222,7 +223,7 @@ export default function BeatsDashboard() {
         </Card>
 
         {/* Latest Card */}
-        <Card className="border-purple-200 bg-purple-50">
+        <Card className="border-purple-200 bg-purple-50 min-w-[220px]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -233,6 +234,7 @@ export default function BeatsDashboard() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
 
       {/* Filters and Search */}
@@ -246,8 +248,25 @@ export default function BeatsDashboard() {
             className="pl-10"
           />
         </div>
-        <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full sm:w-auto">
-          <TabsList className="grid w-full grid-cols-5">
+        {/* Mobile: category select */}
+        <div className="sm:hidden">
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Filter category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              {categories.map((c) => (
+                <SelectItem key={c.value} value={c.value}>
+                  {c.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        {/* Desktop: tabs */}
+        <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="hidden sm:block">
+          <TabsList className="grid grid-cols-5">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="trending">Trending</TabsTrigger>
             <TabsTrigger value="featured">Featured</TabsTrigger>
@@ -259,10 +278,10 @@ export default function BeatsDashboard() {
 
       {/* Beats Table */}
       <Card>
-        <CardHeader>
-          <CardTitle>My Beats ({filteredBeats.length})</CardTitle>
-          <CardDescription>Manage your beat collection</CardDescription>
-        </CardHeader>
+          <CardHeader>
+            <CardTitle className="text-foreground">My Beats ({filteredBeats.length})</CardTitle>
+            <CardDescription className="text-foreground">Manage your beat collection</CardDescription>
+          </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <Table>

@@ -113,6 +113,7 @@ export default function BeatCard({ beat, onClick }: BeatCardProps) {
               <div className="flex items-center space-x-1 md:space-x-2">
                 <Badge className="bg-white/20 backdrop-blur-sm text-white text-xs border-0">{beat.bpm} BPM</Badge>
                 <Badge className="bg-white/20 backdrop-blur-sm text-white text-xs border-0">{beat.key}</Badge>
+                <Badge className="bg-white/20 backdrop-blur-sm text-white text-xs border-0">{beat.genre}</Badge>
               </div>
             </div>
             <h3 className="font-bold text-base md:text-lg text-white line-clamp-1">{beat.title}</h3>

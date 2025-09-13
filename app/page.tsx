@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import TrendingBeats from "@/components/trending-beats"
 import FeaturedBeats from "@/components/featured-beats"
+import BeatCard from "@/components/beat-card"
 import PopularGenres from "@/components/popular-genres"
 import YouTubeSection from "@/components/youtube-section"
 import TracklistSection from "@/components/tracklist-section"
@@ -217,20 +218,20 @@ export default function Home() {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder="Search beats, genres, moods, BPM..."
-                  className="w-full bg-white text-brand-500 placeholder:text-gray-400 border border-brand-300 rounded-full py-3 md:py-4 pl-10 md:pl-12 pr-20 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm md:text-base"
+                  className="w-full bg-white text-brand-500 placeholder:text-gray-400 border border-brand-300 rounded-full py-3 md:py-4 pl-10 md:pl-12 pr-28 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-sm md:text-base"
                 />
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={clearSearch}
-                    className="absolute right-12 md:right-16 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute right-16 md:right-20 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <X className="h-4 w-4" />
                   </button>
                 )}
                 <Button
                   type="submit"
-                  className="absolute right-1.5 top-1.5 rounded-full bg-brand-600 hover:bg-brand-500 px-4 md:px-6 transition-colors text-sm py-1.5"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full bg-brand-600 hover:bg-brand-500 h-9 md:h-10 px-4 md:px-6 transition-colors text-sm"
                 >
                   Search
                 </Button>
@@ -397,23 +398,30 @@ export default function Home() {
       </section>
 
       {/* How It Works */}
-      <section className="py-12 md:py-16 bg-background">
+      <section
+        className="py-12 md:py-16"
+        style={{
+          "--card": "0 0% 100%",
+          "--card-foreground": "0 0% 10%",
+          "--muted-foreground": "0 0% 35%",
+        } as React.CSSProperties}
+      >
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl font-bold mb-12 text-center font-heading">How It Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                icon: <Play className="h-8 w-8 text-brand-500" />,
+                icon: <Play className="h-8 w-8 text-brand-600" />,
                 title: "Browse & Listen",
                 description: "Explore our catalog of premium beats. Preview tracks before you buy.",
               },
               {
-                icon: <Music className="h-8 w-8 text-brand-500" />,
+                icon: <Music className="h-8 w-8 text-brand-600" />,
                 title: "Choose Your License",
                 description: "Select the license that fits your needs, from basic to exclusive rights.",
               },
               {
-                icon: <Clock className="h-8 w-8 text-brand-500" />,
+                icon: <Clock className="h-8 w-8 text-brand-600" />,
                 title: "Download & Create",
                 description: "Purchase on BeatStars and start creating your next hit.",
               },
@@ -425,10 +433,10 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.2, duration: 0.5 }}
               >
-                <div className="bg-brand-500/20 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
+                <div className="bg-brand-600/10 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
                   {item.icon}
                 </div>
-                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                <h3 className="text-xl font-bold mb-3 text-card-foreground">{item.title}</h3>
                 <p className="text-muted-foreground">{item.description}</p>
               </motion.div>
             ))}
@@ -436,8 +444,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-12 md:py-16 from-background to-card/50">
+      {/* Testimonials (hidden) */}
+      <section className="hidden">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl font-bold mb-12 text-center font-heading">What Artists Say</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -466,11 +474,11 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-20 from-brand-600 to-accent2-600">
+      <section className="py-16 md:py-20 bg-gradient-to-r from-brand-700 via-brand-600 to-accent2-600 text-white">
         <div className="container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 font-heading">Ready to Elevate Your Sound?</h2>
-            <p className="text-xl mb-8 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 font-heading text-white">Ready to Elevate Your Sound?</h2>
+            <p className="text-xl mb-8 max-w-2xl mx-auto text-white/90">
               Join thousands of artists who trust Cat Matilda Beat for premium beats.
             </p>
             <Button
@@ -490,103 +498,29 @@ export default function Home() {
 // New Releases Component for consistency
 function NewReleaseBeats() {
   const { getBeatsByCategory } = useBeats()
-  const { currentTrack, isPlaying, playTrack, togglePlayPause } = useAudioPlayer()
-
-  const handlePlayTrack = (beat: any) => {
-    if (currentTrack?.id === beat.id) {
-      togglePlayPause()
-    } else {
-      playTrack({
-        id: beat.id,
-        title: beat.title,
-        artist: beat.producer,
-        audioSrc: beat.audio_file || "/demo-beat.mp3",
-        coverImage: beat.cover_image,
-        beatstarsLink: beat.beatstars_link,
-        durationString: beat.duration,
-      })
-    }
-  }
-
   const newReleaseBeats = getBeatsByCategory("new_releases").slice(0, 6)
 
   return (
     <>
-      {newReleaseBeats.map((beat, index) => (
-        <motion.div
-          key={beat.id}
-          className="group bg-card rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 w-[85vw] sm:w-[75vw] flex-shrink-0 snap-start md:w-auto md:min-w-0 md:flex-shrink md:snap-align-none"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1, duration: 0.5 }}
-        >
-          <div className="relative aspect-square overflow-hidden">
-            <img
-              src={beat.cover_image || "/placeholder.svg?height=300&width=300"}
-              alt={beat.title}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-            />
-            <div className="absolute inset-0 from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <button
-              onClick={() => handlePlayTrack(beat)}
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-brand-600 hover:bg-brand-500 rounded-full p-3 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
-            >
-              {currentTrack?.id === beat.id && isPlaying ? (
-                <Pause className="h-6 w-6 text-white" />
-              ) : (
-                <Play className="h-6 w-6 text-white" />
-              )}
-            </button>
-          </div>
-
-          <div className="p-4">
-            <h3 className="font-bold text-lg mb-1 truncate text-black">{beat.title}</h3>
-            <p className="text-black text-sm mb-3 truncate">{beat.producer}</p>
-
-            <div className="flex items-center gap-2 text-xs text-black mb-4">
-              <span>{beat.genre}</span>
-              <span>•</span>
-              <span>{beat.bpm} BPM</span>
-              <span>•</span>
-              <span>{beat.key}</span>
-            </div>
-
-            {beat.tags && (
-              <div className="flex flex-wrap gap-1 mb-4">
-                {beat.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
-                  <span key={tagIndex} className="px-2 py-1 bg-brand-500/20 text-brand-500 text-xs rounded-full">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <div className="flex items-center justify-between">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handlePlayTrack(beat)}
-                className="text-brand-500 hover:text-brand-400 hover:bg-brand-500/10 px-3"
-              >
-                {currentTrack?.id === beat.id && isPlaying ? (
-                  <Pause className="h-4 w-4 mr-1" />
-                ) : (
-                  <Play className="h-4 w-4 mr-1" />
-                )}
-                {currentTrack?.id === beat.id && isPlaying ? "Pause" : "Play"}
-              </Button>
-
-              <Button
-                size="sm"
-                className="bg-brand-600 hover:bg-brand-500"
-                onClick={() => window.open(beat.beatstars_link, "_blank")}
-              >
-                <ExternalLink className="h-3 w-3 mr-1" />
-                Buy
-              </Button>
-            </div>
-          </div>
-        </motion.div>
+      {newReleaseBeats.map((beat) => (
+        <div key={beat.id} className="w-[85vw] sm:w-[75vw] md:w-auto flex-shrink-0 snap-start">
+          <BeatCard
+            beat={{
+              id: beat.id,
+              title: beat.title,
+              producer: beat.producer,
+              coverImage: beat.cover_image,
+              price: beat.price || 0,
+              bpm: beat.bpm,
+              key: beat.key,
+              genre: beat.genre,
+              tags: beat.tags,
+              beatstarsLink: beat.beatstars_link,
+              audioFile: beat.audio_file,
+              duration: beat.duration,
+            }}
+          />
+        </div>
       ))}
     </>
   )

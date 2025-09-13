@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Shuffle, Repeat, List } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
@@ -30,6 +30,14 @@ export default function AdvancedAudioPlayer() {
   const [repeatMode, setRepeatMode] = useState<"off" | "one" | "all">("off")
   const [showQueue, setShowQueue] = useState(false)
   const [previousVolume, setPreviousVolume] = useState(volume)
+  const [isCollapsed, setIsCollapsed] = useState(false)
+
+  // Collapse by default on mobile
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 640) {
+      setIsCollapsed(true)
+    }
+  }, [])
 
 
   // Format time helper
@@ -86,23 +94,44 @@ export default function AdvancedAudioPlayer() {
   }
 
   if (!currentTrack) {
-    return (
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border/80 p-4 z-50 shadow-2xl shadow-black/20 ring-1 ring-black/20">
-        <div className="container mx-auto">
-          <div className="flex items-center justify-center text-muted-foreground">
-            <p className="text-sm">No track selected</p>
-          </div>
-        </div>
-      </div>
-    )
+    // Hide player completely when no track is selected
+    return null
   }
 
   const progressPercentage = duration > 0 ? Math.min((currentTime / duration) * 100, 100) : 0
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border/80 p-4 z-50 shadow-2xl shadow-black/20 ring-1 ring-black/20">
+    <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border/80 p-3 md:p-4 z-50 shadow-2xl shadow-black/20 ring-1 ring-black/20">
       <div className="container mx-auto">
-        <div className="flex items-center gap-4">
+        {isCollapsed && (
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
+                <Image
+                  src={currentTrack.coverImage || "/placeholder.svg?height=40&width=40"}
+                  alt={currentTrack.title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="min-w-0">
+                <h4 className="font-medium text-sm truncate">{currentTrack.title}</h4>
+                <p className="text-xs text-muted-foreground truncate">{currentTrack.artist}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button onClick={togglePlayPause} className="h-9 w-9 rounded-full bg-white hover:bg-gray-100 text-black">
+                {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => setIsCollapsed(false)} className="h-8 px-2 text-black">
+                Show
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {!isCollapsed && (
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
           {/* Track Info */}
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
@@ -183,7 +212,16 @@ export default function AdvancedAudioPlayer() {
           </div>
 
           {/* Volume and Queue Controls */}
-          <div className="flex items-center gap-2 flex-1 justify-end">
+          <div className="flex items-center gap-2 flex-1 justify-between sm:justify-end w-full">
+            {/* Mobile Buy button */}
+            <Button
+              size="sm"
+              variant="cta"
+              className="transition-colors text-xs h-8 sm:hidden"
+              onClick={() => window.open(currentTrack.beatstarsLink || 'https://beatstars.com/catmatildabeat', '_blank')}
+            >
+              Buy
+            </Button>
             <Button
               variant="ghost"
               size="sm"
@@ -203,7 +241,7 @@ export default function AdvancedAudioPlayer() {
                 {isMuted || volume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
               </Button>
 
-              <div className="w-20">
+              <div className="w-24">
                 <Slider
                   value={[isMuted ? 0 : volume * 100]}
                   onValueChange={(value) => handleVolumeChange([value[0] / 100])}
@@ -213,19 +251,23 @@ export default function AdvancedAudioPlayer() {
                 />
               </div>
             </div>
+            <Button variant="ghost" size="sm" onClick={() => setIsCollapsed(true)} className="h-8 px-2 text-black">
+              Hide
+            </Button>
           </div>
         </div>
+        )}
 
         {/* Queue Display */}
         {showQueue && queue.length > 0 && (
-          <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+          <div className="mt-3 p-4 bg-muted/50 rounded-lg -mx-3 md:mx-0">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-medium text-sm">Queue ({queue.length} tracks)</h3>
               <Button variant="ghost" size="sm" onClick={clearQueue} className="text-xs">
                 Clear Queue
               </Button>
             </div>
-            <div className="space-y-2 max-h-40 overflow-y-auto">
+            <div className="space-y-2 max-h-48 overflow-y-auto">
               {queue.map((track, index) => (
                 <div
                   key={`${track.id}-${index}`}

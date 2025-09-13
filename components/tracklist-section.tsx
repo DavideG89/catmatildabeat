@@ -92,62 +92,71 @@ export default function TracklistSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
             >
-              <div className="flex items-center gap-4">
-                <div className="relative flex-shrink-0">
-                  <img
-                    src={beat.cover_image || "/placeholder.svg?height=64&width=64"}
-                    alt={beat.title}
-                    className="w-16 h-16 rounded-lg object-cover"
-                  />
-                  <button
-                    onClick={() => handlePlayTrack(beat)}
-                    className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg opacity-0 hover:opacity-100 transition-opacity"
-                  >
-                    {currentTrack?.id === beat.id && isPlaying ? (
-                      <Pause className="h-6 w-6 text-white" />
-                    ) : (
-                      <Play className="h-6 w-6 text-white" />
-                    )}
-                  </button>
-                </div>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                {/* Image + Info side-by-side on mobile */}
+                <div className="flex items-start gap-3 flex-1 min-w-0">
+                  <div className="relative flex-shrink-0">
+                    <img
+                      src={beat.cover_image || "/placeholder.svg?height=64&width=64"}
+                      alt={beat.title}
+                      className="w-16 h-16 rounded-lg object-cover"
+                    />
+                    <button
+                      onClick={() => handlePlayTrack(beat)}
+                      className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg opacity-0 hover:opacity-100 transition-opacity"
+                    >
+                      {currentTrack?.id === beat.id && isPlaying ? (
+                        <Pause className="h-6 w-6 text-white" />
+                      ) : (
+                        <Play className="h-6 w-6 text-white" />
+                      )}
+                    </button>
+                  </div>
 
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-lg truncate text-card-foreground transition-colors group-hover:text-black">
-                    {beat.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm truncate">{beat.producer}</p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                    <span>{beat.genre}</span>
-                    <span>•</span>
-                    <span>{beat.bpm} BPM</span>
-                    <span>•</span>
-                    <span>{beat.key}</span>
-                    {beat.duration && (
-                      <>
-                        <span>•</span>
-                        <span>{beat.duration}</span>
-                      </>
-                    )}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-lg truncate text-card-foreground transition-colors group-hover:text-black">
+                      {beat.title}
+                    </h3>
+                    <p className="text-black/80 text-sm truncate">{beat.producer}</p>
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-black/70 mt-1">
+                      <span>{beat.genre}</span>
+                      <span className="hidden sm:inline">•</span>
+                      <span>{beat.bpm} BPM</span>
+                      <span className="hidden sm:inline">•</span>
+                      <span>{beat.key}</span>
+                      {beat.duration && (
+                        <>
+                          <span className="hidden sm:inline">•</span>
+                          <span>{beat.duration}</span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                {/* Buttons stacked under on mobile, right side on desktop */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                   <Button
                     variant="ghost"
-                    size="icon"
+                    size="sm"
                     onClick={() => handlePlayTrack(beat)}
-                    className="h-10 w-10 text-brand-500 hover:text-brand-400 hover:bg-brand-500/10"
+                    className="text-brand-500 hover:text-brand-400 hover:bg-brand-500/10 px-3 w-full sm:w-auto"
                   >
                     {currentTrack?.id === beat.id && isPlaying ? (
-                      <Pause className="h-5 w-5" />
+                      <>
+                        <Pause className="h-4 w-4 mr-1" /> Pause
+                      </>
                     ) : (
-                      <Play className="h-5 w-5" />
+                      <>
+                        <Play className="h-4 w-4 mr-1" /> Play
+                      </>
                     )}
                   </Button>
+
                   <Button
                     size="sm"
                     variant="cta"
-                    className="text-xs px-3"
+                    className="text-xs px-3 w-full sm:w-auto"
                     onClick={() => handleBuyBeat(beat.beatstars_link)}
                   >
                     <ExternalLink className="h-3 w-3 mr-1" />

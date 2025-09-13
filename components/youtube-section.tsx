@@ -25,7 +25,14 @@ export default function YouTubeSection() {
   ]
 
   return (
-    <section className="py-10 md:py-16  from-card/50 to-background animate-on-scroll">
+    <section
+      className="py-10 md:py-16 animate-on-scroll"
+      style={{
+        "--card": "0 0% 100%",
+        "--card-foreground": "0 0% 10%",
+        "--muted-foreground": "0 0% 40%",
+      } as React.CSSProperties}
+    >
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <motion.div
@@ -36,7 +43,7 @@ export default function YouTubeSection() {
           >
             <div className="flex items-center justify-center mb-4">
               <Youtube className="h-8 w-8 md:h-10 md:w-10 text-red-500 mr-3" />
-              <h2 className="text-2xl md:text-3xl font-bold font-heading">Follow My Journey</h2>
+              <h2 className="text-2xl md:text-3xl font-bold font-heading text-card-foreground">Follow My Journey</h2>
             </div>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Get behind-the-scenes content, beat breakdowns, and exclusive previews on my YouTube channel
@@ -50,12 +57,12 @@ export default function YouTubeSection() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
             >
-              <Card className="bg-gradient-to-br from-red-500/10 to-red-600/5 border-red-500/20 overflow-hidden">
+              <Card className="bg-gradient-to-br from-red-500/10 to-red-600/5 border-red-500/30 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="p-0">
                   <div className="relative aspect-video from-red-500/20 to-red-600/10 flex items-center justify-center">
                     <div className="text-center">
                       <Youtube className="h-16 w-16 md:h-20 md:w-20 text-red-500 mx-auto mb-4" />
-                      <h3 className="text-xl md:text-2xl font-bold mb-2">Cat Matilda Beat</h3>
+                      <h3 className="text-xl md:text-2xl font-bold mb-2 text-card-foreground">Cat Matilda Beat</h3>
                       <p className="text-muted-foreground text-sm md:text-base">Beat Making & Music Production</p>
                     </div>
                     <div
@@ -70,7 +77,7 @@ export default function YouTubeSection() {
                       {stats.map((stat, index) => (
                         <div key={index} className="text-center">
                           <div className="flex justify-center mb-2 text-red-500">{stat.icon}</div>
-                          <div className="font-bold text-sm md:text-base">{stat.value}</div>
+                          <div className="font-bold text-sm md:text-base text-card-foreground">{stat.value}</div>
                           <div className="text-xs text-muted-foreground">{stat.label}</div>
                         </div>
                       ))}
@@ -78,7 +85,7 @@ export default function YouTubeSection() {
                     <Button
                       onClick={handleWatchVideos}
                       variant="outline"
-                      className="w-full border-red-500/20 text-red-500 hover:bg-red-500/10 bg-transparent"
+                      className="w-full border-red-500/30 text-red-600 hover:bg-red-500/10 bg-transparent"
                     >
                       <Youtube className="mr-2 h-4 w-4" />
                       Watch Videos
@@ -96,8 +103,8 @@ export default function YouTubeSection() {
               transition={{ delay: 0.4, duration: 0.6 }}
             >
               <div>
-                <h3 className="text-xl md:text-2xl font-bold mb-4">Subscribe for Exclusive Content</h3>
-                <ul className="space-y-3 text-muted-foreground">
+                <h3 className="text-xl md:text-2xl font-bold mb-4 text-card-foreground">Subscribe for Exclusive Content</h3>
+                <ul className="space-y-3 text-black/70">
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-red-500 rounded-full mr-3 flex-shrink-0"></div>
                     Beat making tutorials and breakdowns
@@ -122,7 +129,7 @@ export default function YouTubeSection() {
               </div>
 
               <div className="space-y-3">
-                <Button onClick={handleSubscribe} className="w-full bg-red-600 hover:bg-red-500 text-white" size="lg">
+                <Button onClick={handleSubscribe} className="w-full bg-red-600 hover:bg-red-500 text-white rounded-full" size="lg">
                   <Bell className="mr-2 h-5 w-5" />
                   {isSubscribed ? "Subscribed!" : "Subscribe Now"}
                 </Button>

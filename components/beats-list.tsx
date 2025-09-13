@@ -90,7 +90,7 @@ export default function BeatsList({ searchQuery = "", filters }: BeatsListProps)
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="bg-zinc-900 text-zinc-300 border border-zinc-700 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 hover:bg-zinc-800 text-sm w-full sm:w-auto"
+          className="bg-zinc-900 text-zinc-300 border border-zinc-700 px-3 pr-8 h-10 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 hover:bg-zinc-800 text-sm w-full sm:w-auto min-w-[180px] sm:min-w-[220px]"
         >
           <option value="newest">Sort by: Newest</option>
           <option value="price-low">Sort by: Price (Low to High)</option>

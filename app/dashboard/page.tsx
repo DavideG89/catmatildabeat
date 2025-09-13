@@ -46,54 +46,56 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card>
+      <div className="overflow-x-auto -mx-4 px-4 mb-8 md:mx-0 md:px-0">
+        <div className="flex gap-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6 min-w-max md:min-w-0">
+        <Card className="border-blue-200 bg-blue-50 min-w-[220px]">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Beats</CardTitle>
-            <Music className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-blue-900">Total Beats</CardTitle>
+            <Music className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{loading ? "..." : beats.length}</div>
-            <p className="text-xs text-muted-foreground">{activeBeats.length} active</p>
+            <div className="text-2xl font-bold text-blue-900">{loading ? "..." : beats.length}</div>
+            <p className="text-xs text-blue-800">{activeBeats.length} active</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-amber-200 bg-amber-50 min-w-[220px]">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-amber-900">Total Sales</CardTitle>
+            <TrendingUp className="h-4 w-4 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{loading ? "..." : totalSales}</div>
-            <p className="text-xs text-muted-foreground">Across all beats</p>
+            <div className="text-2xl font-bold text-amber-900">{loading ? "..." : totalSales}</div>
+            <p className="text-xs text-amber-800">Across all beats</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-teal-200 bg-teal-50 min-w-[220px]">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Categories</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-teal-900">Categories</CardTitle>
+            <DollarSign className="h-4 w-4 text-teal-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-teal-900">
               {loading
                 ? "..."
                 : `${trendingBeats.length + featuredBeats.length + newReleases.length + latestBeats.length}`}
             </div>
-            <p className="text-xs text-muted-foreground">Distributed beats</p>
+            <p className="text-xs text-teal-800">Distributed beats</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-rose-200 bg-rose-50 min-w-[220px]">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Trending</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-rose-900">Trending</CardTitle>
+            <Users className="h-4 w-4 text-rose-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{loading ? "..." : trendingBeats.length}</div>
-            <p className="text-xs text-muted-foreground">Trending beats</p>
+            <div className="text-2xl font-bold text-rose-900">{loading ? "..." : trendingBeats.length}</div>
+            <p className="text-xs text-rose-800">Trending beats</p>
           </CardContent>
         </Card>
+        </div>
       </div>
 
       {/* Main Content */}

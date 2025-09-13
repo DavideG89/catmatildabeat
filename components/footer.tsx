@@ -13,15 +13,15 @@ export default function Footer() {
             </div>
             <p className="text-sm text-muted-foreground mb-4">Premium beats for producers and artists.</p>
             <div className="flex space-x-4">
-              <Link href="#" className="text-muted-foreground hover:text-brand-400 transition-colors">
+              <Link href="#" className="text-foreground hover:text-brand-400 transition-colors">
                 <Instagram className="h-5 w-5" />
                 <span className="sr-only">Instagram</span>
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-brand-400 transition-colors">
+              <Link href="#" className="text-foreground hover:text-brand-400 transition-colors">
                 <Twitter className="h-5 w-5" />
                 <span className="sr-only">Twitter</span>
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-brand-400 transition-colors">
+              <Link href="#" className="text-foreground hover:text-brand-400 transition-colors">
                 <Youtube className="h-5 w-5" />
                 <span className="sr-only">YouTube</span>
               </Link>
@@ -32,22 +32,22 @@ export default function Footer() {
             <h3 className="font-bold mb-4 text-base md:text-lg">Quick Links</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/" className="text-muted-foreground hover:text-brand-400 transition-colors">
+                <Link href="/" className="text-foreground hover:text-brand-400 transition-colors">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/beats" className="text-muted-foreground hover:text-brand-400 transition-colors">
+                <Link href="/beats" className="text-foreground hover:text-brand-400 transition-colors">
                   Beats
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-muted-foreground hover:text-brand-400 transition-colors">
+                <Link href="/about" className="text-foreground hover:text-brand-400 transition-colors">
                   About
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-muted-foreground hover:text-brand-400 transition-colors">
+                <Link href="/contact" className="text-foreground hover:text-brand-400 transition-colors">
                   Contact
                 </Link>
               </li>
@@ -58,29 +58,29 @@ export default function Footer() {
             <h3 className="font-bold mb-4 text-base md:text-lg">Legal</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/terms" className="text-muted-foreground hover:text-brand-400 transition-colors">
+                <Link href="/terms" className="text-foreground hover:text-brand-400 transition-colors">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="text-muted-foreground hover:text-brand-400 transition-colors">
+                <Link href="/privacy" className="text-foreground hover:text-brand-400 transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/licenses" className="text-muted-foreground hover:text-brand-400 transition-colors">
+                <Link href="/licenses" className="text-foreground hover:text-brand-400 transition-colors">
                   License Information
                 </Link>
               </li>
               <li>
-                <Link href="/refunds" className="text-muted-foreground hover:text-brand-400 transition-colors">
+                <Link href="/refunds" className="text-foreground hover:text-brand-400 transition-colors">
                   Refund Policy
                 </Link>
               </li>
               <li>
                 <Link
                   href="/dashboard"
-                  className="text-muted-foreground hover:text-brand-400 transition-colors text-xs"
+                  className="text-foreground hover:text-brand-400 transition-colors text-xs"
                 >
                   Producer Login
                 </Link>
@@ -90,18 +90,18 @@ export default function Footer() {
 
           <div>
             <h3 className="font-bold mb-4 text-base md:text-lg">Newsletter</h3>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-sm text-foreground mb-4">
               Subscribe to get updates on new beats and exclusive offers.
             </p>
-            <form className="flex">
+            <form className="flex flex-col sm:flex-row gap-2">
               <input
                 type="email"
                 placeholder="Your email"
-                className="bg-secondary text-foreground px-3 py-2 rounded-l-md w-full focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
+                className="bg-white text-brand-500 placeholder:text-gray-400 border border-brand-300 rounded-full px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
               />
               <button
                 type="submit"
-                className="bg-brand-600 hover:bg-brand-500 px-3 py-2 rounded-r-md transition-colors text-sm"
+                className="bg-brand-600 hover:bg-brand-500 px-6 py-3 rounded-full transition-colors text-sm text-white w-full sm:w-auto"
               >
                 Subscribe
               </button>
