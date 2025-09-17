@@ -313,7 +313,7 @@ export default function Home() {
             <div className="order-1 md:order-2 w-full">
               <div className="relative rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/10 bg-white/40 dark:bg-zinc-900/40">
                 <img
-                  src="/img/CatMatildaStudio.png"
+                  src="/img/CatMatildaStudio.jpg"
                   alt="Studio preview"
                   className="w-full h-full object-cover aspect-video md:aspect-[4/3]"
                 />

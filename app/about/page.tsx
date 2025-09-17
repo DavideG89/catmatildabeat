@@ -36,11 +36,8 @@ export default function AboutPage() {
       <section className="text-center mb-12 md:mb-16">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl md:text-5xl font-bold mb-6 font-heading">
-            About <span className="gradient-text">Cat Matilda Beat</span>
+            About <span>Cat Matilda Beat</span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground mb-8">
-            Crafting premium beats and bringing musical visions to life for artists worldwide.
-          </p>
         </div>
       </section>
 
@@ -51,19 +48,21 @@ export default function AboutPage() {
             <h2 className="text-2xl md:text-3xl font-bold mb-6 font-heading">My Story</h2>
             <div className="space-y-4 text-muted-foreground">
               <p>
-                What started as a passion for music in my bedroom studio has evolved into a full-time dedication to
-                creating premium beats that inspire artists around the world. I'm Cat Matilda Beat, a producer who
-                believes that every artist deserves access to professional-quality instrumentals.
+              Cat Matilda Beat was born from the idea that music should be a playground, an open space where sounds, genres and emotions collide to create something new.
               </p>
               <p>
-                Over the past 8 years, I've honed my craft across multiple genres, from hard-hitting trap beats to
-                smooth R&B melodies. My goal is simple: create beats that not only sound amazing but also provide the
-                perfect foundation for artists to express their creativity.
+              From the very first experiment with electronic layers to the raw energy of hip-hop and trap, from the groove of funk to the edge of rock, Cat Matilda Beat has always been about exploration. Each track is more than just an instrumental: it’s an invitation to express yourself, to let your voice, your flow, or even your videos ride on unique waves of sound.
               </p>
               <p>
-                Every beat I produce is crafted with attention to detail, using industry-standard equipment and
-                techniques. I draw inspiration from both classic and contemporary sounds, ensuring each track has its
-                own unique character while maintaining commercial appeal.
+              And yes, you guessed it right: this playground is ruled by a black cat.
+They say a black cat crossing your path brings bad luck…well, this one decided to sit on the drum machine instead. The only curse here? Every track comes with claws out, ready to leave a mark.
+              </p>
+              <p>
+              Cat Matilda isn’t just any cat. She learned how to scratch vinyl before furniture, how to hit pads with more precision than a paw could ever promise, and how to turn ‘bad luck’ into grooves that stick to your head for days. Each track is crafted with the same feline curiosity: a leap, a chase, a playful mischief that suddenly transforms into a full melody.
+              </p>
+              <p>
+              So if you’ve ever wondered what happens when a black cat trades mystery for music, the answer is right here.
+              Cat Matilda Beat: where superstition meets inspiration, and every note is a lucky strike. 🐾🎶
               </p>
             </div>
           </div>

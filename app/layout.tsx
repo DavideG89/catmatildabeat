@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter, Montserrat, Gafata } from "next/font/google"
+import { Inter, Gafata } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
@@ -9,11 +9,11 @@ import AdvancedAudioPlayer from "@/components/advanced-audio-player"
 import { AudioPlayerProvider } from "@/components/audio-player-context"
 import { BeatsProvider } from "@/components/beats-context"
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
-const montserrat = Montserrat({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-montserrat",
   display: "swap",
+  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
 })
 const gafata = Gafata({
   subsets: ["latin"],
@@ -36,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${montserrat.variable} ${gafata.variable} font-sans text-foreground min-h-screen flex flex-col`}
+        className={`${inter.variable} ${gafata.variable} font-sans text-foreground min-h-screen flex flex-col`}
       >
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <BeatsProvider>
