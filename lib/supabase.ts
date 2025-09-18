@@ -15,7 +15,27 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 })
 
+// Extract the storage path (bucket-relative) from a public Supabase URL
+const extractStoragePathFromUrl = (url: string, bucket: string): string | null => {
+  if (!url) return null
+
+  try {
+    const marker = `/storage/v1/object/public/${bucket}/`
+    const index = url.indexOf(marker)
+    if (index === -1) return null
+
+    const pathWithPossibleQuery = url.slice(index + marker.length)
+    const [path] = pathWithPossibleQuery.split("?")
+
+    return path || null
+  } catch {
+    return null
+  }
+}
+
 // Database types
+export type BeatCategory = "trending" | "featured" | "new_releases" | "latest"
+
 export interface Beat {
   id: string
   title: string
@@ -27,7 +47,8 @@ export interface Beat {
   genre: string
   tags: string[]
   status: "active" | "draft" | "archived"
-  category: "trending" | "featured" | "new_releases" | "latest"
+  category?: BeatCategory
+  categories?: BeatCategory[] | null
   beatstars_link: string
   sales: number
   description: string
@@ -276,6 +297,28 @@ export const beatOperations = {
     } catch (error) {
       console.error("Unexpected error uploading image:", error)
       return null
+    }
+  },
+
+  // Delete image from Supabase Storage using its public URL
+  async deleteImage(publicUrl: string): Promise<boolean> {
+    try {
+      const path = extractStoragePathFromUrl(publicUrl, "beat-covers")
+      if (!path) {
+        return true
+      }
+
+      const { error } = await supabase.storage.from("beat-covers").remove([path])
+
+      if (error) {
+        console.error("Error deleting image:", error)
+        return false
+      }
+
+      return true
+    } catch (error) {
+      console.error("Unexpected error deleting image:", error)
+      return false
     }
   },
 

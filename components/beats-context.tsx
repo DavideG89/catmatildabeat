@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
-import { beatOperations, subscribeToBeats, type Beat } from "@/lib/supabase"
+import { beatOperations, subscribeToBeats, type Beat, type BeatCategory } from "@/lib/supabase"
 
 interface BeatsContextType {
   beats: Beat[]
@@ -14,7 +14,7 @@ interface BeatsContextType {
   refreshBeats: () => Promise<void>
   getActiveBeat: (id: string) => Beat | null
   getActiveBeats: () => Beat[]
-  getBeatsByCategory: (category: "trending" | "featured" | "new_releases" | "latest") => Beat[]
+  getBeatsByCategory: (category: BeatCategory) => Beat[]
 }
 
 const BeatsContext = createContext<BeatsContextType | undefined>(undefined)
@@ -30,7 +30,7 @@ export function BeatsProvider({ children }: { children: ReactNode }) {
     setError(null)
     try {
       const data = await beatOperations.getAll()
-      setBeats(data)
+      setBeats(data.map(normalizeBeat))
     } catch (error) {
       console.error("Error loading beats:", error)
       setError("Failed to load beats")
@@ -51,7 +51,7 @@ export function BeatsProvider({ children }: { children: ReactNode }) {
       switch (payload.eventType) {
         case "INSERT":
           setBeats((prev) => {
-            const newBeat = payload.new as Beat
+            const newBeat = normalizeBeat(payload.new as Beat)
             // Check if beat already exists to prevent duplicates
             if (prev.some((beat) => beat.id === newBeat.id)) {
               return prev
@@ -61,7 +61,9 @@ export function BeatsProvider({ children }: { children: ReactNode }) {
           break
 
         case "UPDATE":
-          setBeats((prev) => prev.map((beat) => (beat.id === payload.new.id ? (payload.new as Beat) : beat)))
+          setBeats((prev) =>
+            prev.map((beat) => (beat.id === payload.new.id ? normalizeBeat(payload.new as Beat) : beat)),
+          )
           break
 
         case "DELETE":
@@ -85,7 +87,7 @@ export function BeatsProvider({ children }: { children: ReactNode }) {
       const newBeat = await beatOperations.create(beatData)
       if (newBeat) {
         // Real-time subscription will handle the state update
-        return newBeat
+        return normalizeBeat(newBeat)
       }
       return null
     } catch (error) {
@@ -101,7 +103,7 @@ export function BeatsProvider({ children }: { children: ReactNode }) {
       const updatedBeat = await beatOperations.update(id, updates)
       if (updatedBeat) {
         // Real-time subscription will handle the state update
-        return updatedBeat
+        return normalizeBeat(updatedBeat)
       }
       return null
     } catch (error) {
@@ -130,7 +132,8 @@ export function BeatsProvider({ children }: { children: ReactNode }) {
   // Search beats
   const searchBeats = async (query: string, filters?: any): Promise<Beat[]> => {
     try {
-      return await beatOperations.search(query, filters)
+      const results = await beatOperations.search(query, filters)
+      return results.map(normalizeBeat)
     } catch (error) {
       console.error("Error searching beats:", error)
       setError("Failed to search beats")
@@ -154,8 +157,8 @@ export function BeatsProvider({ children }: { children: ReactNode }) {
   }
 
   // Get beats by category
-  const getBeatsByCategory = (category: "trending" | "featured" | "new_releases" | "latest"): Beat[] => {
-    return beats.filter((beat) => beat.status === "active" && beat.category === category)
+  const getBeatsByCategory = (category: BeatCategory): Beat[] => {
+    return beats.filter((beat) => beat.status === "active" && beat.categories?.includes(category))
   }
 
   const value: BeatsContextType = {
@@ -173,6 +176,20 @@ export function BeatsProvider({ children }: { children: ReactNode }) {
   }
 
   return <BeatsContext.Provider value={value}>{children}</BeatsContext.Provider>
+}
+
+const normalizeBeat = (beat: Beat): Beat => {
+  const categoryList = Array.isArray(beat.categories)
+    ? (beat.categories.filter(Boolean) as BeatCategory[])
+    : beat.category
+      ? [beat.category]
+      : []
+
+  return {
+    ...beat,
+    categories: categoryList,
+    category: categoryList[0],
+  }
 }
 
 export function useBeats() {

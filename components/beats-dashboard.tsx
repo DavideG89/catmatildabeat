@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, type ChangeEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -11,10 +11,12 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search, MoreHorizontal, Edit, Trash2, Eye, TrendingUp, Music, Star, Clock } from "lucide-react"
 import { useBeats } from "@/components/beats-context"
+import { beatOperations, type BeatCategory } from "@/lib/supabase"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 
-const categories = [
+const categories: { value: BeatCategory; label: string }[] = [
   { value: "trending", label: "Trending" },
   { value: "featured", label: "Featured" },
   { value: "new_releases", label: "New Releases" },
@@ -24,7 +26,7 @@ const categories = [
 export default function BeatsDashboard() {
   const { beats, loading, deleteBeat, updateBeat } = useBeats()
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState<string>("all")
+  const [selectedCategory, setSelectedCategory] = useState<"all" | BeatCategory>("all")
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editingBeat, setEditingBeat] = useState<any>(null)
   const [editForm, setEditForm] = useState({
@@ -33,11 +35,16 @@ export default function BeatsDashboard() {
     genre: "",
     bpm: "",
     key: "",
-    category: "",
+    categories: [] as BeatCategory[],
     beatstarsLink: "",
     tags: [] as string[],
+    coverImage: "",
   })
   const [newEditTag, setNewEditTag] = useState("")
+  const [newCoverFile, setNewCoverFile] = useState<File | null>(null)
+  const [coverPreview, setCoverPreview] = useState<string | null>(null)
+  const [initialCoverImage, setInitialCoverImage] = useState<string>("")
+  const [removeExistingCover, setRemoveExistingCover] = useState(false)
 
   // Filter beats based on search and category
   const filteredBeats = useMemo(() => {
@@ -55,7 +62,7 @@ export default function BeatsDashboard() {
 
     // Filter by category
     if (selectedCategory !== "all") {
-      filtered = filtered.filter((beat) => beat.category === selectedCategory)
+      filtered = filtered.filter((beat) => beatHasCategory(beat, selectedCategory as BeatCategory))
     }
 
     return filtered
@@ -64,10 +71,10 @@ export default function BeatsDashboard() {
   // Group beats by category for overview cards
   const beatsByCategory = useMemo(() => {
     return {
-      trending: beats.filter((beat) => beat.category === "trending" && beat.status === "active"),
-      featured: beats.filter((beat) => beat.category === "featured" && beat.status === "active"),
-      new_releases: beats.filter((beat) => beat.category === "new_releases" && beat.status === "active"),
-      latest: beats.filter((beat) => beat.category === "latest" && beat.status === "active"),
+      trending: beats.filter((beat) => beat.status === "active" && beatHasCategory(beat, "trending")),
+      featured: beats.filter((beat) => beat.status === "active" && beatHasCategory(beat, "featured")),
+      new_releases: beats.filter((beat) => beat.status === "active" && beatHasCategory(beat, "new_releases")),
+      latest: beats.filter((beat) => beat.status === "active" && beatHasCategory(beat, "latest")),
     }
   }, [beats])
 
@@ -89,11 +96,71 @@ export default function BeatsDashboard() {
       genre: beat.genre || "",
       bpm: beat.bpm?.toString() || "",
       key: beat.key || "",
-      category: beat.category || "",
+      categories: getBeatCategories(beat),
       beatstarsLink: beat.beatstars_link || "",
       tags: Array.isArray(beat.tags) ? beat.tags : [],
+      coverImage: beat.cover_image || "",
     })
+    setInitialCoverImage(beat.cover_image || "")
+    setRemoveExistingCover(false)
+    setNewCoverFile(null)
+    setCoverPreview(beat.cover_image || null)
     setIsEditModalOpen(true)
+  }
+
+  const handleCoverImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setNewCoverFile(file)
+    if (initialCoverImage) {
+      setRemoveExistingCover(true)
+    }
+
+    const reader = new FileReader()
+    reader.onload = (loadEvent) => {
+      setCoverPreview((loadEvent.target?.result as string) || null)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleClearNewCover = () => {
+    setNewCoverFile(null)
+    if (initialCoverImage) {
+      setRemoveExistingCover(false)
+      setEditForm((prev) => ({ ...prev, coverImage: initialCoverImage }))
+      setCoverPreview(initialCoverImage)
+    } else {
+      setCoverPreview(null)
+      setEditForm((prev) => ({ ...prev, coverImage: "" }))
+    }
+  }
+
+  const handleRemoveExistingCover = () => {
+    if (!initialCoverImage) return
+
+    setRemoveExistingCover(true)
+    setNewCoverFile(null)
+    setCoverPreview(null)
+    setEditForm((prev) => ({ ...prev, coverImage: "" }))
+  }
+
+  const handleRestoreCover = () => {
+    if (!initialCoverImage) return
+
+    setRemoveExistingCover(false)
+    setNewCoverFile(null)
+    setCoverPreview(initialCoverImage)
+    setEditForm((prev) => ({ ...prev, coverImage: initialCoverImage }))
+  }
+
+  const handleCategoryToggle = (categoryValue: BeatCategory, checked: boolean) => {
+    setEditForm((prev) => ({
+      ...prev,
+      categories: checked
+        ? Array.from(new Set([...prev.categories, categoryValue]))
+        : prev.categories.filter((value) => value !== categoryValue),
+    }))
   }
 
   const handleView = (id: string) => {
@@ -106,18 +173,45 @@ export default function BeatsDashboard() {
     if (!editingBeat) return
 
     try {
+      let coverImageUrl = initialCoverImage
+
+      if (removeExistingCover && initialCoverImage) {
+        const removed = await beatOperations.deleteImage(initialCoverImage)
+        if (!removed) {
+          throw new Error("Failed to delete existing cover image")
+        }
+        coverImageUrl = ""
+      }
+
+      if (newCoverFile) {
+        const uploadedCoverUrl = await beatOperations.uploadImage(newCoverFile, editingBeat.id)
+        if (uploadedCoverUrl) {
+          coverImageUrl = uploadedCoverUrl
+        } else {
+          throw new Error("Failed to upload new cover image")
+        }
+      }
+
+      const selectedCategories = editForm.categories.length > 0 ? editForm.categories : (["latest"] as BeatCategory[])
+
       await updateBeat(editingBeat.id, {
         title: editForm.title,
         producer: editForm.producer,
         genre: editForm.genre,
         bpm: Number.parseInt(editForm.bpm) || 0,
         key: editForm.key,
-        category: editForm.category as "trending" | "featured" | "new_releases" | "latest",
+        category: selectedCategories[0],
+        categories: selectedCategories,
         beatstars_link: editForm.beatstarsLink,
         tags: editForm.tags,
+        cover_image: coverImageUrl,
       })
       setIsEditModalOpen(false)
       setEditingBeat(null)
+      setNewCoverFile(null)
+      setCoverPreview(null)
+      setInitialCoverImage("")
+      setRemoveExistingCover(false)
     } catch (error) {
       console.error("Error updating beat:", error)
     }
@@ -132,38 +226,43 @@ export default function BeatsDashboard() {
       genre: "",
       bpm: "",
       key: "",
-      category: "",
+      categories: [],
       beatstarsLink: "",
       tags: [],
+      coverImage: "",
     })
     setNewEditTag("")
+    setNewCoverFile(null)
+    setCoverPreview(null)
+    setInitialCoverImage("")
+    setRemoveExistingCover(false)
   }
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
-        return <Badge className="bg-green-100 text-green-800">Active</Badge>
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200 transition-colors">Active</Badge>
       case "draft":
-        return <Badge className="bg-yellow-100 text-yellow-800">Draft</Badge>
+        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors">Draft</Badge>
       case "archived":
-        return <Badge className="bg-gray-100 text-gray-800">Archived</Badge>
+        return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors">Archived</Badge>
       default:
-        return <Badge>{status}</Badge>
+        return <Badge className="transition-colors hover:bg-muted">{status}</Badge>
     }
   }
 
-  const getCategoryBadge = (category: string) => {
+  const getCategoryBadge = (category: BeatCategory) => {
     switch (category) {
       case "trending":
-        return <Badge className="bg-orange-100 text-orange-800">Trending</Badge>
+        return <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 transition-colors">Trending</Badge>
       case "featured":
-        return <Badge className="bg-blue-100 text-blue-800">Featured</Badge>
+        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">Featured</Badge>
       case "new_releases":
-        return <Badge className="bg-green-100 text-green-800">New Release</Badge>
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200 transition-colors">New Release</Badge>
       case "latest":
-        return <Badge className="bg-purple-100 text-purple-800">Latest</Badge>
+        return <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 transition-colors">Latest</Badge>
       default:
-        return <Badge>{category}</Badge>
+        return <Badge className="transition-colors hover:bg-muted">{category}</Badge>
     }
   }
 
@@ -256,7 +355,7 @@ export default function BeatsDashboard() {
         </div>
         {/* Mobile: category select */}
         <div className="sm:hidden">
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+          <Select value={selectedCategory} onValueChange={(value) => setSelectedCategory(value as "all" | BeatCategory)}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Filter category" />
             </SelectTrigger>
@@ -271,7 +370,11 @@ export default function BeatsDashboard() {
           </Select>
         </div>
         {/* Desktop: tabs */}
-        <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="hidden sm:block">
+        <Tabs
+          value={selectedCategory}
+          onValueChange={(value) => setSelectedCategory(value as "all" | BeatCategory)}
+          className="hidden sm:block"
+        >
           <TabsList className="grid grid-cols-5">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="trending">Trending</TabsTrigger>
@@ -298,7 +401,7 @@ export default function BeatsDashboard() {
                   <TableHead>Genre</TableHead>
                   <TableHead>BPM</TableHead>
                   <TableHead>Key</TableHead>
-                  <TableHead>Category</TableHead>
+                  <TableHead>Categories</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Sales</TableHead>
                   <TableHead>Actions</TableHead>
@@ -332,7 +435,17 @@ export default function BeatsDashboard() {
                       <TableCell>{beat.genre}</TableCell>
                       <TableCell>{beat.bpm}</TableCell>
                       <TableCell>{beat.key}</TableCell>
-                      <TableCell>{getCategoryBadge(beat.category)}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {getBeatCategories(beat).length > 0 ? (
+                            getBeatCategories(beat).map((category) => (
+                              <span key={`${beat.id}-${category}`}>{getCategoryBadge(category)}</span>
+                            ))
+                          ) : (
+                            <Badge className="bg-muted text-muted-foreground">Unassigned</Badge>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell>{getStatusBadge(beat.status)}</TableCell>
                       <TableCell>{beat.sales || 0}</TableCell>
                       <TableCell>
@@ -379,6 +492,48 @@ export default function BeatsDashboard() {
             <DialogTitle>Edit Beat</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-start gap-3">
+              <Label className="sm:text-right">Cover Image</Label>
+              <div className="sm:col-span-3 space-y-2">
+                <div className="w-32 h-32 rounded-md overflow-hidden bg-muted flex items-center justify-center">
+                  {coverPreview ? (
+                    <img src={coverPreview} alt={editForm.title || "Beat cover"} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-xs text-muted-foreground">No image selected</span>
+                  )}
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Input
+                    id="edit-cover"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverImageChange}
+                    className="max-w-xs"
+                  />
+                  {newCoverFile && (
+                    <Button type="button" variant="outline" onClick={handleClearNewCover}>
+                      Cancel new image
+                    </Button>
+                  )}
+                  {initialCoverImage && !newCoverFile && !removeExistingCover && (
+                    <Button type="button" variant="destructive" onClick={handleRemoveExistingCover}>
+                      Remove current cover
+                    </Button>
+                  )}
+                  {removeExistingCover && initialCoverImage && !newCoverFile && (
+                    <Button type="button" variant="outline" onClick={handleRestoreCover}>
+                      Undo removal
+                    </Button>
+                  )}
+                </div>
+                {newCoverFile && (
+                  <p className="text-xs text-muted-foreground">The new cover will replace the existing image when you save.</p>
+                )}
+                {removeExistingCover && !newCoverFile && initialCoverImage && (
+                  <p className="text-xs text-muted-foreground">The existing cover will be deleted when you save.</p>
+                )}
+              </div>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
               <Label htmlFor="title" className="sm:text-right">
                 Title
@@ -435,25 +590,55 @@ export default function BeatsDashboard() {
                 className="sm:col-span-3"
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
-              <Label htmlFor="category" className="sm:text-right">
-                Category
-              </Label>
-              <Select
-                value={editForm.category}
-                onValueChange={(value) => setEditForm({ ...editForm, category: value })}
-              >
-                <SelectTrigger className="sm:col-span-3">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.value} value={category.value}>
-                      {category.label}
-                    </SelectItem>
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-start gap-3">
+              <Label className="sm:text-right">Categories</Label>
+              <div className="sm:col-span-3 space-y-3">
+                <p className="text-xs text-muted-foreground">Select one or more categories for this beat.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {categories.map((categoryOption) => (
+                    <label
+                      key={categoryOption.value}
+                      htmlFor={`edit-category-${categoryOption.value}`}
+                      className="flex items-start gap-2 rounded-md border border-border bg-background p-3 hover:bg-muted/40 transition-colors cursor-pointer"
+                    >
+                      <Checkbox
+                        id={`edit-category-${categoryOption.value}`}
+                        checked={editForm.categories.includes(categoryOption.value as BeatCategory)}
+                        onCheckedChange={(checked) =>
+                          handleCategoryToggle(categoryOption.value as BeatCategory, Boolean(checked))
+                        }
+                        className="mt-1"
+                      />
+                      <div className="space-y-1">
+                        <span className="text-sm font-medium">{categoryOption.label}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {renderCategoryDescription(categoryOption.value as BeatCategory)}
+                        </span>
+                      </div>
+                    </label>
                   ))}
-                </SelectContent>
-              </Select>
+                </div>
+
+                {editForm.categories.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {editForm.categories.map((categoryValue) => (
+                      <Badge key={categoryValue} variant="secondary" className="flex items-center gap-1">
+                        {categories.find((c) => c.value === categoryValue)?.label || categoryValue}
+                        <span
+                          role="button"
+                          aria-label={`Remove ${categoryValue}`}
+                          className="cursor-pointer"
+                          onClick={() => handleCategoryToggle(categoryValue, false)}
+                        >
+                          ×
+                        </span>
+                      </Badge>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">No categories selected. Default will be Latest.</p>
+                )}
+              </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
               <Label htmlFor="beatstarsLink" className="sm:text-right">
@@ -530,3 +715,26 @@ export default function BeatsDashboard() {
     </div>
   )
 }
+
+const getBeatCategories = (beat: any): BeatCategory[] => {
+  if (Array.isArray(beat?.categories) && beat.categories.length > 0) {
+    return beat.categories as BeatCategory[]
+  }
+  if (beat?.category) {
+    return [beat.category as BeatCategory]
+  }
+  return []
+}
+
+const beatHasCategory = (beat: any, category: BeatCategory): boolean => {
+  return getBeatCategories(beat).includes(category)
+}
+
+const categoryDescriptions: Record<BeatCategory, string> = {
+  trending: "Popular beats getting attention",
+  featured: "Highlighted premium beats",
+  new_releases: "Fresh beats just released",
+  latest: "Recent additions to the catalog",
+}
+
+const renderCategoryDescription = (category: BeatCategory) => categoryDescriptions[category]

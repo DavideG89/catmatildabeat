@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import { useBeats } from "@/components/beats-context"
-import { beatOperations } from "@/lib/supabase"
+import { beatOperations, type BeatCategory } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -61,7 +61,12 @@ const keys = [
   "Bb Minor",
 ]
 
-const categories = [
+const categories: {
+  value: BeatCategory
+  label: string
+  description: string
+  color: string
+}[] = [
   {
     value: "trending",
     label: "Trending",
@@ -105,7 +110,7 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
     bpm: "",
     key: "",
     genre: "",
-    categories: [] as string[], // Multiple categories
+    categories: [] as BeatCategory[], // Multiple categories
     description: "",
     duration: "",
     beatstarsLink: "",
@@ -343,7 +348,7 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
     }))
   }
 
-  const handleCategoryChange = (categoryValue: string, checked: boolean) => {
+  const handleCategoryChange = (categoryValue: BeatCategory, checked: boolean) => {
     setFormData((prev) => ({
       ...prev,
       categories: checked ? [...prev.categories, categoryValue] : prev.categories.filter((c) => c !== categoryValue),
@@ -419,6 +424,9 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
       }
 
       // Create beat object - use first selected category or default to "latest"
+      const selectedCategories: BeatCategory[] =
+        formData.categories.length > 0 ? formData.categories : (["latest"] as BeatCategory[])
+
       const beatData: any = {
         title: formData.title,
         producer: formData.producer,
@@ -429,10 +437,8 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
         genre: formData.genre,
         tags: formData.tags,
         status: "active" as const,
-        category:
-          formData.categories.length > 0
-            ? (formData.categories[0] as "trending" | "featured" | "new_releases" | "latest")
-            : "latest",
+        category: selectedCategories[0] as "trending" | "featured" | "new_releases" | "latest",
+        categories: selectedCategories,
         beatstars_link: formData.beatstarsLink || "https://beatstars.com/catmatildabeat",
         sales: 0,
         description: formData.description,
@@ -697,7 +703,7 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
                     <Checkbox
                       id={category.value}
                       checked={formData.categories.includes(category.value)}
-                      onCheckedChange={(checked) => handleCategoryChange(category.value, checked as boolean)}
+                      onCheckedChange={(checked) => handleCategoryChange(category.value as BeatCategory, checked as boolean)}
                       className="mt-1"
                     />
                     <div className="flex-1 min-w-0">
@@ -726,7 +732,7 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
                     {category?.label}
                     <X
                       className="h-3 w-3 cursor-pointer hover:text-destructive"
-                      onClick={() => handleCategoryChange(categoryValue, false)}
+                      onClick={() => handleCategoryChange(categoryValue as BeatCategory, false)}
                     />
                   </Badge>
                 )

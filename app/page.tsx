@@ -168,10 +168,10 @@ export default function Home() {
                     className="bg-brand-600 hover:bg-brand-500 text-base md:text-lg px-5 md:px-7 transition-all"
                     onClick={handleBrowseBeats}
                   >
-                    Browse Beats on BeatStars
+                    <Link href="/beats">Browse Beats marketplace</Link>
                   </Button>
                   <Button size="lg" variant="outline" className="text-base md:text-lg px-5 md:px-7" asChild>
-                    <Link href="/beats">Preview Beats</Link>
+                    <Link href="https://www.beatstars.com/catmatildabeat">Brows on Beatstar</Link>
                   </Button>
                 </div>
               </motion.div>
@@ -382,13 +382,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <h2 className="text-2xl md:text-3xl font-bold font-heading">Popular Genres</h2>
-            <Button
-              variant="ghost"
-              className="text-brand-500 hover:text-brand-400 text-sm px-0 h-auto"
-              onClick={handleBrowseBeats}
-            >
-              View All <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
+          
           </div>
           <PopularGenres />
         </div>

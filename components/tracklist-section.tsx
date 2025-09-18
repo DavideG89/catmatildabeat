@@ -174,13 +174,13 @@ export default function TracklistSection() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.5 }}
         >
-          <Button
+          {/* <Button
             variant="outline"
-            className="border-brand-600 text-brand-500 hover:bg-brand-500/10 bg-transparent"
+            
             onClick={() => window.open("https://beatstars.com/catmatildabeat", "_blank")}
           >
             View All Beats on BeatStars
-          </Button>
+          </Button> */}
         </motion.div>
       </div>
     </section>
