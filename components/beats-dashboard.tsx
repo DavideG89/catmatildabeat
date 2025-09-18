@@ -15,6 +15,7 @@ import { beatOperations, type BeatCategory } from "@/lib/supabase"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import { cn } from "@/lib/utils"
 
 const categories: { value: BeatCategory; label: string }[] = [
   { value: "trending", label: "Trending" },
@@ -45,6 +46,9 @@ export default function BeatsDashboard() {
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
   const [initialCoverImage, setInitialCoverImage] = useState<string>("")
   const [removeExistingCover, setRemoveExistingCover] = useState(false)
+
+  const actionMenuItemClasses =
+    "focus:bg-brand-100 focus:text-brand-900 data-[highlighted]:bg-brand-100 data-[highlighted]:text-brand-900"
 
   // Filter beats based on search and category
   const filteredBeats = useMemo(() => {
@@ -161,6 +165,19 @@ export default function BeatsDashboard() {
         ? Array.from(new Set([...prev.categories, categoryValue]))
         : prev.categories.filter((value) => value !== categoryValue),
     }))
+  }
+
+  const handleAddTag = () => {
+    const nextTag = newEditTag.trim()
+    if (!nextTag) return
+
+    setEditForm((prev) => {
+      if (prev.tags.includes(nextTag)) {
+        return prev
+      }
+      return { ...prev, tags: [...prev.tags, nextTag] }
+    })
+    setNewEditTag("")
   }
 
   const handleView = (id: string) => {
@@ -456,20 +473,24 @@ export default function BeatsDashboard() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleView(beat.id)}>
+                            <DropdownMenuItem className={actionMenuItemClasses} onClick={() => handleView(beat.id)}>
                               <Eye className="h-4 w-4 mr-2" />
                               View
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleEdit(beat)}>
+                            <DropdownMenuItem className={actionMenuItemClasses} onClick={() => handleEdit(beat)}>
                               <Edit className="h-4 w-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem
+                              className={actionMenuItemClasses}
                               onClick={() => handleStatusChange(beat.id, beat.status === "active" ? "draft" : "active")}
                             >
                               {beat.status === "active" ? "Set to Draft" : "Set to Active"}
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDelete(beat.id)} className="text-red-600">
+                            <DropdownMenuItem
+                              className={cn(actionMenuItemClasses, "text-red-600 focus:text-red-700 data-[highlighted]:text-red-700")}
+                              onClick={() => handleDelete(beat.id)}
+                            >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Delete
                             </DropdownMenuItem>
@@ -487,14 +508,14 @@ export default function BeatsDashboard() {
 
       {/* Edit Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[720px]">
           <DialogHeader>
             <DialogTitle>Edit Beat</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-4 items-start gap-3">
-              <Label className="sm:text-right">Cover Image</Label>
-              <div className="sm:col-span-3 space-y-2">
+          <div className="space-y-5 py-4 max-h-[70vh] overflow-y-auto">
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">Cover Image</Label>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
                 <div className="w-32 h-32 rounded-md overflow-hidden bg-muted flex items-center justify-center">
                   {coverPreview ? (
                     <img src={coverPreview} alt={editForm.title || "Beat cover"} className="w-full h-full object-cover" />
@@ -502,7 +523,7 @@ export default function BeatsDashboard() {
                     <span className="text-xs text-muted-foreground">No image selected</span>
                   )}
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="space-y-2">
                   <Input
                     id="edit-cover"
                     type="file"
@@ -510,198 +531,177 @@ export default function BeatsDashboard() {
                     onChange={handleCoverImageChange}
                     className="max-w-xs"
                   />
+                  <div className="flex flex-wrap items-center gap-2">
+                    {newCoverFile && (
+                      <Button type="button" variant="outline" onClick={handleClearNewCover}>
+                        Cancel new image
+                      </Button>
+                    )}
+                    {initialCoverImage && !newCoverFile && !removeExistingCover && (
+                      <Button type="button" variant="destructive" onClick={handleRemoveExistingCover}>
+                        Remove current cover
+                      </Button>
+                    )}
+                    {removeExistingCover && initialCoverImage && !newCoverFile && (
+                      <Button type="button" variant="outline" onClick={handleRestoreCover}>
+                        Undo removal
+                      </Button>
+                    )}
+                  </div>
                   {newCoverFile && (
-                    <Button type="button" variant="outline" onClick={handleClearNewCover}>
-                      Cancel new image
-                    </Button>
+                    <p className="text-xs text-muted-foreground">The new cover will replace the existing image when you save.</p>
                   )}
-                  {initialCoverImage && !newCoverFile && !removeExistingCover && (
-                    <Button type="button" variant="destructive" onClick={handleRemoveExistingCover}>
-                      Remove current cover
-                    </Button>
-                  )}
-                  {removeExistingCover && initialCoverImage && !newCoverFile && (
-                    <Button type="button" variant="outline" onClick={handleRestoreCover}>
-                      Undo removal
-                    </Button>
+                  {removeExistingCover && !newCoverFile && initialCoverImage && (
+                    <p className="text-xs text-muted-foreground">The existing cover will be deleted when you save.</p>
                   )}
                 </div>
-                {newCoverFile && (
-                  <p className="text-xs text-muted-foreground">The new cover will replace the existing image when you save.</p>
-                )}
-                {removeExistingCover && !newCoverFile && initialCoverImage && (
-                  <p className="text-xs text-muted-foreground">The existing cover will be deleted when you save.</p>
-                )}
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
-              <Label htmlFor="title" className="sm:text-right">
-                Title
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="title">Title</Label>
               <Input
                 id="title"
                 value={editForm.title}
                 onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                className="sm:col-span-3"
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
-              <Label htmlFor="producer" className="sm:text-right">
-                Artist
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="producer">Artist</Label>
               <Input
                 id="producer"
                 value={editForm.producer}
                 onChange={(e) => setEditForm({ ...editForm, producer: e.target.value })}
-                className="sm:col-span-3"
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
-              <Label htmlFor="genre" className="sm:text-right">
-                Genre
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="genre">Genre</Label>
               <Input
                 id="genre"
                 value={editForm.genre}
                 onChange={(e) => setEditForm({ ...editForm, genre: e.target.value })}
-                className="sm:col-span-3"
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
-              <Label htmlFor="bpm" className="sm:text-right">
-                BPM
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="bpm">BPM</Label>
               <Input
                 id="bpm"
                 type="number"
                 value={editForm.bpm}
                 onChange={(e) => setEditForm({ ...editForm, bpm: e.target.value })}
-                className="sm:col-span-3"
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
-              <Label htmlFor="key" className="sm:text-right">
-                Key
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="key">Key</Label>
               <Input
                 id="key"
                 value={editForm.key}
                 onChange={(e) => setEditForm({ ...editForm, key: e.target.value })}
-                className="sm:col-span-3"
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-4 items-start gap-3">
-              <Label className="sm:text-right">Categories</Label>
-              <div className="sm:col-span-3 space-y-3">
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">Categories</Label>
                 <p className="text-xs text-muted-foreground">Select one or more categories for this beat.</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {categories.map((categoryOption) => (
-                    <label
-                      key={categoryOption.value}
-                      htmlFor={`edit-category-${categoryOption.value}`}
-                      className="flex items-start gap-2 rounded-md border border-border bg-background p-3 hover:bg-muted/40 transition-colors cursor-pointer"
-                    >
-                      <Checkbox
-                        id={`edit-category-${categoryOption.value}`}
-                        checked={editForm.categories.includes(categoryOption.value as BeatCategory)}
-                        onCheckedChange={(checked) =>
-                          handleCategoryToggle(categoryOption.value as BeatCategory, Boolean(checked))
-                        }
-                        className="mt-1"
-                      />
-                      <div className="space-y-1">
-                        <span className="text-sm font-medium">{categoryOption.label}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {renderCategoryDescription(categoryOption.value as BeatCategory)}
-                        </span>
-                      </div>
-                    </label>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {categories.map((categoryOption) => (
+                  <label
+                    key={categoryOption.value}
+                    htmlFor={`edit-category-${categoryOption.value}`}
+                    className="flex items-start gap-2 rounded-md border border-border bg-background p-3 hover:bg-muted/40 transition-colors cursor-pointer"
+                  >
+                    <Checkbox
+                      id={`edit-category-${categoryOption.value}`}
+                      checked={editForm.categories.includes(categoryOption.value as BeatCategory)}
+                      onCheckedChange={(checked) =>
+                        handleCategoryToggle(categoryOption.value as BeatCategory, Boolean(checked))
+                      }
+                      className="mt-1"
+                    />
+                    <div className="space-y-1">
+                      <span className="text-sm font-medium">{categoryOption.label}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {renderCategoryDescription(categoryOption.value as BeatCategory)}
+                      </span>
+                    </div>
+                  </label>
+                ))}
+              </div>
+
+              {editForm.categories.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {editForm.categories.map((categoryValue) => (
+                    <Badge key={categoryValue} variant="secondary" className="flex items-center gap-1">
+                      {categories.find((c) => c.value === categoryValue)?.label || categoryValue}
+                      <span
+                        role="button"
+                        aria-label={`Remove ${categoryValue}`}
+                        className="cursor-pointer"
+                        onClick={() => handleCategoryToggle(categoryValue, false)}
+                      >
+                        ×
+                      </span>
+                    </Badge>
                   ))}
                 </div>
-
-                {editForm.categories.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {editForm.categories.map((categoryValue) => (
-                      <Badge key={categoryValue} variant="secondary" className="flex items-center gap-1">
-                        {categories.find((c) => c.value === categoryValue)?.label || categoryValue}
-                        <span
-                          role="button"
-                          aria-label={`Remove ${categoryValue}`}
-                          className="cursor-pointer"
-                          onClick={() => handleCategoryToggle(categoryValue, false)}
-                        >
-                          ×
-                        </span>
-                      </Badge>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-muted-foreground">No categories selected. Default will be Latest.</p>
-                )}
-              </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">No categories selected. Default will be Latest.</p>
+              )}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-3">
-              <Label htmlFor="beatstarsLink" className="sm:text-right">
-                BeatStars Link
-              </Label>
+            <div className="space-y-2">
+              <Label htmlFor="beatstarsLink">BeatStars Link</Label>
               <Input
                 id="beatstarsLink"
                 value={editForm.beatstarsLink}
                 onChange={(e) => setEditForm({ ...editForm, beatstarsLink: e.target.value })}
                 placeholder="https://beatstars.com/your-beat"
-                className="sm:col-span-3"
               />
             </div>
 
             {/* Tags editor */}
-            <div className="grid grid-cols-1 sm:grid-cols-4 items-start gap-3">
-              <Label className="sm:text-right">Tags</Label>
-              <div className="sm:col-span-3 space-y-2">
-                <div className="flex gap-2">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Tags</Label>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <div className="relative w-full sm:max-w-sm">
                   <Input
                     value={newEditTag}
                     onChange={(e) => setNewEditTag(e.target.value)}
                     placeholder="Add a tag"
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        if (newEditTag.trim() && !editForm.tags.includes(newEditTag.trim())) {
-                          setEditForm({ ...editForm, tags: [...editForm.tags, newEditTag.trim()] })
-                          setNewEditTag("")
-                        }
+                      if (e.key === "Enter") {
+                        e.preventDefault()
+                        handleAddTag()
                       }
                     }}
+                    className="pr-24"
                   />
                   <Button
                     type="button"
-                    onClick={() => {
-                      if (newEditTag.trim() && !editForm.tags.includes(newEditTag.trim())) {
-                        setEditForm({ ...editForm, tags: [...editForm.tags, newEditTag.trim()] })
-                        setNewEditTag("")
-                      }
-                    }}
+                    size="sm"
+                    onClick={handleAddTag}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full px-3 text-sm"
                   >
                     Add
                   </Button>
                 </div>
-                {editForm.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {editForm.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                        {tag}
-                        <span
-                          role="button"
-                          aria-label={`Remove ${tag}`}
-                          className="ml-1 cursor-pointer"
-                          onClick={() => setEditForm({ ...editForm, tags: editForm.tags.filter((t) => t !== tag) })}
-                        >
-                          ×
-                        </span>
-                      </Badge>
-                    ))}
-                  </div>
-                )}
               </div>
+              {editForm.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {editForm.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                      {tag}
+                      <span
+                        role="button"
+                        aria-label={`Remove ${tag}`}
+                        className="ml-1 cursor-pointer"
+                        onClick={() => setEditForm({ ...editForm, tags: editForm.tags.filter((t) => t !== tag) })}
+                      >
+                        ×
+                      </span>
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className="flex justify-end space-x-2">
