@@ -110,7 +110,7 @@ export default function YouTubeSection() {
               <h2 className="text-2xl md:text-3xl font-bold font-heading text-card-foreground">Follow My Journey</h2>
             </div>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Get behind-the-scenes content, beat breakdowns, and exclusive previews on my YouTube channel
+            New sounds, new energy, every week on my YouTube channel
             </p>
           </motion.div>
 
