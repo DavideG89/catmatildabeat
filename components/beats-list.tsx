@@ -36,14 +36,10 @@ export default function BeatsList({ searchQuery = "", filters }: BeatsListProps)
 
         // Apply sorting
         switch (sortBy) {
-          case "price-low":
-            searchResults = searchResults.sort((a, b) => (a.price || 0) - (b.price || 0))
-            break
-          case "price-high":
-            searchResults = searchResults.sort((a, b) => (b.price || 0) - (a.price || 0))
-            break
-          case "popular":
-            searchResults = searchResults.sort((a, b) => (b.sales || 0) - (a.sales || 0))
+          case "title-asc":
+            searchResults = searchResults.sort((a, b) =>
+              (a.title || "").localeCompare(b.title || "", undefined, { sensitivity: "base" }),
+            )
             break
           case "bpm-low":
             searchResults = searchResults.sort((a, b) => a.bpm - b.bpm)
@@ -93,9 +89,7 @@ export default function BeatsList({ searchQuery = "", filters }: BeatsListProps)
           className="bg-zinc-900 text-zinc-300 border border-zinc-700 px-3 pr-8 h-10 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500 hover:bg-zinc-800 text-sm w-full sm:w-auto min-w-[180px] sm:min-w-[220px]"
         >
           <option value="newest">Sort by: Newest</option>
-          <option value="price-low">Sort by: Price (Low to High)</option>
-          <option value="price-high">Sort by: Price (High to Low)</option>
-          <option value="popular">Sort by: Most Popular</option>
+          <option value="title-asc">Sort by: Title (A to Z)</option>
           <option value="bpm-low">Sort by: BPM (Low to High)</option>
           <option value="bpm-high">Sort by: BPM (High to Low)</option>
         </select>
