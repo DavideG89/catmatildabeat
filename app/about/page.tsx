@@ -5,13 +5,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Music, Headphones, Mic, Users, Award, Clock } from "lucide-react"
 
 export default function AboutPage() {
-  const stats = [
-    { icon: <Music className="h-6 w-6" />, label: "Beats Produced", value: "500+" },
-    { icon: <Users className="h-6 w-6" />, label: "Happy Artists", value: "200+" },
-    { icon: <Award className="h-6 w-6" />, label: "Years Experience", value: "8+" },
-    { icon: <Clock className="h-6 w-6" />, label: "Hours in Studio", value: "10,000+" },
-  ]
-
   const services = [
     {
       icon: <Headphones className="h-8 w-8 text-brand-500" />,
@@ -72,21 +65,6 @@ They say a black cat crossing your path brings bad luck…well, this one decided
                   className="w-full h-full object-cover rounded-2xl aspect-video md:aspect-[4/3]" />
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="mb-12 md:mb-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {stats.map((stat, index) => (
-            <Card key={index} className="text-center">
-              <CardContent className="p-4 md:p-6">
-                <div className="flex justify-center mb-3 text-brand-500">{stat.icon}</div>
-                <div className="text-2xl md:text-3xl font-bold mb-1">{stat.value}</div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
-              </CardContent>
-            </Card>
-          ))}
         </div>
       </section>
 

@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Menu, X, Music } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -80,13 +79,6 @@ export default function Header() {
             </Link>
           </nav>
 
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-3 z-10">
-            <Button variant="ghost" className="text-muted-foreground hover:text-brand-400 transition-colors" asChild>
-              <Link href="/login">Login</Link>
-            </Button>
-          </div>
-
           {/* Mobile Menu Button */}
           <button
             className="md:hidden text-brand-600 hover:text-brand-500 z-10 p-2"
@@ -146,21 +138,6 @@ export default function Header() {
                     </Link>
                   </motion.div>
                 ))}
-                <motion.div
-                  variants={{
-                    hidden: { opacity: 0, x: -20 },
-                    visible: { opacity: 1, x: 0 },
-                  }}
-                  className="pt-2"
-                >
-                  <Link
-                    href="/login"
-                    className="text-sm block py-2 text-black"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Login
-                  </Link>
-                </motion.div>
               </motion.nav>
             </div>
           </motion.div>

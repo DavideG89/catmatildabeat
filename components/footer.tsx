@@ -10,17 +10,16 @@ export default function Footer() {
             <div className="flex items-center space-x-2 mb-4">
               <img src="/img/logo_Cat_Matilda.png" alt="Cat Matilda Logo" className="h-8 w-auto md:h-10" />
             </div>
-            <p className="text-sm text-muted-foreground mb-4">Premium beats for producers and artists.</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              Feel the Beat and get Inspired. No curse, just beat.
+            </p>
             <div className="flex space-x-4">
-              <Link href="#" className="text-foreground hover:text-brand-400 transition-colors">
+              <Link href="https://www.instagram.com/catmatildabeat/" className="text-foreground hover:text-brand-400 transition-colors" target="_blank" rel="noopener noreferrer">
                 <Instagram className="h-5 w-5" />
                 <span className="sr-only">Instagram</span>
               </Link>
-              <Link href="#" className="text-foreground hover:text-brand-400 transition-colors">
-                <Twitter className="h-5 w-5" />
-                <span className="sr-only">Twitter</span>
-              </Link>
-              <Link href="#" className="text-foreground hover:text-brand-400 transition-colors">
+
+              <Link href="https://www.youtube.com/channel/UCKpPHRtsxkhHeao7ttkyb4A" className="text-foreground hover:text-brand-400 transition-colors" target="_blank" rel="noopener noreferrer">
                 <Youtube className="h-5 w-5" />
                 <span className="sr-only">YouTube</span>
               </Link>
@@ -74,14 +73,6 @@ export default function Footer() {
               <li>
                 <Link href="/refunds" className="text-foreground hover:text-brand-400 transition-colors">
                   Refund Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/dashboard"
-                  className="text-foreground hover:text-brand-400 transition-colors text-xs"
-                >
-                  Producer Login
                 </Link>
               </li>
             </ul>
