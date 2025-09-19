@@ -314,7 +314,7 @@ export default function Home() {
                 <img
                   src="/img/loop_cat.gif"
                   alt="Studio preview"
-                  className="w-full h-full object-cover aspect-video md:aspect-[4/3]"
+                  className="w-full h-auto max-h-[480px] object-contain sm:h-full sm:max-h-none sm:object-cover sm:aspect-video md:aspect-[4/3]"
                 />
               </div>
             </div>
