@@ -68,7 +68,8 @@ They say a black cat crossing your path brings bad luck…well, this one decided
           </div>
           <div className="relative">
             <div className="aspect-square bg-gradient-to-br from-brand-500/20 to-accent2-500/20 rounded-2xl flex items-center justify-center">
-              <Music className="h-24 w-24 text-brand-500" />
+              <img src="/img/CatMatildaStudio.jpg" alt="Studio preview"
+                  className="w-full h-full object-cover rounded-2xl aspect-video md:aspect-[4/3]" />
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter, Gafata } from "next/font/google"
 import "./globals.css"
+import Script from "next/script"
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
@@ -23,9 +24,53 @@ const gafata = Gafata({
 })
 
 export const metadata: Metadata = {
-  title: "Cat Matilda Beat | Premium Beats & Sample Packs",
-  description: "High-quality beats and sample packs for producers and artists",
-    generator: 'v0.app'
+  metadataBase: new URL("https://catmatildabeat.com"),
+  title: {
+    default: "Cat Matilda Beat | Feel the Beat and get Inspired.",
+    template: "%s | Cat Matilda Beat",
+  },
+  description: "Explore CatMatilda Beat | A marketplace for every genre and project. Unique beats to buy or free. No curse, just beats.",
+  keywords: [
+    "Cat Matilda Beat",
+    "premium beats",
+    "beat marketplace",
+    "beat store",
+    "original beats",
+    "music production",
+    "mixing % mastering",
+    "instrumental beats",
+    "type beats",
+    "beats genres",
+    "exclusive beats",
+    "royalty-free beats",
+    "custom beats",
+  ],
+  authors: [{ name: "Cat Matilda Beat" }],
+  creator: "Cat Matilda Beat",
+  publisher: "Cat Matilda Beat",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Cat Matilda Beat | No curse, just beats.",
+    description: "Discover inspiring beats, tailor-made productions, and professional mixing services by Cat Matilda Beat.",
+    url: "https://catmatildabeat.com",
+    siteName: "Cat Matilda Beat",
+    locale: "it_IT",
+    type: "website",
+    images: [
+      {
+        url: "/img/CatMatildaStudio.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Cat Matilda Beat studio setup",
+      },
+    ],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function RootLayout({
@@ -38,6 +83,16 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${gafata.variable} font-sans text-foreground min-h-screen flex flex-col`}
       >
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-CNGZHHYF1Y" strategy="afterInteractive" />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || []
+            function gtag(){dataLayer.push(arguments)}
+            gtag('js', new Date())
+
+            gtag('config', 'G-CNGZHHYF1Y')
+          `}
+        </Script>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <BeatsProvider>
             <AudioPlayerProvider>

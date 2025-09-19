@@ -166,7 +166,6 @@ export default function Home() {
                   <Button
                     size="lg"
                     className="bg-brand-600 hover:bg-brand-500 text-base md:text-lg px-5 md:px-7 transition-all"
-                    onClick={handleBrowseBeats}
                   >
                     <Link href="/beats">Browse Beats marketplace</Link>
                   </Button>
@@ -311,9 +310,9 @@ export default function Home() {
 
             {/* Right: Visual panel */}
             <div className="order-1 md:order-2 w-full">
-              <div className="relative rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/10 bg-white/40 dark:bg-zinc-900/40">
+              <div className="relative">
                 <img
-                  src="/img/CatMatildaStudio.jpg"
+                  src="/img/loop_cat.gif"
                   alt="Studio preview"
                   className="w-full h-full object-cover aspect-video md:aspect-[4/3]"
                 />
