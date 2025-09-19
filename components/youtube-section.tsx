@@ -148,9 +148,6 @@ export default function YouTubeSection() {
                     </div>
                     <div className="text-center">
                       {isLoadingStats && <p className="text-xs text-muted-foreground">Fetching the latest channel stats…</p>}
-                      {!isLoadingStats && !statsError && channelStats && (
-                        <p className="text-xs text-muted-foreground">Updated automatically with live YouTube data.</p>
-                      )}
                       {statsError && <p className="text-xs text-red-500">{statsError}</p>}
                     </div>
                     <Button
