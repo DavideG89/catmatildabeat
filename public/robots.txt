@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /dashboard
 Disallow: /login
-Sitemap: https://catmatildabeat.com/sitemap.xml
+Sitemap: https://www.catmatildabeat.com/sitemap.xml

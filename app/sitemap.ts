@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 
-const SITE_URL = "https://catmatildabeat.com"
+const SITE_URL = "https://www.catmatildabeat.com"
 const LAST_MODIFIED = new Date("2025-01-01T00:00:00Z")
 
 const genreNames = [
