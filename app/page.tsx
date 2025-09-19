@@ -408,12 +408,12 @@ export default function Home() {
               {
                 icon: <Play className="h-8 w-8 text-brand-600" />,
                 title: "Browse & Listen",
-                description: "Explore our catalog of premium beats. Preview tracks before you buy.",
+                description: "Explore our catalog of cat beats and audition tracks before making your choice.",
               },
               {
                 icon: <Music className="h-8 w-8 text-brand-600" />,
                 title: "Choose Your License",
-                description: "Select the license that fits your needs, from basic to exclusive rights.",
+                description: "On BeatStars, select the licensing option that aligns with your creative or commercial needs.",
               },
               {
                 icon: <Clock className="h-8 w-8 text-brand-600" />,

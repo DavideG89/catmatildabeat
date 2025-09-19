@@ -70,11 +70,7 @@ export default function Footer() {
                   License Information
                 </Link>
               </li>
-              <li>
-                <Link href="/refunds" className="text-foreground hover:text-brand-400 transition-colors">
-                  Refund Policy
-                </Link>
-              </li>
+
             </ul>
           </div>
 
