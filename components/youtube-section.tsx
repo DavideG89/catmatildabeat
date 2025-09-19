@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Youtube, Play, Bell, Users, Video } from "lucide-react"
@@ -8,6 +8,62 @@ import { motion } from "framer-motion"
 
 export default function YouTubeSection() {
   const [isSubscribed, setIsSubscribed] = useState(false)
+  const [channelStats, setChannelStats] = useState<{
+    subscriberCount: number
+    videoCount: number
+    viewCount: number
+  } | null>(null)
+  const [isLoadingStats, setIsLoadingStats] = useState(true)
+  const [statsError, setStatsError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let isMounted = true
+
+    const fetchStats = async (withLoading: boolean) => {
+      if (withLoading) {
+        setIsLoadingStats(true)
+      }
+
+      try {
+        const response = await fetch("/api/youtube-stats")
+        const data = await response.json()
+
+        if (!response.ok) {
+          const errorMessage = data?.error ? `${data.error}` : `Request failed with status ${response.status}`
+          throw new Error(errorMessage)
+        }
+
+        if (!isMounted) return
+
+        setChannelStats({
+          subscriberCount: Number(data?.subscriberCount ?? 0),
+          videoCount: Number(data?.videoCount ?? 0),
+          viewCount: Number(data?.viewCount ?? 0),
+        })
+        setStatsError(null)
+      } catch (error) {
+        console.error("Unable to load YouTube stats", error)
+        if (isMounted) {
+          const message = error instanceof Error ? error.message : "Unable to load latest channel stats."
+          setStatsError(message)
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingStats(false)
+        }
+      }
+    }
+
+    fetchStats(true)
+    const interval = setInterval(() => fetchStats(false), 1000 * 60 * 30)
+
+    return () => {
+      isMounted = false
+      clearInterval(interval)
+    }
+  }, [])
+
+  const formatNumber = (value: number) => new Intl.NumberFormat("en-US").format(value)
 
   const handleSubscribe = () => {
     window.open("https://www.youtube.com/channel/UCKpPHRtsxkhHeao7ttkyb4A?sub_confirmation=1", "_blank")
@@ -18,11 +74,19 @@ export default function YouTubeSection() {
     window.open("https://www.youtube.com/channel/UCKpPHRtsxkhHeao7ttkyb4A", "_blank")
   }
 
-  const stats = [
+  const fallbackStats = [
     { icon: <Users className="h-5 w-5" />, label: "Subscribers", value: "2.5K+" },
     { icon: <Video className="h-5 w-5" />, label: "Videos", value: "50+" },
     { icon: <Play className="h-5 w-5" />, label: "Total Views", value: "100K+" },
   ]
+
+  const liveStats = channelStats
+    ? [
+        { icon: <Users className="h-5 w-5" />, label: "Subscribers", value: formatNumber(channelStats.subscriberCount) },
+        { icon: <Video className="h-5 w-5" />, label: "Videos", value: formatNumber(channelStats.videoCount) },
+        { icon: <Play className="h-5 w-5" />, label: "Total Views", value: formatNumber(channelStats.viewCount) },
+      ]
+    : null
 
   return (
     <section
@@ -74,13 +138,20 @@ export default function YouTubeSection() {
                   </div>
                   <div className="p-4 md:p-6">
                     <div className="grid grid-cols-3 gap-4 mb-4">
-                      {stats.map((stat, index) => (
+                      {(liveStats ?? fallbackStats).map((stat, index) => (
                         <div key={index} className="text-center">
                           <div className="flex justify-center mb-2 text-red-500">{stat.icon}</div>
                           <div className="font-bold text-sm md:text-base text-card-foreground">{stat.value}</div>
                           <div className="text-xs text-muted-foreground">{stat.label}</div>
                         </div>
                       ))}
+                    </div>
+                    <div className="text-center">
+                      {isLoadingStats && <p className="text-xs text-muted-foreground">Fetching the latest channel stats…</p>}
+                      {!isLoadingStats && !statsError && channelStats && (
+                        <p className="text-xs text-muted-foreground">Updated automatically with live YouTube data.</p>
+                      )}
+                      {statsError && <p className="text-xs text-red-500">{statsError}</p>}
                     </div>
                     <Button
                       onClick={handleWatchVideos}
@@ -134,7 +205,7 @@ export default function YouTubeSection() {
                   {isSubscribed ? "Subscribed!" : "Subscribe Now"}
                 </Button>
                 <p className="text-center text-xs text-muted-foreground">
-                  Join 2.5K+ producers and artists following my journey
+                  Join {channelStats ? formatNumber(channelStats.subscriberCount) : "2.5K+"} producers and artists following my journey
                 </p>
               </div>
             </motion.div>

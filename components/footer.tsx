@@ -1,7 +1,17 @@
+"use client"
+
+import { useState, type FormEvent } from "react"
 import Link from "next/link"
-import { Instagram, Twitter, Youtube } from "lucide-react"
+import { Instagram, Youtube } from "lucide-react"
 
 export default function Footer() {
+  const [showNewsletterNotice, setShowNewsletterNotice] = useState(false)
+
+  const handleNewsletterSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setShowNewsletterNotice(true)
+  }
+
   return (
     <footer className="bg-card border-t border-border py-8 md:py-12">
       <div className="container mx-auto px-4">
@@ -79,7 +89,7 @@ export default function Footer() {
             <p className="text-sm text-foreground mb-4">
               Subscribe to get updates on new beats and exclusive offers.
             </p>
-            <form className="flex flex-col sm:flex-row gap-2">
+            <form className="flex flex-col sm:flex-row gap-2" onSubmit={handleNewsletterSubmit}>
               <input
                 type="email"
                 placeholder="Your email"
@@ -92,6 +102,11 @@ export default function Footer() {
                 Subscribe
               </button>
             </form>
+            {showNewsletterNotice && (
+              <p className="text-xs text-muted-foreground mt-2">
+                Newsletter signup is currently unavailable.
+              </p>
+            )}
           </div>
         </div>
 
