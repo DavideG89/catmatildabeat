@@ -11,25 +11,28 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Upload, X, Plus, Loader2, CheckCircle, AlertCircle, Music, Play, Pause } from "lucide-react"
+import { Upload, X, Plus, Loader2, CheckCircle, AlertCircle, Music, Play, Pause, ChevronDown } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
-const genres = [
-  "Trap",
-  "Hip Hop",
-  "R&B",
-  "Drill",
-  "Pop",
-  "Afrobeat",
+const genreOptions = [
+  "Alternative HipHop",
+  "Alternative Rock",
+  "Ambient",
+  "Ambient Electronic",
+  "Boom Bap / Old school",
+  "Cinematic Emotional",
   "Electronic",
+  "Funk",
+  "FunkRock",
+  "HipHop",
+  "Indie",
   "Lo-Fi",
-  "UK Drill",
+  "Rap",
+  "Rock",
   "Synthwave",
-  "Jazz",
-  "Gospel",
-  "Boom Bap",
-  "Reggaeton",
+  "Trip Hop",
 ]
 
 const keys = [
@@ -110,6 +113,7 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
     bpm: "",
     key: "",
     genre: "",
+    genres: [] as string[],
     categories: [] as BeatCategory[], // Multiple categories
     description: "",
     duration: "",
@@ -130,6 +134,26 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleGenreToggle = (genre: string, isSelected: boolean) => {
+    setFormData((prev) => {
+      const current = new Set(prev.genres)
+
+      if (isSelected) {
+        current.add(genre)
+      } else {
+        current.delete(genre)
+      }
+
+      const orderedSelection = genreOptions.filter((option) => current.has(option))
+
+      return {
+        ...prev,
+        genres: orderedSelection,
+        genre: orderedSelection[0] ?? "",
+      }
+    })
   }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -386,7 +410,7 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
 
     try {
       // Validate required fields
-      if (!formData.title || !formData.bpm || !formData.key || !formData.genre) {
+      if (!formData.title || !formData.bpm || !formData.key || formData.genres.length === 0) {
         throw new Error("Please fill in all required fields")
       }
 
@@ -427,6 +451,10 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
       const selectedCategories: BeatCategory[] =
         formData.categories.length > 0 ? formData.categories : (["latest"] as BeatCategory[])
 
+      const [primaryGenre, ...secondaryGenres] = formData.genres
+      const autoGenreTags = secondaryGenres.filter(Boolean)
+      const uniqueTags = Array.from(new Set([...formData.tags, ...autoGenreTags]))
+
       const beatData: any = {
         title: formData.title,
         producer: formData.producer,
@@ -434,8 +462,8 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
         audio_file: audioFileUrl, // Add audio file URL
         bpm: Number.parseInt(formData.bpm),
         key: formData.key,
-        genre: formData.genre,
-        tags: formData.tags,
+        genre: primaryGenre,
+        tags: uniqueTags,
         status: "active" as const,
         category: selectedCategories[0] as "trending" | "featured" | "new_releases" | "latest",
         categories: selectedCategories,
@@ -456,6 +484,7 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
           bpm: "",
           key: "",
           genre: "",
+          genres: [],
           categories: [],
           description: "",
           duration: "",
@@ -674,21 +703,59 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
           </div>
         </div>
 
-        {/* Genre */}
+        {/* Genres */}
         <div className="space-y-2">
-          <Label htmlFor="genre">Genre *</Label>
-          <Select value={formData.genre} onValueChange={(value) => handleInputChange("genre", value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select genre" />
-            </SelectTrigger>
-            <SelectContent>
-              {genres.map((genre) => (
-                <SelectItem key={genre} value={genre}>
+          <Label htmlFor="genre">Genres *</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                role="combobox"
+                className="w-full justify-between"
+              >
+                {formData.genres.length === 0
+                  ? "Select genres"
+                  : formData.genres.length === 1
+                    ? formData.genres[0]
+                    : `${formData.genres[0]} +${formData.genres.length - 1}`}
+                <ChevronDown className="h-4 w-4 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[260px] p-2" align="start">
+              <div className="flex flex-col gap-1 max-h-60 overflow-y-auto">
+                {genreOptions.map((genre) => {
+                  const isSelected = formData.genres.includes(genre)
+                  return (
+                    <label
+                      key={genre}
+                      className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted cursor-pointer"
+                    >
+                      <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={(checked) => handleGenreToggle(genre, Boolean(checked))}
+                      />
+                      <span className="truncate">{genre}</span>
+                    </label>
+                  )
+                })}
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          {formData.genres.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {formData.genres.map((genre) => (
+                <Badge key={genre} variant="secondary" className="flex items-center gap-1">
                   {genre}
-                </SelectItem>
+                  <X
+                    className="h-3 w-3 cursor-pointer hover:text-destructive"
+                    onClick={() => handleGenreToggle(genre, false)}
+                  />
+                </Badge>
               ))}
-            </SelectContent>
-          </Select>
+            </div>
+          )}
         </div>
 
         {/* Categories with Checkboxes */}

@@ -18,11 +18,11 @@ const salesData = [
 ]
 
 const genreData = [
-  { name: "Trap", value: 35 },
-  { name: "Hip Hop", value: 25 },
-  { name: "R&B", value: 20 },
-  { name: "Pop", value: 15 },
-  { name: "Other", value: 5 },
+  { name: "HipHop", value: 28 },
+  { name: "Rap", value: 22 },
+  { name: "Lo-Fi", value: 18 },
+  { name: "Electronic", value: 16 },
+  { name: "Alternative HipHop", value: 12 },
 ]
 
 const COLORS = ["#8b5cf6", "#a855f7", "#d946ef", "#ec4899", "#f43f5e"]

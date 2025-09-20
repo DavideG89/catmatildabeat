@@ -20,18 +20,22 @@ export default function BeatFilters({ onFiltersChange }: BeatFiltersProps) {
 
   // Default genres and keys as fallback
   const defaultGenres = [
-    "Hip Hop",
-    "Trap",
-    "R&B",
-    "Pop",
-    "Drill",
-    "Afrobeat",
-    "Reggaeton",
-    "House",
+    "Alternative HipHop",
+    "Alternative Rock",
+    "Ambient",
+    "Ambient Electronic",
+    "Boom Bap / Old school",
+    "Cinematic Emotional",
     "Electronic",
+    "Funk",
+    "FunkRock",
+    "HipHop",
+    "Indie",
+    "Lo-Fi",
+    "Rap",
     "Rock",
-    "Jazz",
-    "Blues",
+    "Synthwave",
+    "Trip Hop",
   ]
 
   const defaultKeys = [

@@ -13,12 +13,12 @@ import { motion } from "framer-motion"
 const playlists = [
   {
     id: "1",
-    title: "Trap Essentials",
-    description: "Hard-hitting trap beats for your next project",
+    title: "Rap Essentials",
+    description: "High-energy rap beats for your next project",
     coverImage: "/placeholder.svg?height=300&width=300",
     trackCount: 12,
     duration: "38:45",
-    genre: "Trap",
+    genre: "Rap",
     color: "from-purple-600 to-pink-600",
     tracks: [
       { id: "1", title: "Midnight Dreams", duration: "2:45" },
@@ -43,12 +43,12 @@ const playlists = [
   },
   {
     id: "3",
-    title: "Hip Hop Classics",
-    description: "Timeless hip hop beats with that classic sound",
+    title: "Boom Bap Classics",
+    description: "Timeless boom bap instrumentals with that classic sound",
     coverImage: "/placeholder.svg?height=300&width=300",
     trackCount: 10,
     duration: "32:18",
-    genre: "Hip Hop",
+    genre: "Boom Bap / Old school",
     color: "from-orange-600 to-red-600",
     tracks: [
       { id: "6", title: "Street Dreams", duration: "3:05" },

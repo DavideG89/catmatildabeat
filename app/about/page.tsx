@@ -9,7 +9,7 @@ export default function AboutPage() {
     {
       icon: <Headphones className="h-8 w-8 text-brand-500" />,
       title: "Beat Production",
-      description: "Custom beats tailored to your style and vision, from trap to R&B and everything in between.",
+      description: "Custom beats tailored to your style and vision, from rap to ambient electronic and everything in between.",
     },
     {
       icon: <Mic className="h-8 w-8 text-brand-500" />,
@@ -44,7 +44,7 @@ export default function AboutPage() {
               Cat Matilda Beat was born from the idea that music should be a playground, an open space where sounds, genres and emotions collide to create something new.
               </p>
               <p>
-              From the very first experiment with electronic layers to the raw energy of hip-hop and trap, from the groove of funk to the edge of rock, Cat Matilda Beat has always been about exploration. Each track is more than just an instrumental: it’s an invitation to express yourself, to let your voice, your flow, or even your videos ride on unique waves of sound.
+              From the very first experiment with electronic layers to the raw energy of hip-hop and rap, from the groove of funk to the edge of rock, Cat Matilda Beat has always been about exploration. Each track is more than just an instrumental: it’s an invitation to express yourself, to let your voice, your flow, or even your videos ride on unique waves of sound.
               </p>
               <p>
               And yes, you guessed it right: this playground is ruled by a black cat.

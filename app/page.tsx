@@ -216,7 +216,7 @@ export default function Home() {
 
                 {/* Quick chips */}
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {["Trap", "Hip Hop", "R&B", "Drill"].map((chip) => (
+                  {["HipHop", "Alternative HipHop", "Lo-Fi", "Rap"].map((chip) => (
                     <button
                       key={chip}
                       type="button"
@@ -296,7 +296,7 @@ export default function Home() {
                         <div className="text-xs text-muted-foreground">
                           <p className="mb-2">Try searching by:</p>
                           <div className="flex flex-wrap justify-center gap-2">
-                            <span className="px-2 py-1 bg-muted rounded text-xs">Genre (trap, hip hop)</span>
+                            <span className="px-2 py-1 bg-muted rounded text-xs">Genre (rap, hiphop)</span>
                             <span className="px-2 py-1 bg-muted rounded text-xs">Mood (dark, chill)</span>
                             <span className="px-2 py-1 bg-muted rounded text-xs">BPM (140, 95)</span>
                           </div>

@@ -35,10 +35,10 @@ const mockBeats: Beat[] = [
     price: 29.99,
     bpm: 140,
     key: "C Minor",
-    genre: "Hip Hop",
-    tags: ["Hip Hop", "Dark", "Atmospheric"],
+    genre: "Alternative HipHop",
+    tags: ["Alternative HipHop", "Dark", "Atmospheric"],
     description:
-      "A dark and atmospheric hip hop beat perfect for late night sessions. Features deep bass lines and haunting melodies that create the perfect backdrop for introspective lyrics.",
+      "A dark and atmospheric alternative hip-hop beat perfect for late night sessions. Features deep bass lines and haunting melodies that create the perfect backdrop for introspective lyrics.",
     beatstarsLink: "https://beatstars.com/catmatildabeat",
   },
   {
@@ -49,10 +49,10 @@ const mockBeats: Beat[] = [
     price: 24.99,
     bpm: 95,
     key: "G Major",
-    genre: "R&B",
-    tags: ["R&B", "Chill", "Summer"],
+    genre: "Ambient",
+    tags: ["Ambient", "Chill", "Summer"],
     description:
-      "A smooth R&B beat with summer vibes. Perfect for laid-back vocals and chill sessions with warm, nostalgic melodies.",
+      "A smooth ambient beat with summer vibes. Perfect for laid-back vocals and chill sessions with warm, nostalgic melodies.",
     beatstarsLink: "https://beatstars.com/catmatildabeat",
   },
   {
@@ -63,8 +63,8 @@ const mockBeats: Beat[] = [
     price: 34.99,
     bpm: 160,
     key: "F Minor",
-    genre: "Hip Hop",
-    tags: ["Hip Hop", "Hard", "Urban"],
+    genre: "HipHop",
+    tags: ["HipHop", "Hard", "Urban"],
     description:
       "Hard-hitting urban beat with aggressive drums and street-ready energy. Built for powerful vocals and commanding presence.",
     beatstarsLink: "https://beatstars.com/catmatildabeat",
@@ -77,8 +77,8 @@ const mockBeats: Beat[] = [
     price: 27.99,
     bpm: 128,
     key: "A Minor",
-    genre: "Pop",
-    tags: ["Pop", "Upbeat", "Electronic"],
+    genre: "Synthwave",
+    tags: ["Synthwave", "Upbeat", "Electronic"],
     description:
       "Upbeat pop beat with electronic elements and catchy melodies. Perfect for radio-ready tracks with commercial appeal.",
     beatstarsLink: "https://beatstars.com/catmatildabeat",

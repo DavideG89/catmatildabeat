@@ -10,7 +10,24 @@ import { useState } from "react"
 export default function SamplePackFilters() {
   const [priceRange, setPriceRange] = useState([0, 100])
 
-  const genres = ["Hip Hop", "Trap", "R&B", "Electronic", "Pop", "Ambient", "Lo-Fi", "Cinematic"]
+  const genres = [
+    "Alternative HipHop",
+    "Alternative Rock",
+    "Ambient",
+    "Ambient Electronic",
+    "Boom Bap / Old school",
+    "Cinematic Emotional",
+    "Electronic",
+    "Funk",
+    "FunkRock",
+    "HipHop",
+    "Indie",
+    "Lo-Fi",
+    "Rap",
+    "Rock",
+    "Synthwave",
+    "Trip Hop",
+  ]
 
   const types = [
     "Drum Kits",

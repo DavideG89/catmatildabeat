@@ -158,7 +158,7 @@ export default function BeatsList({ searchQuery = "", filters }: BeatsListProps)
             <div className="mt-4 text-sm text-foreground">
               <p>Search tips:</p>
               <ul className="list-disc list-inside mt-2 space-y-1">
-                <li>Try searching by genre (trap, hip hop, r&b)</li>
+                <li>Try searching by genre (rap, hiphop, lo-fi)</li>
                 <li>Search by producer name</li>
                 <li>Search by BPM (140, 95, etc.)</li>
                 <li>Search by key (C Minor, G Major)</li>

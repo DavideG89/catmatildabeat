@@ -4,16 +4,22 @@ const SITE_URL = "https://www.catmatildabeat.com"
 const LAST_MODIFIED = new Date("2025-01-01T00:00:00Z")
 
 const genreNames = [
-  "trap",
-  "hip hop",
-  "r&b",
-  "drill",
-  "pop",
-  "afrobeat",
-  "electronic",
-  "lo-fi",
-  "uk drill",
-  "synthwave",
+  "Alternative HipHop",
+  "Alternative Rock",
+  "Ambient",
+  "Ambient Electronic",
+  "Boom Bap / Old school",
+  "Cinematic Emotional",
+  "Electronic",
+  "Funk",
+  "FunkRock",
+  "HipHop",
+  "Indie",
+  "Lo-Fi",
+  "Rap",
+  "Rock",
+  "Synthwave",
+  "Trip Hop",
 ]
 
 export default function sitemap(): MetadataRoute.Sitemap {

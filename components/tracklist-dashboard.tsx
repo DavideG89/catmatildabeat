@@ -284,14 +284,22 @@ export default function TracklistDashboard() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Trap">Trap</SelectItem>
-                      <SelectItem value="Hip Hop">Hip Hop</SelectItem>
-                      <SelectItem value="R&B">R&B</SelectItem>
-                      <SelectItem value="Pop">Pop</SelectItem>
-                      <SelectItem value="Drill">Drill</SelectItem>
-                      <SelectItem value="Boom Bap">Boom Bap</SelectItem>
-                      <SelectItem value="Lo-Fi">Lo-Fi</SelectItem>
+                      <SelectItem value="Alternative HipHop">Alternative HipHop</SelectItem>
+                      <SelectItem value="Alternative Rock">Alternative Rock</SelectItem>
                       <SelectItem value="Ambient">Ambient</SelectItem>
+                      <SelectItem value="Ambient Electronic">Ambient Electronic</SelectItem>
+                      <SelectItem value="Boom Bap / Old school">Boom Bap / Old school</SelectItem>
+                      <SelectItem value="Cinematic Emotional">Cinematic Emotional</SelectItem>
+                      <SelectItem value="Electronic">Electronic</SelectItem>
+                      <SelectItem value="Funk">Funk</SelectItem>
+                      <SelectItem value="FunkRock">FunkRock</SelectItem>
+                      <SelectItem value="HipHop">HipHop</SelectItem>
+                      <SelectItem value="Indie">Indie</SelectItem>
+                      <SelectItem value="Lo-Fi">Lo-Fi</SelectItem>
+                      <SelectItem value="Rap">Rap</SelectItem>
+                      <SelectItem value="Rock">Rock</SelectItem>
+                      <SelectItem value="Synthwave">Synthwave</SelectItem>
+                      <SelectItem value="Trip Hop">Trip Hop</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

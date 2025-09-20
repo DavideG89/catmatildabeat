@@ -10,7 +10,7 @@ const samplePacks = [
     price: 49.99,
     description:
       "A collection of warm, vintage drum samples recorded through analog hardware. Perfect for hip-hop, lo-fi, and boom bap productions.",
-    genre: "Hip Hop",
+    genre: "HipHop",
     tags: ["Drums", "Analog", "Lo-Fi"],
     sampleCount: 120,
   },
@@ -39,13 +39,13 @@ const samplePacks = [
   },
   {
     id: "4",
-    title: "Trap Melody Loops",
+    title: "Rap Melody Loops",
     producer: "Cat Matilda Beat",
     coverImage: "/placeholder.svg?height=400&width=400",
     price: 29.99,
     description:
-      "Dark, melodic loops and one-shots perfect for modern trap productions. Includes MIDI files for all melodic content.",
-    genre: "Trap",
+      "Dark, melodic loops and one-shots perfect for modern rap productions. Includes MIDI files for all melodic content.",
+    genre: "Rap",
     tags: ["Melodies", "Loops", "MIDI"],
     sampleCount: 75,
   },
