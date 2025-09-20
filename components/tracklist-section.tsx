@@ -12,11 +12,49 @@ export default function TracklistSection() {
   const { currentTrack, isPlaying, playTrack, togglePlayPause } = useAudioPlayer()
   const { getBeatsByCategory } = useBeats()
   const [latestBeats, setLatestBeats] = useState<any[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    const beats = getBeatsByCategory("latest").slice(0, 8)
+    const beats = getBeatsByCategory("latest")
     setLatestBeats(beats)
+    setCurrentPage(1)
   }, [getBeatsByCategory])
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+
+    const mediaQuery = window.matchMedia("(max-width: 639px)")
+    const handleChange = (event: MediaQueryListEvent | MediaQueryList) => {
+      setIsMobile(event.matches)
+    }
+
+    handleChange(mediaQuery)
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", handleChange)
+      return () => mediaQuery.removeEventListener("change", handleChange)
+    }
+
+    mediaQuery.addListener(handleChange)
+    return () => mediaQuery.removeListener(handleChange)
+  }, [])
+
+  const itemsPerPage = isMobile ? 3 : 6
+  const totalPages = Math.ceil(latestBeats.length / (itemsPerPage || 1))
+
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) {
+      setCurrentPage(totalPages)
+    }
+  }, [totalPages, currentPage])
+
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const paginatedBeats = latestBeats.slice(startIndex, startIndex + itemsPerPage)
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+  }
 
   const handlePlayTrack = (beat: any) => {
     if (currentTrack?.id === beat.id) {
@@ -44,7 +82,7 @@ export default function TracklistSection() {
   if (latestBeats.length === 0) {
     return (
       <div
-        className="py-12 md:py-16 bg-gradient-to-b from-card/50 to-background"
+        className="py-10 md:py-16 bg-gradient-to-b from-card/50 to-background"
         style={{
           "--card": "0 0% 100%",
           "--card-foreground": "0 0% 10%",
@@ -63,7 +101,7 @@ export default function TracklistSection() {
 
   return (
     <section
-      className="py-12 md:py-16 bg-gradient-to-b from-card/50 to-background"
+      className="py-10 md:py-16 bg-gradient-to-b from-card/50 to-background"
       style={{
         "--card": "0 0% 100%",
         "--card-foreground": "0 0% 10%",
@@ -72,7 +110,7 @@ export default function TracklistSection() {
     >
       <div className="container mx-auto px-4">
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-8 md:mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -84,7 +122,7 @@ export default function TracklistSection() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-          {latestBeats.map((beat, index) => (
+          {paginatedBeats.map((beat, index) => (
             <motion.div
               key={beat.id}
               className="group bg-card rounded-xl p-4 border border-black transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
@@ -134,13 +172,13 @@ export default function TracklistSection() {
                   </div>
                 </div>
 
-                {/* Buttons stacked under on mobile, right side on desktop */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                {/* Buttons inline on mobile, consistent spacing on desktop */}
+                <div className="flex flex-row flex-wrap sm:flex-row items-center gap-2 w-full sm:w-auto">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handlePlayTrack(beat)}
-                    className="text-brand-500 hover:text-brand-400 hover:bg-brand-500/10 px-3 w-full sm:w-auto"
+                    className="text-brand-500 hover:text-brand-400 hover:bg-brand-500/10 px-3 flex-1 sm:flex-none"
                   >
                     {currentTrack?.id === beat.id && isPlaying ? (
                       <>
@@ -156,7 +194,7 @@ export default function TracklistSection() {
                   <Button
                     size="sm"
                     variant="cta"
-                    className="text-xs px-3 w-full sm:w-auto"
+                    className="text-xs px-3 flex-1 sm:flex-none min-w-[90px]"
                     onClick={() => handleBuyBeat(beat.beatstars_link)}
                   >
                     <ExternalLink className="h-3 w-3 mr-1" />
@@ -167,6 +205,30 @@ export default function TracklistSection() {
             </motion.div>
           ))}
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-6 gap-2">
+            {Array.from({ length: totalPages }, (_, index) => {
+              const pageNumber = index + 1
+              const isActive = pageNumber === currentPage
+              return (
+                <button
+                  key={pageNumber}
+                  type="button"
+                  onClick={() => handlePageChange(pageNumber)}
+                  className={`w-8 h-8 rounded-full border border-black/10 flex items-center justify-center text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-brand-500 text-white border-brand-500"
+                      : "text-black/80 hover:text-brand-500 hover:bg-brand-500/10"
+                  }`}
+                  aria-label={`Go to page ${pageNumber}`}
+                >
+                  {pageNumber}
+                </button>
+              )
+            })}
+          </div>
+        )}
 
         <motion.div
           className="text-center mt-8"

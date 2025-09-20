@@ -323,12 +323,12 @@ export default function Home() {
       </section>
 
       {/* Tracklist Section */}
-      <section className="py-12 md:py-16">
+      <section className="py-8 md:py-16">
         <TracklistSection />
       </section>
 
       {/* Featured Content Tabs - Horizontal Scrolling for All Devices */}
-      <section className="py-12 md:py-16 bg-transparent">
+      <section className="py-8 md:py-16 bg-transparent">
         <div className="container mx-auto px-4">
           <Tabs defaultValue="trending" className="w-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -377,7 +377,7 @@ export default function Home() {
       </section>
 
       {/* Popular Genres */}
-      <section className="py-12 md:py-16 bg-transparent">
+      <section className="py-8 md:py-16 bg-transparent">
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <h2 className="text-2xl md:text-3xl font-bold font-heading">Popular Genres</h2>
@@ -388,13 +388,13 @@ export default function Home() {
       </section>
 
       {/* YouTube Section */}
-      <section className="py-12 md:py-16">
+      <section className="py-8 md:py-16">
         <YouTubeSection />
       </section>
 
       {/* How It Works */}
       <section
-        className="py-12 md:py-16"
+        className="py-8 md:py-16"
         style={{
           "--card": "0 0% 100%",
           "--card-foreground": "0 0% 10%",
@@ -402,7 +402,7 @@ export default function Home() {
         } as React.CSSProperties}
       >
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold mb-12 text-center font-heading">How It Works</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-8 md:mb-12 text-center font-heading">How It Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
@@ -440,7 +440,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-20 bg-transparent text-foreground">
+      <section className="py-12 md:py-20 bg-transparent text-foreground">
         <div className="container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <h2 className="text-3xl md:text-4xl font-bold mb-6 font-heading">Ready to Elevate Your Sound?</h2>
