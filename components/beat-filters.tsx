@@ -128,13 +128,13 @@ export default function BeatFilters({ onFiltersChange }: BeatFiltersProps) {
 
   if (loading) {
     return (
-      <div className="bg-zinc-900 rounded-xl p-4">
+      <div className="rounded-xl p-4 bg-zinc-900 border border-zinc-800 shadow-sm">
         <div className="animate-pulse">
-          <div className="h-6 bg-zinc-800 rounded mb-4"></div>
+          <div className="h-6 rounded mb-4 bg-zinc-800"></div>
           <div className="space-y-3">
-            <div className="h-4 bg-zinc-800 rounded"></div>
-            <div className="h-4 bg-zinc-800 rounded"></div>
-            <div className="h-4 bg-zinc-800 rounded"></div>
+            <div className="h-4 rounded bg-zinc-800"></div>
+            <div className="h-4 rounded bg-zinc-800"></div>
+            <div className="h-4 rounded bg-zinc-800"></div>
           </div>
         </div>
       </div>
@@ -142,9 +142,9 @@ export default function BeatFilters({ onFiltersChange }: BeatFiltersProps) {
   }
 
   return (
-    <div className="bg-zinc-900 rounded-xl p-4 lg:sticky lg:top-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-white">Filters</h3>
+    <div className="rounded-xl p-4 bg-zinc-900 border border-zinc-800 shadow-sm text-white lg:sticky lg:top-4">
+      <div className="flex items-center justify-end lg:justify-between mb-4">
+        <h3 className="hidden lg:block text-lg font-semibold">Filters</h3>
         {hasActiveFilters && (
           <Button
             variant="ghost"
@@ -157,74 +157,10 @@ export default function BeatFilters({ onFiltersChange }: BeatFiltersProps) {
         )}
       </div>
 
-      <Accordion type="multiple" defaultValue={["genres", "keys", "bpm"]} className="w-full">
-        {/* Genres */}
-        <AccordionItem value="genres" className="border-zinc-800">
-          <AccordionTrigger className="text-white hover:text-brand-400 py-2 sm:py-3">
-            <span className="flex items-center gap-2">
-              Genres
-              {selectedGenres.length > 0 && (
-                <span className="bg-brand-500 text-white text-xs px-2 py-0.5 rounded-full">
-                  {selectedGenres.length}
-                </span>
-              )}
-            </span>
-          </AccordionTrigger>
-          <AccordionContent className="pb-4">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {availableGenres.map((genre) => (
-                <Button
-                  key={genre}
-                  variant={selectedGenres.includes(genre) ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleGenreChange(genre)}
-                  className={`text-xs justify-start ${
-                    selectedGenres.includes(genre)
-                      ? "bg-brand-600 hover:bg-brand-500 text-white border-brand-600"
-                      : "bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white"
-                  }`}
-                >
-                  {genre}
-                </Button>
-              ))}
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Keys */}
-        <AccordionItem value="keys" className="border-zinc-800">
-          <AccordionTrigger className="text-white hover:text-brand-400 py-2 sm:py-3">
-            <span className="flex items-center gap-2">
-              Keys
-              {selectedKeys.length > 0 && (
-                <span className="bg-brand-500 text-white text-xs px-2 py-0.5 rounded-full">{selectedKeys.length}</span>
-              )}
-            </span>
-          </AccordionTrigger>
-          <AccordionContent className="pb-4">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {availableKeys.map((key) => (
-                <Button
-                  key={key}
-                  variant={selectedKeys.includes(key) ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleKeyChange(key)}
-                  className={`text-xs justify-start ${
-                    selectedKeys.includes(key)
-                      ? "bg-brand-600 hover:bg-brand-500 text-white border-brand-600"
-                      : "bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white"
-                  }`}
-                >
-                  {key}
-                </Button>
-              ))}
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-
+      <Accordion type="multiple" defaultValue={["bpm", "genres", "keys"]} className="w-full">
         {/* BPM Range */}
         <AccordionItem value="bpm" className="border-zinc-800">
-          <AccordionTrigger className="text-white hover:text-brand-400 py-2 sm:py-3">
+          <AccordionTrigger className="py-2 sm:py-3 text-white hover:text-brand-300">
             <span className="flex items-center gap-2">
               BPM Range
               {(bpmRange[0] !== 60 || bpmRange[1] !== 200) && (
@@ -236,7 +172,7 @@ export default function BeatFilters({ onFiltersChange }: BeatFiltersProps) {
           </AccordionTrigger>
           <AccordionContent className="pb-4">
             <div className="space-y-4">
-              <div className="flex justify-between text-sm text-zinc-400">
+              <div className="flex justify-between text-sm text-zinc-300">
                 <span>{bpmRange[0]} BPM</span>
                 <span>{bpmRange[1]} BPM</span>
               </div>
@@ -253,6 +189,70 @@ export default function BeatFilters({ onFiltersChange }: BeatFiltersProps) {
                 <span>60</span>
                 <span>200</span>
               </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* Genres */}
+        <AccordionItem value="genres" className="border-zinc-800">
+          <AccordionTrigger className="py-2 sm:py-3 text-white hover:text-brand-300">
+            <span className="flex items-center gap-2">
+              Genres
+              {selectedGenres.length > 0 && (
+                <span className="bg-brand-500 text-white text-xs px-2 py-0.5 rounded-full">
+                  {selectedGenres.length}
+                </span>
+              )}
+            </span>
+          </AccordionTrigger>
+          <AccordionContent className="pb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2">
+              {availableGenres.map((genre) => (
+                <Button
+                  key={genre}
+                  variant={selectedGenres.includes(genre) ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handleGenreChange(genre)}
+                  className={`w-full text-xs justify-start transition-colors ${
+                    selectedGenres.includes(genre)
+                      ? "bg-brand-600 hover:bg-brand-500 text-white border-brand-600"
+                      : "bg-zinc-800 border-zinc-700 text-zinc-200 hover:bg-zinc-700 hover:text-white"
+                  }`}
+                >
+                  {genre}
+                </Button>
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* Keys */}
+        <AccordionItem value="keys" className="border-zinc-800">
+          <AccordionTrigger className="py-2 sm:py-3 text-white hover:text-brand-300">
+            <span className="flex items-center gap-2">
+              Keys
+              {selectedKeys.length > 0 && (
+                <span className="bg-brand-500 text-white text-xs px-2 py-0.5 rounded-full">{selectedKeys.length}</span>
+              )}
+            </span>
+          </AccordionTrigger>
+          <AccordionContent className="pb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2">
+              {availableKeys.map((key) => (
+                <Button
+                  key={key}
+                  variant={selectedKeys.includes(key) ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handleKeyChange(key)}
+                  className={`w-full text-xs justify-start transition-colors ${
+                    selectedKeys.includes(key)
+                      ? "bg-brand-600 hover:bg-brand-500 text-white border-brand-600"
+                      : "bg-zinc-800 border-zinc-700 text-zinc-200 hover:bg-zinc-700 hover:text-white"
+                  }`}
+                >
+                  {key}
+                </Button>
+              ))}
             </div>
           </AccordionContent>
         </AccordionItem>

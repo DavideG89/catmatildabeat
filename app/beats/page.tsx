@@ -54,7 +54,7 @@ function BeatsPageContent() {
             <Button
               variant="outline"
               onClick={() => setMobileFiltersOpen(true)}
-              className="relative gap-2 h-10 px-4 rounded-full bg-white text-brand-600 border border-black/10 shadow-sm hover:bg-black/5 dark:bg-zinc-900 dark:text-white dark:border-zinc-700 dark:hover:bg-zinc-800"
+              className="relative gap-2 h-10 px-4 rounded-xl bg-zinc-900 text-white border border-zinc-800 shadow-sm hover:bg-zinc-800 focus-visible:ring-2 focus-visible:ring-brand-500"
               aria-label="Open filters"
             >
               <Filter className="h-4 w-4" /> Filters
@@ -69,24 +69,27 @@ function BeatsPageContent() {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
-        {/* Sidebar Filters (desktop) */}
-        <div className="hidden lg:block w-full lg:w-1/4 order-2 lg:order-1">
-          <BeatFilters onFiltersChange={handleFiltersChange} />
+        <div className="w-full lg:w-2/3 xl:w-3/4 order-1">
+          <BeatsList searchQuery={searchQuery} filters={filters} />
         </div>
 
-        <div className="w-full lg:w-3/4 order-1 lg:order-2">
-          <BeatsList searchQuery={searchQuery} filters={filters} />
+        {/* Sidebar Filters (desktop) */}
+        <div className="hidden lg:block w-full lg:w-1/3 xl:w-1/4 order-2">
+          <BeatFilters onFiltersChange={handleFiltersChange} />
         </div>
       </div>
 
       {/* Mobile Filters Sheet */}
       <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
-        <SheetContent side="bottom" className="p-0 h-[85svh] sm:h-[80svh] rounded-t-2xl pb-[env(safe-area-inset-bottom)]">
+        <SheetContent
+          side="bottom"
+          className="p-0 h-[85svh] sm:h-[80svh] rounded-t-2xl pb-[env(safe-area-inset-bottom)] bg-zinc-900 border-t border-zinc-800"
+        >
           <div className="pt-3 pb-1 flex justify-center">
-            <div className="h-1.5 w-12 bg-muted rounded-full" />
+            <div className="h-1.5 w-12 bg-zinc-700 rounded-full" />
           </div>
-          <SheetHeader className="px-4 pb-3 border-b">
-            <SheetTitle>Filters</SheetTitle>
+          <SheetHeader className="px-4 pb-3 border-b border-zinc-800">
+            <SheetTitle className="text-white">Filters</SheetTitle>
           </SheetHeader>
           <div className="p-4 overflow-y-auto overscroll-contain h-[calc(85svh-60px)] sm:h-[calc(80svh-60px)]">
             <BeatFilters onFiltersChange={handleFiltersChange} />
@@ -110,10 +113,7 @@ function BeatsLoadingSkeleton() {
     <div className="container mx-auto px-4 py-6 md:py-12 mb-24">
       <Skeleton className="h-10 w-64 mb-6" />
       <div className="flex flex-col lg:flex-row gap-6 md:gap-8">
-        <div className="w-full lg:w-1/4">
-          <Skeleton className="h-96 w-full" />
-        </div>
-        <div className="w-full lg:w-3/4">
+        <div className="w-full lg:w-2/3 xl:w-3/4 order-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {Array(6)
               .fill(0)
@@ -134,6 +134,9 @@ function BeatsLoadingSkeleton() {
                 </div>
               ))}
           </div>
+        </div>
+        <div className="w-full lg:w-1/3 xl:w-1/4 order-2">
+          <Skeleton className="h-96 w-full" />
         </div>
       </div>
     </div>

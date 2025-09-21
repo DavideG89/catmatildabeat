@@ -89,9 +89,9 @@ export default function ContactPage() {
   return (
     <div className="container mx-auto px-4 py-6 md:py-12 mb-24">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8 md:mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4 font-heading">Get In Touch</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-4xl font-bold mb-4 md:mb-6 font-heading">Get In Touch</h1>
+          <p className="text-lg text-muted-foreground max-w-2xl text-left">
             Have questions about beats, custom work, or collaborations? I'd love to hear from you.
           </p>
         </div>

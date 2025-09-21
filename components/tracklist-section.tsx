@@ -82,7 +82,7 @@ export default function TracklistSection() {
   if (latestBeats.length === 0) {
     return (
       <div
-        className="py-10 md:py-16 bg-gradient-to-b from-card/50 to-background"
+        className="pt-10 pb-6 md:pt-16 md:pb-10 bg-gradient-to-b from-card/50 to-background"
         style={{
           "--card": "0 0% 100%",
           "--card-foreground": "0 0% 10%",
@@ -101,7 +101,7 @@ export default function TracklistSection() {
 
   return (
     <section
-      className="py-10 md:py-16 bg-gradient-to-b from-card/50 to-background"
+      className="pt-10 pb-6 md:pt-16 md:pb-10 bg-gradient-to-b from-card/50 to-background"
       style={{
         "--card": "0 0% 100%",
         "--card-foreground": "0 0% 10%",
@@ -110,13 +110,13 @@ export default function TracklistSection() {
     >
       <div className="container mx-auto px-4">
         <motion.div
-          className="text-center mb-8 md:mb-12"
+          className="text-left md:text-center mb-8 md:mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-2xl md:text-3xl font-bold mb-4 font-heading">Latest Tracks</h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto md:text-center">
             Fresh beats ready to elevate your next project
           </p>
         </motion.div>
@@ -125,7 +125,7 @@ export default function TracklistSection() {
           {paginatedBeats.map((beat, index) => (
             <motion.div
               key={beat.id}
-              className="group bg-card rounded-xl p-4 border border-black transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+              className="group bg-card rounded-xl p-4 border border-black"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
@@ -207,7 +207,7 @@ export default function TracklistSection() {
         </div>
 
         {totalPages > 1 && (
-          <div className="flex justify-center mt-6 gap-2">
+          <div className="flex justify-center mt-5 gap-1 md:gap-2">
             {Array.from({ length: totalPages }, (_, index) => {
               const pageNumber = index + 1
               const isActive = pageNumber === currentPage
@@ -216,14 +216,14 @@ export default function TracklistSection() {
                   key={pageNumber}
                   type="button"
                   onClick={() => handlePageChange(pageNumber)}
-                  className={`w-8 h-8 rounded-full border border-black/10 flex items-center justify-center text-sm font-medium transition-colors ${
+                  className={`inline-flex items-center justify-center w-4 h-4 rounded-full transition-colors border border-transparent !min-w-[16px] !min-h-[16px] ${
                     isActive
-                      ? "bg-brand-500 text-white border-brand-500"
-                      : "text-black/80 hover:text-brand-500 hover:bg-brand-500/10"
+                      ? "bg-brand-500"
+                      : "bg-black/20"
                   }`}
                   aria-label={`Go to page ${pageNumber}`}
                 >
-                  {pageNumber}
+                  <span className="sr-only">{pageNumber}</span>
                 </button>
               )
             })}

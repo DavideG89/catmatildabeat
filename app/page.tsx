@@ -146,7 +146,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen mb-24 overflow-hidden">
       {/* Hero Section */}
-      <section className="relative h-[90vh] min-h-[90vh] flex items-center justify-center overflow-visible">
+      <section className="relative min-h-[70vh] md:min-h-[50vh] flex items-center justify-center overflow-visible">
         <div className="container mx-auto px-4 z-10 relative">
           <div className="grid md:grid-cols-2 items-center gap-6 md:gap-12">
             {/* Left: Heading, CTAs, Search */}
@@ -323,12 +323,12 @@ export default function Home() {
       </section>
 
       {/* Tracklist Section */}
-      <section className="py-8 md:py-16">
+      <section className="pt-4 pb-3 md:pt-12 md:pb-8">
         <TracklistSection />
       </section>
 
       {/* Featured Content Tabs - Horizontal Scrolling for All Devices */}
-      <section className="py-8 md:py-16 bg-transparent">
+      <section className="pt-3 pb-6 md:pt-10 md:pb-16 bg-transparent">
         <div className="container mx-auto px-4">
           <Tabs defaultValue="trending" className="w-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">

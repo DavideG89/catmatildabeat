@@ -26,9 +26,9 @@ export default function AboutPage() {
   return (
     <div className="container mx-auto px-4 py-6 md:py-12 mb-24">
       {/* Hero Section */}
-      <section className="text-center mb-12 md:mb-16">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl md:text-5xl font-bold mb-6 font-heading">
+      <section className="mb-12 md:mb-16">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-4xl font-bold mb-4 md:mb-6 font-heading">
             About <span>Cat Matilda Beat</span>
           </h1>
         </div>

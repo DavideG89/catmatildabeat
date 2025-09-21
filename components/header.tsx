@@ -9,23 +9,43 @@ import { motion, AnimatePresence } from "framer-motion"
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [isMobileBeats, setIsMobileBeats] = useState(false)
   const pathname = usePathname()
 
   // Throttled scroll handler to improve performance
   const handleScroll = useCallback(() => {
+    if (isMobileBeats) {
+      setScrolled(true)
+      return
+    }
+
     const scrollPosition = window.scrollY
     setScrolled(scrollPosition > 20)
-  }, [])
+  }, [isMobileBeats])
 
   useEffect(() => {
-    // Add scroll event listener with passive option for better performance
-    window.addEventListener("scroll", handleScroll, { passive: true })
+    const updateMobileBeats = () => {
+      const isMobile = window.matchMedia("(max-width: 767px)").matches
+      setIsMobileBeats(isMobile && pathname === "/beats")
+    }
 
-    // Initial check
+    updateMobileBeats()
+    window.addEventListener("resize", updateMobileBeats)
+
+    return () => window.removeEventListener("resize", updateMobileBeats)
+  }, [pathname])
+
+  useEffect(() => {
+    if (isMobileBeats) {
+      setScrolled(true)
+      return
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
     handleScroll()
 
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [handleScroll])
+  }, [handleScroll, isMobileBeats])
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -49,11 +69,15 @@ export default function Header() {
     }
   }, [isMenuOpen])
 
+  const headerStyle = isMobileBeats
+    ? "bg-background/90 backdrop-blur-md"
+    : scrolled
+      ? "bg-background/90 backdrop-blur-md"
+      : "bg-transparent"
+
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-background/90 backdrop-blur-md shadow-md" : "bg-transparent"
-      }`}
+      className={`sticky top-0 z-50 transition-all duration-300 ${headerStyle}`}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-16">
@@ -81,7 +105,7 @@ export default function Header() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-brand-600 hover:text-brand-500 z-10 p-2"
+            className="md:hidden text-zinc-900 hover:text-zinc-700 dark:text-white dark:hover:text-brand-300 z-10 p-2 transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={isMenuOpen}
@@ -99,7 +123,7 @@ export default function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden bg-card/95 backdrop-blur-sm border-b border-border overflow-hidden"
+            className="md:hidden bg-card/95 backdrop-blur-[2px] border-b border-border overflow-hidden"
           >
             <div className="container mx-auto px-4 py-4">
               <motion.nav
