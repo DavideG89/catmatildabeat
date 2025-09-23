@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 const title = "Beats Marketplace"
-const description = "Browse and filter exclusive Cat Matilda Beat instrumentals across genres, moods, and BPM."
+const description = "Browse and filter exclusive Beat instrumentals across genres, moods, and BPM."
 
 export const metadata: Metadata = {
   title,

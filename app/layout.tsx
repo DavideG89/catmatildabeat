@@ -25,10 +25,7 @@ const gafata = Gafata({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://catmatildabeat.com"),
-  title: {
-    default: "Cat Matilda Beat | Feel the Beat and get Inspired.",
-    template: "%s | Cat Matilda Beat",
-  },
+  title: "Cat Matilda Beat | Feel the Beat and get Inspired.",
   description: "Explore CatMatilda Beat | A marketplace for every genre and project. Unique beats to buy or free. No curse, just beats.",
   keywords: [
     "Cat Matilda Beat",
