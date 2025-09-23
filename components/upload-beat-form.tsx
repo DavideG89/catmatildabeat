@@ -722,8 +722,14 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[260px] p-2" align="start">
-              <div className="flex flex-col gap-1 max-h-60 overflow-y-auto">
+            <PopoverContent
+              className="z-[70] w-[var(--radix-popover-trigger-width)] max-h-60 overflow-y-auto p-2"
+              align="start"
+              sideOffset={6}
+              onWheel={(event) => event.stopPropagation()}
+              onTouchMove={(event) => event.stopPropagation()}
+            >
+              <div className="flex flex-col gap-1 overscroll-contain pr-1">
                 {genreOptions.map((genre) => {
                   const isSelected = formData.genres.includes(genre)
                   return (
