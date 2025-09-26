@@ -45,9 +45,6 @@ export const metadata: Metadata = {
   authors: [{ name: "Cat Matilda Beat" }],
   creator: "Cat Matilda Beat",
   publisher: "Cat Matilda Beat",
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     title: "Cat Matilda Beat | No curse, just beats.",
     description: "Discover inspiring beats, tailor-made productions, and professional mixing services by Cat Matilda Beat.",
