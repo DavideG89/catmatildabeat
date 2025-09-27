@@ -323,7 +323,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/*<ScratchBeatSection /*>}
+      {/* Scratch Card Section */}
+      
+      {/*<ScratchBeatSection/>*/}
+
 
       {/* Tracklist Section */}
       <section className="pt-4 pb-3 md:pt-12 md:pb-8">
