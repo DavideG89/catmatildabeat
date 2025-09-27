@@ -44,17 +44,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: LAST_MODIFIED,
       priority: 0.8,
     },
-
   ]
 
-  {/*const genrePages: MetadataRoute.Sitemap = genreNames.map((genre) => {
+  const genrePages: MetadataRoute.Sitemap = genreNames.map((genre) => {
     const genreParam = encodeURIComponent(genre)
+
     return {
       url: `${SITE_URL}/beats?genre=${genreParam}`,
       lastModified: LAST_MODIFIED,
       priority: 0.7,
     }
-  })*/}
+  })
 
-  return [...staticPages]
+  return [...staticPages, ...genrePages]
 }

@@ -279,7 +279,7 @@ export default function BeatDetailPage({ params }: BeatDetailPageProps) {
       </div>
 
       <div className="mt-12">
-        <RelatedBeats currentBeatId={beat.id} genre={beat.genre} />
+        <RelatedBeats currentBeatId={beat.id} />
       </div>
     </div>
   )

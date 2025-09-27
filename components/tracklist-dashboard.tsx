@@ -54,14 +54,11 @@ export default function TracklistDashboard() {
       id: beat.id,
       title: beat.title,
       artist: beat.producer,
-      coverImage: beat.coverImage,
-      audioSrc: "/demo-beat.mp3",
+      coverImage: beat.cover_image || "/placeholder.svg",
+      audioSrc: beat.audio_file || "/demo-beat.mp3",
       type: "beat" as const,
-      beatstarsLink: beat.beatstarsLink,
-      duration: beat.duration || "3:00",
-      genre: beat.genre,
-      bpm: beat.bpm,
-      key: beat.key,
+      beatstarsLink: beat.beatstars_link,
+      durationString: beat.duration || "3:00",
     }
 
     if (currentTrack?.id === beat.id && isPlaying) {
@@ -71,7 +68,7 @@ export default function TracklistDashboard() {
     }
   }
 
-  const handleBuyNow = (beatstarsLink: string) => {
+  const handleBuyNow = (beatstarsLink?: string) => {
     if (beatstarsLink) {
       window.open(beatstarsLink, "_blank")
     } else {
@@ -132,7 +129,7 @@ export default function TracklistDashboard() {
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Image
-                      src={beat.coverImage || "/placeholder.svg"}
+                      src={beat.cover_image || "/placeholder.svg"}
                       alt={beat.title}
                       width={40}
                       height={40}
@@ -156,10 +153,14 @@ export default function TracklistDashboard() {
                 <TableCell className="hidden lg:table-cell">{beat.duration || "3:00"}</TableCell>
                 <TableCell className="hidden sm:table-cell">
                   <Badge
-                    variant={beat.status === "Active" ? "default" : "secondary"}
-                    className={beat.status === "Active" ? "bg-green-600" : "bg-zinc-600"}
+                    variant={beat.status === "active" ? "default" : "secondary"}
+                    className={beat.status === "active" ? "bg-green-600" : "bg-zinc-600"}
                   >
-                    {beat.status}
+                    {beat.status === "active"
+                      ? "Active"
+                      : beat.status === "draft"
+                        ? "Draft"
+                        : "Archived"}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
@@ -178,7 +179,7 @@ export default function TracklistDashboard() {
                         <Edit className="h-4 w-4 mr-2" />
                         Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleBuyNow(beat.beatstarsLink)}>
+                      <DropdownMenuItem onClick={() => handleBuyNow(beat.beatstars_link)}>
                         <ExternalLink className="h-4 w-4 mr-2" />
                         Buy on BeatStars
                       </DropdownMenuItem>
@@ -214,7 +215,7 @@ export default function TracklistDashboard() {
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <Image
-                  src={viewingBeat.coverImage || "/placeholder.svg"}
+                  src={viewingBeat.cover_image || "/placeholder.svg"}
                   alt={viewingBeat.title}
                   width={100}
                   height={100}
@@ -227,8 +228,12 @@ export default function TracklistDashboard() {
                     <Badge>{viewingBeat.bpm} BPM</Badge>
                     <Badge>{viewingBeat.key}</Badge>
                     <Badge>{viewingBeat.duration || "3:00"}</Badge>
-                    <Badge className={viewingBeat.status === "Active" ? "bg-green-600" : "bg-zinc-600"}>
-                      {viewingBeat.status}
+                    <Badge className={viewingBeat.status === "active" ? "bg-green-600" : "bg-zinc-600"}>
+                      {viewingBeat.status === "active"
+                        ? "Active"
+                        : viewingBeat.status === "draft"
+                          ? "Draft"
+                          : "Archived"}
                     </Badge>
                   </div>
                 </div>
@@ -245,10 +250,10 @@ export default function TracklistDashboard() {
                   <p className="text-sm text-muted-foreground">{viewingBeat.description}</p>
                 </div>
               )}
-              {viewingBeat.beatstarsLink && (
+              {viewingBeat.beatstars_link && (
                 <div>
                   <Label>BeatStars Link</Label>
-                  <p className="text-sm text-muted-foreground break-all">{viewingBeat.beatstarsLink}</p>
+                  <p className="text-sm text-muted-foreground break-all">{viewingBeat.beatstars_link}</p>
                 </div>
               )}
             </div>
@@ -341,9 +346,9 @@ export default function TracklistDashboard() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Active">Active</SelectItem>
-                      <SelectItem value="Draft">Draft</SelectItem>
-                      <SelectItem value="Archived">Archived</SelectItem>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="draft">Draft</SelectItem>
+                      <SelectItem value="archived">Archived</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -361,8 +366,8 @@ export default function TracklistDashboard() {
                 <Label htmlFor="edit-beatstars-link">BeatStars Link</Label>
                 <Input
                   id="edit-beatstars-link"
-                  value={editingBeat.beatstarsLink}
-                  onChange={(e) => setEditingBeat({ ...editingBeat, beatstarsLink: e.target.value })}
+                  value={editingBeat.beatstars_link || ""}
+                  onChange={(e) => setEditingBeat({ ...editingBeat, beatstars_link: e.target.value })}
                   placeholder="https://beatstars.com/catmatildabeat/your-beat"
                 />
               </div>

@@ -13,6 +13,7 @@ import PopularGenres from "@/components/popular-genres"
 import YouTubeSection from "@/components/youtube-section"
 import TracklistSection from "@/components/tracklist-section"
 import MobileScrollContainer from "@/components/mobile-scroll-container"
+import ScratchBeatSection from "@/components/scratch-beat-section"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { useBeats } from "@/components/beats-context"
@@ -321,6 +322,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/*<ScratchBeatSection /*>}
 
       {/* Tracklist Section */}
       <section className="pt-4 pb-3 md:pt-12 md:pb-8">

@@ -23,6 +23,8 @@ const gafata = Gafata({
   display: "swap",
 })
 
+const enableAnalytics = (process.env.NEXT_PUBLIC_ENABLE_ANALYTICS || "").toLowerCase() === "true"
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://catmatildabeat.com"),
   title: "Cat Matilda Beat | Feel the Beat and get Inspired.",
@@ -89,16 +91,22 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${gafata.variable} font-sans text-foreground min-h-screen flex flex-col`}
       >
-        <Script src="https://www.googletagmanager.com/gtag/js?id=G-CNGZHHYF1Y" strategy="afterInteractive" />
-        <Script id="gtag-init" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || []
-            function gtag(){dataLayer.push(arguments)}
-            gtag('js', new Date())
+        {enableAnalytics && (
+          <>
+            <Script src="https://www.googletagmanager.com/gtag/js?id=G-CNGZHHYF1Y" strategy="afterInteractive" />
+            <Script id="gtag-init" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || []
+                function gtag(){dataLayer.push(arguments)}
+                gtag('js', new Date())
 
-            gtag('config', 'G-CNGZHHYF1Y')
-          `}
-        </Script>
+                gtag('config', 'G-CNGZHHYF1Y', {
+                  page_path: window.location.pathname,
+                })
+              `}
+            </Script>
+          </>
+        )}
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <BeatsProvider>
             <AudioPlayerProvider>

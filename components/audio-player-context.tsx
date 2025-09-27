@@ -8,7 +8,7 @@ interface Track {
   artist: string
   audioSrc: string
   coverImage: string
-  type?: "beat" | "track"
+  type?: "beat" | "track" | "sample-pack"
   beatstarsLink?: string
   duration?: number // Duration in seconds
   durationString?: string // Duration as string from database (e.g., "3:30")

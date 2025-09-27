@@ -421,10 +421,11 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
       // Upload cover image if provided
       if (coverImage) {
         const tempId = Date.now().toString()
-        coverImageUrl = await beatOperations.uploadImage(coverImage, tempId)
-        if (!coverImageUrl) {
+        const uploadedCover = await beatOperations.uploadImage(coverImage, tempId)
+        if (!uploadedCover) {
           throw new Error("Failed to upload cover image")
         }
+        coverImageUrl = uploadedCover
       } else {
         // Use placeholder image if no image uploaded
         coverImageUrl = `/placeholder.svg?height=400&width=400&query=${encodeURIComponent(formData.title + " beat cover")}`
@@ -438,10 +439,11 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
         const minutes = Math.floor(durationSeconds / 60)
         const seconds = Math.round(durationSeconds % 60)
         const finalDurationString = `${minutes}:${seconds.toString().padStart(2, "0")}`
-        audioFileUrl = await uploadAudioFile(previewFile, tempId)
-        if (!audioFileUrl) {
+        const uploadedAudio = await uploadAudioFile(previewFile, tempId)
+        if (!uploadedAudio) {
           throw new Error("Failed to upload audio file")
         }
+        audioFileUrl = uploadedAudio
         // Set form field for consistency (not relied upon for payload)
         setFormData((prev) => ({ ...prev, duration: finalDurationString }))
         previewDurationString = finalDurationString
