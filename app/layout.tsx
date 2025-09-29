@@ -25,6 +25,15 @@ const gafata = Gafata({
 
 const enableAnalytics = (process.env.NEXT_PUBLIC_ENABLE_ANALYTICS || "").toLowerCase() === "true"
 
+const supabaseOrigin = (() => {
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://tdaoebkpidwdhwevospu.supabase.co"
+    return new URL(url).origin
+  } catch {
+    return null
+  }
+})()
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://catmatildabeat.com"),
   title: "Cat Matilda Beat | Feel the Beat and get Inspired.",
@@ -88,6 +97,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {supabaseOrigin && (
+          <>
+            <link rel="dns-prefetch" href={supabaseOrigin} />
+            <link rel="preconnect" href={supabaseOrigin} crossOrigin="anonymous" />
+          </>
+        )}
+        {enableAnalytics && (
+          <>
+            <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+            <link rel="preconnect" href="https://www.google-analytics.com" crossOrigin="anonymous" />
+          </>
+        )}
+      </head>
       <body
         className={`${inter.variable} ${gafata.variable} font-sans text-foreground min-h-screen flex flex-col`}
       >

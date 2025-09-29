@@ -54,7 +54,9 @@ export default function MobileScrollContainer({ children, className = "" }: Mobi
           size="icon"
           className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm shadow-md hover:bg-background/90 md:hidden"
           onClick={scrollLeft}
+          aria-label="Scroll items left"
         >
+          <span className="sr-only">Scroll items left</span>
           <ChevronLeft className="h-4 w-4" />
         </Button>
       )}
@@ -75,7 +77,9 @@ export default function MobileScrollContainer({ children, className = "" }: Mobi
           size="icon"
           className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm shadow-md hover:bg-background/90 md:hidden"
           onClick={scrollRight}
+          aria-label="Scroll items right"
         >
+          <span className="sr-only">Scroll items right</span>
           <ChevronRight className="h-4 w-4" />
         </Button>
       )}

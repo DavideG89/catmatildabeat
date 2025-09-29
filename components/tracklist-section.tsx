@@ -142,7 +142,15 @@ export default function TracklistSection() {
                     <button
                       onClick={() => handlePlayTrack(beat)}
                       className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg opacity-0 hover:opacity-100 transition-opacity"
+                      aria-label={`${
+                        currentTrack?.id === beat.id && isPlaying ? "Pause" : "Play"
+                      } ${beat.title}`}
                     >
+                      <span className="sr-only">
+                        {currentTrack?.id === beat.id && isPlaying
+                          ? `Pause ${beat.title}`
+                          : `Play ${beat.title}`}
+                      </span>
                       {currentTrack?.id === beat.id && isPlaying ? (
                         <Pause className="h-6 w-6 text-white" />
                       ) : (

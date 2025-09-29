@@ -1,7 +1,16 @@
 import { createClient } from "@supabase/supabase-js"
 
 // Prefer env vars; fallback to existing values (replace these in .env.local)
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://tdaoebkpidwdhwevospu.supabase.co"
+export const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "https://tdaoebkpidwdhwevospu.supabase.co"
+export const supabaseOrigin = (() => {
+  try {
+    return new URL(supabaseUrl).origin
+  } catch {
+    return null
+  }
+})()
+
 const supabaseAnonKey =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkYW9lYmtwaWR3ZGh3ZXZvc3B1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0NzQzNjUsImV4cCI6MjA3MzA1MDM2NX0.2pF02bCD90FZfGuSjCB2Prs7BFMBnPLLyJ50F9RmEEM"

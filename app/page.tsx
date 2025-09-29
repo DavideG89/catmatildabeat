@@ -202,7 +202,9 @@ export default function Home() {
                         type="button"
                         onClick={clearSearch}
                         className="absolute right-16 md:right-20 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        aria-label="Clear search"
                       >
+                        <span className="sr-only">Clear search</span>
                         <X className="h-4 w-4" />
                       </button>
                     )}

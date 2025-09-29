@@ -128,7 +128,9 @@ export default function PopularGenres() {
               size="icon"
               className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white"
               onClick={scrollLeft}
+              aria-label="Scroll genres left"
             >
+              <span className="sr-only">Scroll genres left</span>
               <ChevronLeft className="h-4 w-4" />
             </Button>
 
@@ -137,7 +139,9 @@ export default function PopularGenres() {
               size="icon"
               className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white"
               onClick={scrollRight}
+              aria-label="Scroll genres right"
             >
+              <span className="sr-only">Scroll genres right</span>
               <ChevronRight className="h-4 w-4" />
             </Button>
           </>
