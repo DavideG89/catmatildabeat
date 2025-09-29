@@ -4,6 +4,7 @@ import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { Play, ChevronRight, Clock, Music, Search, X, Pause, ExternalLink } from "lucide-react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import TrendingBeats from "@/components/trending-beats"
@@ -314,9 +315,14 @@ export default function Home() {
             {/* Right: Visual panel */}
             <div className="order-1 md:order-2 w-full">
               <div className="relative">
-                <img
+                <Image
                   src="/img/loop_cat.gif"
                   alt="Studio preview"
+                  width={500}
+                  height={401}
+                  priority
+                  unoptimized
+                  fetchPriority="high"
                   className="w-full h-auto max-h-[480px] object-contain sm:h-full sm:max-h-none sm:object-cover sm:aspect-video md:aspect-[4/3]"
                 />
               </div>
