@@ -45,7 +45,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
   ]
-
+/*
   const genrePages: MetadataRoute.Sitemap = genreNames.map((genre) => {
     const genreParam = encodeURIComponent(genre)
 
@@ -57,4 +57,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
   })
 
   return [...staticPages, ...genrePages]
+*/
 }
