@@ -55,7 +55,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     }
   })
-
-  return [...staticPages, ...genrePages]
 */
+  return [...staticPages]
 }
