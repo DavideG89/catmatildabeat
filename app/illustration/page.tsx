@@ -1,69 +1,49 @@
-import type { Metadata } from "next"
-import Image from "next/image"
 import Link from "next/link"
 
-import { Card, CardContent } from "@/components/ui/card"
+import IllustrationGallery from "@/components/illustration-gallery"
 import { Button } from "@/components/ui/button"
 
 const illustrations = [
-  {
-    title: "Synthwave Reverie",
-    description:
-      "Ritratti cinematici con luci al neon che evocano la dimensione futurista dei beat di Cat Matilda.",
-    image: "/img/Cat_Genre_u9585422994_keep_realistic_black_cat_and_change_color_backgro_23cc16e6-eb15-4165-9239-f18e7d3eaa25_2.jpg",
-  },
-  {
-    title: "Studio Glow",
-    description: "La postazione sonora di Cat Matilda trasformata in poster illustrato a tinte analogiche.",
-    image: "/img/CatMatildaStudio.jpg",
-  },
-  {
-    title: "Feline Frequencies",
-    description:
-      "Sovrapposizioni di texture e glitch delicati per raccontare il ritmo felino dietro ogni produzione.",
-    image: "/img/Cat_Genre_u9585422994_keep_realistic_black_cat_and_change_solid_color_b_bae04826-da40-4261-a588-cd65f0c56282_2.jpg",
-  },
-  {
-    title: "Chromatic Nights",
-    description:
-      "Palette audaci e contrasti cromatici pensati per release notturne e campagne social.",
-    image: "/img/Cat_Genre_u9585422994_realistic_black_cat_and_solid_color_background_--_7353baf1-5db6-494a-95d6-868f93e63e40_2.jpg",
-  },
-  {
-    title: "Scratch Memories",
-    description:
-      "Illustrazioni che uniscono vinili, graffi e storytelling visivo per merch e cover art.",
-    image: "/img/Cat_Genre_u9585422994_keep_realistic_black_cat_and_change_solid_green_c_14c08551-d0e2-4f2d-86d9-db3005094aa1_1.jpg",
-  },
-  {
-    title: "Dreamscape Sessions",
-    description:
-      "Atmosfere soft-focus ispirate ai momenti di studio e alle sessioni di scrittura condivise.",
-    image: "/img/Cat_Genre_u9585422994_realistic_black_cat_and_solid_color_background_--_7353baf1-5db6-494a-95d6-868f93e63e40_3.jpg",
-  },
+ 
   {
     title: "Quadro 1",
     description:
       "Opera pittorica che cattura l'energia di Cat Matilda con trattamenti analogici e texture materiche.",
-    image: "/img/Quadro%201.jpg",
+    image: {
+      src: "/img/Quadro%201.jpg",
+      width: 1280,
+      height: 983,
+    },
   },
   {
     title: "Quadro 2",
     description:
       "Interpretazione illustrata in formato fisico, digitalizzata per cataloghi e showcase online.",
-    image: "/img/Quadro%202.jpg",
+    image: {
+      src: "/img/Quadro%202.jpg",
+      width: 1280,
+      height: 983,
+    },
   },
   {
     title: "Quadro 3",
     description:
       "Palette calde e pennellate dinamiche per narrare il lato emotivo delle produzioni di Cat Matilda.",
-    image: "/img/Quadro%203.jpg",
+    image: {
+      src: "/img/Quadro%203.jpg",
+      width: 1280,
+      height: 983,
+    },
   },
   {
     title: "Quadro 4",
     description:
       "Composizione su tela con focus sul ritmo grafico, ideale per esposizioni e stampe large format.",
-    image: "/img/Quadro%204.jpg",
+    image: {
+      src: "/img/Quadro%204.jpg",
+      width: 1280,
+      height: 983,
+    },
   },
 ]
 
@@ -85,29 +65,6 @@ const processHighlights = [
   },
 ]
 
-export const metadata: Metadata = {
-  title: "Illustrazioni | Cat Matilda Beat",
-  description:
-    "Scopri la galleria di illustrazioni dedicate a Cat Matilda: poster, ritratti e visual storytelling per release e collaborazioni.",
-  alternates: {
-    canonical: "/illustration",
-  },
-  openGraph: {
-    title: "Illustrazioni | Cat Matilda Beat",
-    description:
-      "Visual originali, poster esclusivi e concept grafici che traducono l'energia dei beat di Cat Matilda in immagini.",
-    url: "/illustration",
-    images: [
-      {
-        url: "/img/Cat_Genre_u9585422994_keep_realistic_black_cat_and_change_color_backgro_23cc16e6-eb15-4165-9239-f18e7d3eaa25_2.jpg",
-        width: 1200,
-        height: 1600,
-        alt: "Illustrazione di Cat Matilda con luci al neon",
-      },
-    ],
-  },
-}
-
 export default function IllustrationPage() {
   return (
     <div className="container mx-auto px-4 py-6 md:py-12 mb-24">
@@ -124,26 +81,7 @@ export default function IllustrationPage() {
       </section>
 
       <section className="mb-12 md:mb-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {illustrations.map((item) => (
-            <Card key={item.title} className="overflow-hidden border-border/60 bg-card/90 backdrop-blur card-hover-effect">
-              <div className="relative aspect-[4/5] w-full overflow-hidden">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                  className="object-cover transition-transform duration-300 hover:scale-105"
-                  priority={item.title === "Synthwave Reverie"}
-                />
-              </div>
-              <CardContent className="pt-6">
-                <h3 className="text-lg md:text-xl font-semibold mb-2">{item.title}</h3>
-                <p className="text-sm md:text-base text-muted-foreground">{item.description}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <IllustrationGallery items={illustrations} />
       </section>
 
       <section className="mb-12 md:mb-16">
