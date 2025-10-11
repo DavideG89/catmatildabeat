@@ -98,6 +98,12 @@ export default function Header() {
             <Link href="/about" className={`nav-link ${isActive("/about") ? "nav-link-active" : ""}`}>
               About
             </Link>
+            <Link
+              href="/illustration"
+              className={`nav-link ${isActive("/illustration") ? "nav-link-active" : ""}`}
+            >
+              Illustration
+            </Link>
             <Link href="/contact" className={`nav-link ${isActive("/contact") ? "nav-link-active" : ""}`}>
               Contact
             </Link>
@@ -144,6 +150,7 @@ export default function Header() {
                   { href: "/", label: "Home" },
                   { href: "/beats", label: "Beats" },
                   { href: "/about", label: "About" },
+                  { href: "/illustration", label: "Illustration" },
                   { href: "/contact", label: "Contact" },
                 ].map((item) => (
                   <motion.div

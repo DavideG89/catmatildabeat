@@ -40,6 +40,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${SITE_URL}/illustration`,
+      lastModified: LAST_MODIFIED,
+      priority: 0.8,
+    },
+    {
       url: `${SITE_URL}/contact`,
       lastModified: LAST_MODIFIED,
       priority: 0.8,
