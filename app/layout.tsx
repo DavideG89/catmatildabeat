@@ -123,9 +123,7 @@ export default function RootLayout({
                 function gtag(){dataLayer.push(arguments)}
                 gtag('js', new Date())
 
-                gtag('config', 'G-HG5MGWJS48', {
-                  page_path: window.location.pathname,
-                })
+                gtag('config', 'G-HG5MGWJS48')
               `}
             </Script>
           </>
