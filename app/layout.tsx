@@ -116,7 +116,7 @@ export default function RootLayout({
       >
         {enableAnalytics && (
           <>
-            <Script src="https://www.googletagmanager.com/gtag/js?id=G-CNGZHHYF1Y" strategy="afterInteractive" />
+            <Script src="https://www.googletagmanager.com/gtag/js?id=G-HG5MGWJS48" strategy="afterInteractive" />
             <Script id="gtag-init" strategy="afterInteractive">
               {`
                 window.dataLayer = window.dataLayer || []
