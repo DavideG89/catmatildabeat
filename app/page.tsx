@@ -359,6 +359,49 @@ export default function Home() {
       <section className="pt-4 pb-3 md:pt-12 md:pb-8">
         <TracklistSection />
       </section>
+      
+ {/* Illustration Intro Section */}
+ <section className="py-10 md:py-16 bg-transparent">
+        <div className="container mx-auto px-4">
+          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
+            <div className="space-y-5 max-w-xl">
+              <h2 className="text-3xl md:text-4xl font-bold font-heading">
+              The visual side of our sound.
+              </h2>
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+              A visual journey through colors, moods, and stories crafted by <Link rel="stylesheet" className="text-brand-600"href="https://www.instagram.com/jmoon_0000?igsh=ZGJ5MDh0MnN6MGd6" >J Moon </Link> who bring Matilda’s universe to life.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button size="lg" className="bg-brand-600 hover:bg-brand-500" asChild>
+                  <Link href="/illustration">Explore the gallery</Link>
+                </Button>
+                <Button size="lg" variant="outline" className="border-brand-600 text-brand-600 hover:bg-brand-500/10" asChild>
+                  <Link href="/contact">Request your own illustration</Link>
+                </Button>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {illustrationPreviews.map((item) => (
+                <div
+                  key={item.caption}
+                  className="group relative overflow-hidden rounded-2xl border border-border/60 bg-background/60 shadow-sm"
+                >
+                  <Image
+                    src={item.src}
+                    alt={item.alt}
+                    width={640}
+                    height={492}
+                    className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent p-4">
+                    <p className="text-sm font-medium text-white">{item.caption}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Featured Content Tabs - Horizontal Scrolling for All Devices */}
       <section className="pt-3 pb-6 md:pt-10 md:pb-16 bg-transparent">
@@ -417,52 +460,6 @@ export default function Home() {
           
           </div>
           <PopularGenres />
-        </div>
-      </section>
-
-    {/* Illustration Intro Section */}
-    <section className="py-10 md:py-16 bg-transparent">
-        <div className="container mx-auto px-4">
-          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
-            <div className="space-y-5">
-              <span className="inline-flex items-center rounded-full border border-brand-500/40 bg-brand-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-brand-600">
-                Cat Matilda Art
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold font-heading">
-              The visual side of our sound.
-              </h2>
-              <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-              A visual journey through colors, moods, and stories — crafted by talented artists who bring Matilda’s universe to life.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button size="lg" className="bg-brand-600 hover:bg-brand-500" asChild>
-                  <Link href="/illustration">Explore the gallery</Link>
-                </Button>
-                <Button size="lg" variant="outline" className="border-brand-600 text-brand-600 hover:bg-brand-500/10" asChild>
-                  <Link href="/contact">Request your own illustration</Link>
-                </Button>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {illustrationPreviews.map((item) => (
-                <div
-                  key={item.caption}
-                  className="group relative overflow-hidden rounded-2xl border border-border/60 bg-background/60 shadow-sm"
-                >
-                  <Image
-                    src={item.src}
-                    alt={item.alt}
-                    width={640}
-                    height={492}
-                    className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent p-4">
-                    <p className="text-sm font-medium text-white">{item.caption}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 
