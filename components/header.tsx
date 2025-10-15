@@ -83,7 +83,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-16 md:h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 z-10">
-            <img src="/img/logo_Cat_Matilda.png" alt="Cat Matilda Logo" width={120} />
+            <img src="/img/logo-150px.png" alt="Cat Matilda Logo" width={64}/>
             {/*<span className="text-lg md:text-xl font-bold gradient-text font-heading">Cat Matilda Beat</span>*/}
           </Link>
 

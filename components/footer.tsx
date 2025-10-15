@@ -18,7 +18,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <img src="/img/logo_Cat_Matilda.png" alt="Cat Matilda Logo" className="h-8 w-auto md:h-10" />
+              <img src="/img/logo-150px.png" alt="Cat Matilda Logo" className="h-14 w-auto md:h-14" />
             </div>
             <p className="text-sm text-muted-foreground mb-4">
               Feel the Beat and get Inspired. No curse, just beat.

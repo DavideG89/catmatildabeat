@@ -8,7 +8,7 @@ const illustrations = [
   {
     title: "Quadro 1",
     description:
-      "Opera pittorica che cattura l'energia di Cat Matilda con trattamenti analogici e texture materiche.",
+      "Tbd.",
     image: {
       src: "/img/Quadro%201.jpg",
       width: 1280,
@@ -18,7 +18,7 @@ const illustrations = [
   {
     title: "Quadro 2",
     description:
-      "Interpretazione illustrata in formato fisico, digitalizzata per cataloghi e showcase online.",
+      "Tbd.",
     image: {
       src: "/img/Quadro%202.jpg",
       width: 1280,
@@ -28,7 +28,7 @@ const illustrations = [
   {
     title: "Quadro 3",
     description:
-      "Palette calde e pennellate dinamiche per narrare il lato emotivo delle produzioni di Cat Matilda.",
+      "Tbd.",
     image: {
       src: "/img/Quadro%203.jpg",
       width: 1280,
@@ -38,7 +38,7 @@ const illustrations = [
   {
     title: "Quadro 4",
     description:
-      "Composizione su tela con focus sul ritmo grafico, ideale per esposizioni e stampe large format.",
+      "Tbd.",
     image: {
       src: "/img/Quadro%204.jpg",
       width: 1280,
