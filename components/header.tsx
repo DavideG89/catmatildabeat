@@ -80,10 +80,10 @@ export default function Header() {
       className={`sticky top-0 z-50 transition-all duration-300 ${headerStyle}`}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 md:h-16">
+        <div className="flex items-center justify-between h-18 md:h-18">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 z-10">
-            <img src="/img/logo-150px.png" alt="Cat Matilda Logo" width={64}/>
+            <img src="/img/logo-150px.png" alt="Cat Matilda Logo" width={80}/>
             {/*<span className="text-lg md:text-xl font-bold gradient-text font-heading">Cat Matilda Beat</span>*/}
           </Link>
 
