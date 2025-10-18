@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation"
 import { useBeats } from "@/components/beats-context"
 import { useAudioPlayer } from "@/components/audio-player-context"
 
+
 export default function Home() {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
@@ -166,190 +167,194 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen mb-24 overflow-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-[70vh] md:min-h-[50vh] flex items-center justify-center overflow-visible">
-        <div className="container mx-auto px-4 z-10 relative">
-          <div className="grid md:grid-cols-2 items-center gap-6 md:gap-12">
-            {/* Left: Heading, CTAs, Search */}
-            <div className="order-2 md:order-1 space-y-4 md:space-y-6 max-w-xl">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-3 md:mb-5 leading-tight font-heading text-left">
-                  Feel the Beat and get Inspired.
-                </h1>
-                <p className="text-lg sm:text-xl md:text-2xl mb-4 md:mb-6 text-foreground">
-                  No curse, just beat
-                </p>
-                <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-start">
-                  <Button
-                    size="lg"
-                    className="bg-brand-600 hover:bg-brand-500 text-base md:text-lg px-5 md:px-7 transition-all"
-                  >
-                    <Link href="/beats">Browse Beats marketplace</Link>
-                  </Button>
-                  <Button size="lg" variant="outline" className="text-base md:text-lg px-5 md:px-7" asChild>
-                    <Link href="https://www.beatstars.com/catmatildabeat">Brows on Beatstar</Link>
-                  </Button>
-                </div>
-              </motion.div>
-
-              {/* Enhanced Search Bar */}
-              <motion.div
-                ref={searchContainerRef}
-                className="relative"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-              >
-                <form onSubmit={handleSearchSubmit}>
-                  <div className="relative">
-                    <div className="absolute left-3 top-0 h-full flex items-center">
-                      <Search className="text-brand-900/80 h-4 w-4 md:h-5 md:w-5" />
-                    </div>
-                    <input
-                      ref={searchInputRef}
-                      type="text"
-                      value={searchQuery}
-                      onChange={handleSearchChange}
-                      placeholder="Search beats, genres, moods, BPM..."
-                      className="w-full bg-white text-brand-500 placeholder:text-gray-400 border border-black rounded-full py-3 md:py-4 pl-10 md:pl-12 pr-28 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-base"
-                    />
-                    {searchQuery && (
-                      <button
-                        type="button"
-                        onClick={clearSearch}
-                        className="absolute right-16 md:right-20 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                        aria-label="Clear search"
-                      >
-                        <span className="sr-only">Clear search</span>
-                        <X className="h-4 w-4" />
-                      </button>
-                    )}
-                    <Button
-                      type="submit"
-                      className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full bg-brand-600 hover:bg-brand-500 h-9 md:h-10 px-4 md:px-6 transition-colors text-sm"
-                    >
-                      Search
-                    </Button>
-                  </div>
-                </form>
-
-                {/* Quick chips */}
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {["HipHop", "Alternative HipHop", "Lo-Fi", "Rap"].map((chip) => (
-                    <button
-                      key={chip}
-                      type="button"
-                      onClick={() => setSearchQuery(chip)}
-                      className="px-3 py-1 rounded-full border border-black/10 text-sm hover:bg-black/5"
-                    >
-                      {chip}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Search Results Dropdown */}
-                {showSearchResults && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border border-border/60 rounded-xl shadow-2xl ring-1 ring-black/10 dark:ring-white/10 z-50 max-h-96 overflow-y-auto">
-                    {isSearching ? (
-                      <div className="p-6 text-center">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-500 mx-auto mb-2" />
-                        <p className="text-muted-foreground text-sm">Searching...</p>
-                      </div>
-                    ) : searchResults.length > 0 ? (
-                      <>
-                        <div className="p-4">
-                          <h3 className="text-sm font-medium text-muted-foreground mb-3">
-                            Search Results for "{searchQuery}"
-                          </h3>
-                          <div className="space-y-1">
-                            {searchResults.map((beat) => (
-                              <div
-                                key={beat.id}
-                                onClick={() => handleBeatClick(beat.id)}
-                                className="flex items-center gap-3 p-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors"
-                              >
-                                <img
-                                  src={beat.cover_image || beat.coverImage || "/placeholder.svg?height=48&width=48"}
-                                  alt={beat.title}
-                                  className="w-12 h-12 rounded-lg object-cover"
-                                />
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="font-medium text-sm truncate">{beat.title}</h4>
-                                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <span>{beat.genre}</span>
-                                    <span>•</span>
-                                    <span>{beat.bpm} BPM</span>
-                                    <span>•</span>
-                                    <span>{beat.key}</span>
-                                  </div>
-                                  {beat.tags && (
-                                    <div className="flex items-center gap-1 mt-1">
-                                      {beat.tags.slice(0, 2).map((tag: string, index: number) => (
-                                        <span
-                                          key={index}
-                                          className="px-2 py-0.5 bg-brand-500/20 text-brand-500 text-xs rounded-full"
-                                        >
-                                          {tag}
-                                        </span>
-                                      ))}
-                                    </div>
-                                  )}
-                                </div>
-                                {/* Price removed in search dropdown */}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="border-t border-border p-3">
-                          <button
-                            onClick={handleViewAllResults}
-                            className="w-full text-center text-sm text-brand-500 hover:text-brand-400 font-medium transition-colors py-2"
-                          >
-                            View all results for "{searchQuery}"
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="p-6 text-center">
-                        <p className="text-muted-foreground text-sm mb-3">No beats found for "{searchQuery}"</p>
-                        <div className="text-xs text-muted-foreground">
-                          <p className="mb-2">Try searching by:</p>
-                          <div className="flex flex-wrap justify-center gap-2">
-                            <span className="px-2 py-1 bg-muted rounded text-xs">Genre (rap, hiphop)</span>
-                            <span className="px-2 py-1 bg-muted rounded text-xs">Mood (dark, chill)</span>
-                            <span className="px-2 py-1 bg-muted rounded text-xs">BPM (140, 95)</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </motion.div>
-            </div>
-
-            {/* Right: Visual panel */}
-            <div className="order-1 md:order-2 w-full">
-              <div className="relative">
-                <Image
-                  src="/img/loop_cat.gif"
-                  alt="Studio preview"
-                  width={500}
-                  height={401}
-                  priority
-                  unoptimized
-                  fetchPriority="high"
-                  className="w-full h-auto max-h-[480px] object-contain sm:h-full sm:max-h-none sm:object-cover sm:aspect-video md:aspect-[4/3]"
-                />
-              </div>
-            </div>
-          </div>
+      <section className="relative min-h-[70vh] md:min-h-[82vh] flex items-center justify-center overflow-visible">
+        <div className="flex items-center h-18 md:h-18">
+          <img src="/Logo-Big.png" width={350} alt="" />
         </div>
       </section>
 
+        <section className="relative min-h-[70vh] md:min-h-[50vh] flex items-center justify-center overflow-visible">
+        <div className="container mx-auto px-4 z-10 relative">
+                  <div className="grid md:grid-cols-2 items-center gap-6 md:gap-12">
+                    {/* Left: Heading, CTAs, Search */}
+                    <div className="order-2 md:order-1 space-y-4 md:space-y-6 max-w-xl">
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                      >
+                        <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-3 md:mb-5 leading-tight font-heading text-left">
+                          Feel the Beat and get Inspired.
+                        </h1>
+                        <p className="text-lg sm:text-xl md:text-2xl mb-4 md:mb-6 text-foreground">
+                          No curse, just beat
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-start">
+                          <Button
+                            size="lg"
+                            className="bg-brand-600 hover:bg-brand-500 text-base md:text-lg px-5 md:px-7 transition-all"
+                          >
+                            <Link href="/beats">Browse Beats marketplace</Link>
+                          </Button>
+                          <Button size="lg" variant="outline" className="text-base md:text-lg px-5 md:px-7" asChild>
+                            <Link href="https://www.beatstars.com/catmatildabeat">Brows on Beatstar</Link>
+                          </Button>
+                        </div>
+                      </motion.div>
 
+                      {/* Enhanced Search Bar */}
+                      <motion.div
+                        ref={searchContainerRef}
+                        className="relative"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2, duration: 0.5 }}
+                      >
+                        <form onSubmit={handleSearchSubmit}>
+                          <div className="relative">
+                            <div className="absolute left-3 top-0 h-full flex items-center">
+                              <Search className="text-brand-900/80 h-4 w-4 md:h-5 md:w-5" />
+                            </div>
+                            <input
+                              ref={searchInputRef}
+                              type="text"
+                              value={searchQuery}
+                              onChange={handleSearchChange}
+                              placeholder="Search beats, genres, moods, BPM..."
+                              className="w-full bg-white text-brand-500 placeholder:text-gray-400 border border-black rounded-full py-3 md:py-4 pl-10 md:pl-12 pr-28 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-base"
+                            />
+                            {searchQuery && (
+                              <button
+                                type="button"
+                                onClick={clearSearch}
+                                className="absolute right-16 md:right-20 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                aria-label="Clear search"
+                              >
+                                <span className="sr-only">Clear search</span>
+                                <X className="h-4 w-4" />
+                              </button>
+                            )}
+                            <Button
+                              type="submit"
+                              className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full bg-brand-600 hover:bg-brand-500 h-9 md:h-10 px-4 md:px-6 transition-colors text-sm"
+                            >
+                              Search
+                            </Button>
+                          </div>
+                        </form>
+
+                        {/* Quick chips */}
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {["HipHop", "Alternative HipHop", "Lo-Fi", "Rap"].map((chip) => (
+                            <button
+                              key={chip}
+                              type="button"
+                              onClick={() => setSearchQuery(chip)}
+                              className="px-3 py-1 rounded-full border border-black/10 text-sm hover:bg-black/5"
+                            >
+                              {chip}
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Search Results Dropdown */}
+                        {showSearchResults && (
+                          <div className="absolute top-full left-0 right-0 mt-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border border-border/60 rounded-xl shadow-2xl ring-1 ring-black/10 dark:ring-white/10 z-50 max-h-96 overflow-y-auto">
+                            {isSearching ? (
+                              <div className="p-6 text-center">
+                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-500 mx-auto mb-2" />
+                                <p className="text-muted-foreground text-sm">Searching...</p>
+                              </div>
+                            ) : searchResults.length > 0 ? (
+                              <>
+                                <div className="p-4">
+                                  <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                                    Search Results for "{searchQuery}"
+                                  </h3>
+                                  <div className="space-y-1">
+                                    {searchResults.map((beat) => (
+                                      <div
+                                        key={beat.id}
+                                        onClick={() => handleBeatClick(beat.id)}
+                                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors"
+                                      >
+                                        <img
+                                          src={beat.cover_image || beat.coverImage || "/placeholder.svg?height=48&width=48"}
+                                          alt={beat.title}
+                                          className="w-12 h-12 rounded-lg object-cover"
+                                        />
+                                        <div className="flex-1 min-w-0">
+                                          <h4 className="font-medium text-sm truncate">{beat.title}</h4>
+                                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                            <span>{beat.genre}</span>
+                                            <span>•</span>
+                                            <span>{beat.bpm} BPM</span>
+                                            <span>•</span>
+                                            <span>{beat.key}</span>
+                                          </div>
+                                          {beat.tags && (
+                                            <div className="flex items-center gap-1 mt-1">
+                                              {beat.tags.slice(0, 2).map((tag: string, index: number) => (
+                                                <span
+                                                  key={index}
+                                                  className="px-2 py-0.5 bg-brand-500/20 text-brand-500 text-xs rounded-full"
+                                                >
+                                                  {tag}
+                                                </span>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </div>
+                                        {/* Price removed in search dropdown */}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                                <div className="border-t border-border p-3">
+                                  <button
+                                    onClick={handleViewAllResults}
+                                    className="w-full text-center text-sm text-brand-500 hover:text-brand-400 font-medium transition-colors py-2"
+                                  >
+                                    View all results for "{searchQuery}"
+                                  </button>
+                                </div>
+                              </>
+                            ) : (
+                              <div className="p-6 text-center">
+                                <p className="text-muted-foreground text-sm mb-3">No beats found for "{searchQuery}"</p>
+                                <div className="text-xs text-muted-foreground">
+                                  <p className="mb-2">Try searching by:</p>
+                                  <div className="flex flex-wrap justify-center gap-2">
+                                    <span className="px-2 py-1 bg-muted rounded text-xs">Genre (rap, hiphop)</span>
+                                    <span className="px-2 py-1 bg-muted rounded text-xs">Mood (dark, chill)</span>
+                                    <span className="px-2 py-1 bg-muted rounded text-xs">BPM (140, 95)</span>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </motion.div>
+                    </div>
+
+                    {/* Right: Visual panel */}
+                    <div className="order-1 md:order-2 w-full">
+                      <div className="relative">
+                        <Image
+                          src="/img/loop_cat.gif"
+                          alt="Studio preview"
+                          width={500}
+                          height={401}
+                          priority
+                          unoptimized
+                          fetchPriority="high"
+                          className="w-full h-auto max-h-[480px] object-contain sm:h-full sm:max-h-none sm:object-cover sm:aspect-video md:aspect-[4/3]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+        </div>
+        </section>
       {/* Scratch Card Section */}
       
       {/*<ScratchBeatSection/>*/}

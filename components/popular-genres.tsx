@@ -10,15 +10,15 @@ import { useMemo, useRef } from "react"
 
 // Backgrounds from public/img
 const genreImages = [
-  "/img/Cat_Genre_u9585422994_keep_realistic_black_cat_and_change_solid_color_b_a9450805-76b3-4753-9be2-cd4d413497df_0.jpg",
-  "/img/Cat_Genre_u9585422994_keep_realistic_black_cat_and_change_color_backgro_618cfb61-328d-41a3-a19b-ff777c110abf_1.jpg",
-  "/img/Cat_Genre_u9585422994_realistic_black_cat_and_solid_color_background_--_7353baf1-5db6-494a-95d6-868f93e63e40_0.jpg",
-  "/img/Cat_Genre_u9585422994_keep_realistic_black_cat_and_change_solid_color_b_bae04826-da40-4261-a588-cd65f0c56282_2.jpg",
-  "/img/Cat_Genre_u9585422994_keep_realistic_black_cat_and_change_color_backgro_23cc16e6-eb15-4165-9239-f18e7d3eaa25_2.jpg",
-  "/img/Cat_Genre_u9585422994_keep_realistic_black_cat_and_change_solid_green_c_14c08551-d0e2-4f2d-86d9-db3005094aa1_1.jpg",
-  "/img/Cat_Genre_u9585422994_realistic_black_cat_and_solid_color_background_--_7353baf1-5db6-494a-95d6-868f93e63e40_2.jpg",
-  "/img/Cat_Genre_u9585422994_realistic_black_cat_and_solid_color_background_--_7353baf1-5db6-494a-95d6-868f93e63e40_3.jpg",
-  "/img/Cat_Genre_u9585422994_realistic_black_cat_and_solid_color_background_--_f153c4db-515f-458e-9235-85365e31174d_1.jpg",
+  "/img/Alternative.png",
+  "/img/CHILL.png",
+  "/img/CLASSIC(Full HD).png",
+  "/img/FUSION.png",
+  "/img/Pop.png",
+  "/img/CHILL.png",
+  "/img/CLASSIC(Full HD).png",
+  "/img/Pop.png",
+  "/img/FUSION.png",
 ]
 
 const ORDERED_GENRES = [
