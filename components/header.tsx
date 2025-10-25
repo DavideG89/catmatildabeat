@@ -7,10 +7,11 @@ import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 
 export default function Header() {
+  const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [isMobileBeats, setIsMobileBeats] = useState(false)
-  const pathname = usePathname()
+  const [heroInView, setHeroInView] = useState(pathname === "/")
 
   // Throttled scroll handler to improve performance
   const handleScroll = useCallback(() => {
@@ -52,6 +53,31 @@ export default function Header() {
     setIsMenuOpen(false)
   }, [pathname])
 
+  useEffect(() => {
+    if (pathname !== "/") {
+      setHeroInView(false)
+      return
+    }
+
+    const heroSection = document.getElementById("hero-section")
+
+    if (!heroSection) {
+      setHeroInView(false)
+      return
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      setHeroInView(entry.isIntersecting)
+    }, {
+      threshold: 0,
+      rootMargin: "-300px 0px 0px 0px",
+    })
+
+    observer.observe(heroSection)
+
+    return () => observer.disconnect()
+  }, [pathname])
+
   const isActive = (path: string) => {
     return pathname === path
   }
@@ -75,16 +101,21 @@ export default function Header() {
       ? "bg-background/90 backdrop-blur-md"
       : "bg-transparent"
 
+  const shouldHideHeader = pathname === "/" && heroInView && !isMenuOpen
+
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${headerStyle}`}
+      className={`sticky top-0 z-50 transition-all duration-300 overflow-hidden ${headerStyle} ${
+        shouldHideHeader
+          ? "-translate-y-full opacity-0 pointer-events-none h-0"
+          : "translate-y-0 opacity-100 h-auto"
+      }`}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-18 md:h-18">
+        <div className="flex items-center justify-between h-20 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 z-10">
-            <img src="/img/logo-150px.png" alt="Cat Matilda Logo" width={80}/>
-            {/*<span className="text-lg md:text-xl font-bold gradient-text font-heading">Cat Matilda Beat</span>*/}
+          <Link href="/" className="flex items-center">
+            <img src="/Logo-Big.png" alt="Cat Matilda Beat Logo" className="h-12 w-auto md:h-16" />
           </Link>
 
           {/* Desktop Navigation */}

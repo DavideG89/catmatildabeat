@@ -167,13 +167,21 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen mb-24 overflow-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-[70vh] md:min-h-[82vh] flex items-center justify-center overflow-visible">
-        <div className="flex items-center h-18 md:h-18">
-          <img src="/Logo-Big.png" width={350} alt="" />
+      <section id="hero-section" className="relative min-h-[50vh] md:min-h-[50vh] flex items-center justify-center overflow-visible">
+        <div className="w-full px-4 md:px-8">
+          <div className="mx-auto max-w-4xl  flex items-center justify-center p-6 sm:p-10">
+            <Image
+              src="/Logo-Big.png"
+              alt="Cat Matilda logo"
+              width={350}
+              height={250}
+              className="w-full h-auto max-w-3xl object-contain"
+            />
+          </div>
         </div>
       </section>
 
-        <section className="relative min-h-[70vh] md:min-h-[50vh] flex items-center justify-center overflow-visible">
+      <section className="relative min-h-[70vh] md:min-h-[50vh] flex items-center justify-center overflow-visible">
         <div className="container mx-auto px-4 z-10 relative">
                   <div className="grid md:grid-cols-2 items-center gap-6 md:gap-12">
                     {/* Left: Heading, CTAs, Search */}
@@ -183,12 +191,12 @@ export default function Home() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
                       >
-                        <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-3 md:mb-5 leading-tight font-heading text-left">
+                        {/*<h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-3 md:mb-5 leading-tight font-heading text-left">
                           Feel the Beat and get Inspired.
+                        </h1>*/}
+                        <h1 className="text-3xl sm:text-3xl md:text-4xl mb-3 md:mb-5 leading-tight text-left">
+                          No curse, just magic
                         </h1>
-                        <p className="text-lg sm:text-xl md:text-2xl mb-4 md:mb-6 text-foreground">
-                          No curse, just beat
-                        </p>
                         <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-start">
                           <Button
                             size="lg"
@@ -258,6 +266,7 @@ export default function Home() {
                         </div>
 
                         {/* Search Results Dropdown */}
+
                         {showSearchResults && (
                           <div className="absolute top-full left-0 right-0 mt-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border border-border/60 rounded-xl shadow-2xl ring-1 ring-black/10 dark:ring-white/10 z-50 max-h-96 overflow-y-auto">
                             {isSearching ? (
@@ -338,20 +347,7 @@ export default function Home() {
                     </div>
 
                     {/* Right: Visual panel */}
-                    <div className="order-1 md:order-2 w-full">
-                      <div className="relative">
-                        <Image
-                          src="/img/loop_cat.gif"
-                          alt="Studio preview"
-                          width={500}
-                          height={401}
-                          priority
-                          unoptimized
-                          fetchPriority="high"
-                          className="w-full h-auto max-h-[480px] object-contain sm:h-full sm:max-h-none sm:object-cover sm:aspect-video md:aspect-[4/3]"
-                        />
-                      </div>
-                    </div>
+                 
                   </div>
         </div>
         </section>
@@ -385,25 +381,20 @@ export default function Home() {
                 </Button>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {illustrationPreviews.map((item) => (
-                <div
-                  key={item.caption}
-                  className="group relative overflow-hidden rounded-2xl border border-border/60 bg-background/60 shadow-sm"
-                >
-                  <Image
-                    src={item.src}
-                    alt={item.alt}
-                    width={640}
-                    height={492}
-                    className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent p-4">
-                    <p className="text-sm font-medium text-white">{item.caption}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <div className="order-1 md:order-2 w-full">
+                      <div className="relative">
+                        <Image
+                          src="/img/loop_cat.gif"
+                          alt="Studio preview"
+                          width={500}
+                          height={401}
+                          priority
+                          unoptimized
+                          fetchPriority="high"
+                          className="w-full h-auto max-h-[480px] object-contain sm:h-full sm:max-h-none sm:object-cover sm:aspect-video md:aspect-[4/3]"
+                        />
+                      </div>
+                    </div>
           </div>
         </div>
       </section>

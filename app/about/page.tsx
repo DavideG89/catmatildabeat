@@ -8,18 +8,18 @@ export default function AboutPage() {
   const services = [
     {
       icon: <Headphones className="h-8 w-8 text-brand-500" />,
-      title: "Beat Production",
-      description: "Custom beats tailored to your style and vision, from rap to ambient electronic and everything in between.",
+      title: "Original Beats",
+      description: "Need a rhythm that bites? I craft tracks that hiss, purr, and occasionally scratch your eardrums in all the right ways.",
     },
     {
       icon: <Mic className="h-8 w-8 text-brand-500" />,
-      title: "Mixing & Mastering",
-      description: "Professional mixing and mastering services to make your tracks sound radio-ready.",
+      title: "Full Productions",
+      description: "From your first note to the final flicker of light on screen, I handle it all. Audio, visuals, and mystical chaos included. You just try not to trip over my tail.",
     },
     {
       icon: <Music className="h-8 w-8 text-brand-500" />,
-      title: "Full Production",
-      description: "Complete song production from concept to final master, including arrangement and sound design.",
+      title: "Mixing & Mastering",
+      description: "I polish your sound so it’s sharp enough to make mice jump… or listeners stay glued. Every track gets the precision only a cat with nine lives can offer.",
     },
   ]
 
@@ -28,9 +28,7 @@ export default function AboutPage() {
       {/* Hero Section */}
       <section className="mb-12 md:mb-16">
         <div className="mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-4xl font-bold mb-4 md:mb-6 font-heading">
-            About <span>Cat Matilda Beat</span>
-          </h1>
+         
         </div>
       </section>
 
@@ -38,25 +36,20 @@ export default function AboutPage() {
       <section className="mb-12 md:mb-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold mb-6 font-heading">My Story</h2>
+            <h1 className="text-2xl md:text-3xl font-bold mb-6 font-heading">Matilda the Cat</h1>
             <div className="space-y-4 text-muted-foreground">
-              <p>
-              Cat Matilda Beat was born from the idea that music should be a playground, an open space where sounds, genres and emotions collide to create something new.
-              </p>
-              <p>
-              From the very first experiment with electronic layers to the raw energy of hip-hop and rap, from the groove of funk to the edge of rock, Cat Matilda Beat has always been about exploration. Each track is more than just an instrumental: it’s an invitation to express yourself, to let your voice, your flow, or even your videos ride on unique waves of sound.
-              </p>
-              <p>
-              And yes, you guessed it right: this playground is ruled by a black cat.
-They say a black cat crossing your path brings bad luck…well, this one decided to sit on the drum machine instead. The only curse here? Every track comes with claws out, ready to leave a mark.
-              </p>
-              <p>
-              Cat Matilda isn’t just any cat. She learned how to scratch vinyl before furniture, how to hit pads with more precision than a paw could ever promise, and how to turn ‘bad luck’ into grooves that stick to your head for days. Each track is crafted with the same feline curiosity: a leap, a chase, a playful mischief that suddenly transforms into a full melody.
-              </p>
-              <p>
-              So if you’ve ever wondered what happens when a black cat trades mystery for music, the answer is right here.
-              Cat Matilda Beat: where superstition meets inspiration, and every note is a lucky strike. 🐾🎶
-              </p>
+            <p><strong>They call me bad luck.</strong> Funny, isn’t it?<br/>
+              Humans see a black cat and start whispering spells, yet I’m the one creating the magic.</p>
+              <p>I was born from distortion and moonlight, raised on broken rhythms and flickers of neon.</p>
+              <p>They say curiosity kills the cat, but they never tell you what happens when it learns how to create.</p>
+              <p>Every beat I drop is a charm, every melody a shadow that hums, and every line I draw scratches at the veil between misfortune and magic.</p>
+              <p>I don’t just make music. I paint it. I sketch it. I turn superstition into illustration, rhythm into imagery, and silence into something that purrs and breathes.</p>
+              <p>Every visual, every comic strip, every flicker of light on screen is another spell — another claw mark left in the world of sound and vision.</p>
+              <p>I scratch vinyl like I scratch fate — reshaping it, bending it, turning omens into art.</p>
+              <p>I turn superstition into creation, showing that a black cat crossing your path isn’t a warning… it’s an <strong>invitation</strong>.</p>
+              <p>An invitation to watch, listen, feel, and maybe even join the ritual of creation.</p>
+              <p><strong>I’m Matilda, the cat.</strong><br />
+              The bad luck that makes things come alive. 🐾</p>
             </div>
           </div>
           <div className="relative">
@@ -95,9 +88,10 @@ They say a black cat crossing your path brings bad luck…well, this one decided
           <CardContent className="p-6 md:p-8 text-center">
             <h2 className="text-2xl md:text-3xl font-bold mb-4 font-heading">My Philosophy</h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              "Music is a universal language that connects us all. My role as a producer is to create the sonic
-              foundation that allows artists to tell their stories authentically. Every beat should inspire, every
-              melody should move, and every track should have the power to change someone's day."
+            Creativity doesn’t ask for permission.
+            I mix sounds, visuals, and ideas to spark the unexpected.
+            Every project should provoke, that’s what makes it alive.
+            I’m Matilda the cat, and rules? I nap on them.
             </p>
           </CardContent>
         </Card>
@@ -107,8 +101,9 @@ They say a black cat crossing your path brings bad luck…well, this one decided
       <section className="text-center">
         <h2 className="text-2xl md:text-3xl font-bold mb-4 font-heading">Ready to Work Together?</h2>
         <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Whether you need a custom beat, mixing services, or full production, I'm here to help bring your musical
-          vision to life.
+        Step into my playground.
+        Bring your spark, I’ll bring the magic.
+        Let’s make something that hisses, purrs, and breathes.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button size="lg" className="bg-brand-600 hover:bg-brand-500" asChild>
