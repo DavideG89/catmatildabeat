@@ -3,9 +3,10 @@
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { Play, ChevronRight, Clock, Music, Search, X, Pause, ExternalLink } from "lucide-react"
+import { Headphones, Mic, Music, Search, X } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import TrendingBeats from "@/components/trending-beats"
 import FeaturedBeats from "@/components/featured-beats"
@@ -164,31 +165,63 @@ export default function Home() {
     },
   ]
 
+  const services = [
+    {
+      icon: <Headphones className="h-8 w-8 text-brand-500" />,
+      title: "Original Beats",
+      description:
+        "Need a rhythm that bites? I craft tracks that hiss, purr, and occasionally scratch your eardrums in all the right ways.",
+    },
+    {
+      icon: <Mic className="h-8 w-8 text-brand-500" />,
+      title: "Full Productions",
+      description:
+        "From your first note to the final flicker of light on screen, I handle it all. Audio, visuals, and mystical chaos included. You just try not to trip over my tail.",
+    },
+    {
+      icon: <Music className="h-8 w-8 text-brand-500" />,
+      title: "Mixing & Mastering",
+      description:
+        "I polish your sound so it's sharp enough to make mice jump... or listeners stay glued. Every track gets the precision only a cat with nine lives can offer.",
+    },
+  ]
+
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 24 },
+    visible: { opacity: 1, y: 0 },
+  }
+
   return (
     <div className="flex flex-col min-h-screen mb-24 overflow-hidden">
       {/* Hero Section */}
-      <section id="hero-section" className="relative min-h-[50vh] md:min-h-[50vh] flex items-center justify-center overflow-visible">
-        <div className="w-full px-4 md:px-8">
-          <div className="mx-auto max-w-4xl  flex items-center justify-center p-6 sm:p-10">
-            <Image
-              src="/Logo-Big.png"
-              alt="Cat Matilda logo"
-              width={350}
-              height={250}
-              className="w-full h-auto max-w-3xl object-contain"
-            />
-          </div>
+      <section
+        id="hero-section"
+        className="relative flex items-center justify-center overflow-visible px-0 sm:px-6 min-h-[85vh] md:min-h-[80vh]"
+      >
+        <div className="relative w-full max-w-none md:max-w-[1400px] lg:max-w-[1600px] h-full md:h-auto aspect-[3/4] md:aspect-[16/9] flex items-center justify-center overflow-hidden">
+          <Image
+            src="/MTCLOGOANIMATEDNOBG.gif"
+            alt="Animated Cat Matilda logo"
+            fill
+            priority
+            unoptimized
+            sizes="(min-width: 1024px) 100vw, 100vw"
+            className="object-contain scale-[1.5] md:scale-110 lg:scale-125 transition-transform"
+          />
         </div>
       </section>
 
-      <section className="relative min-h-[70vh] md:min-h-[50vh] flex items-center justify-center overflow-visible">
+      <section className="relative min-h-[50vh] md:min-h-[50vh] flex items-center overflow-visible">
         <div className="container mx-auto px-4 z-10 relative">
-                  <div className="grid md:grid-cols-2 items-center gap-6 md:gap-12">
+          <div className="flex justify-center">
+                  <div className=" w-full max-w-6xl md:grid-cols-2 flex justify-center gap-6 md:gap-12">
                     {/* Left: Heading, CTAs, Search */}
                     <div className="order-2 md:order-1 space-y-4 md:space-y-6 max-w-xl">
                       <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.3 }}
+                        variants={fadeInUp}
                         transition={{ duration: 0.6 }}
                       >
                         {/*<h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-3 md:mb-5 leading-tight font-heading text-left">
@@ -214,9 +247,11 @@ export default function Home() {
                       <motion.div
                         ref={searchContainerRef}
                         className="relative"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2, duration: 0.5 }}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.3 }}
+                        variants={fadeInUp}
+                        transition={{ duration: 0.6, delay: 0.2 }}
                       >
                         <form onSubmit={handleSearchSubmit}>
                           <div className="relative">
@@ -349,6 +384,7 @@ export default function Home() {
                     {/* Right: Visual panel */}
                  
                   </div>
+          </div>
         </div>
         </section>
       {/* Scratch Card Section */}
@@ -464,7 +500,30 @@ export default function Home() {
         <YouTubeSection />
       </section>
 
-      {/* How It Works */}
+   {/* Services Section */}
+   <section className="py-8 md:py-16 bg-transparent">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 font-heading">What I Offer</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              From beat production to full song creation, I provide comprehensive music production services.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            {services.map((service, index) => (
+              <Card key={index} className="text-center card-hover-effect">
+                <CardContent className="p-6 md:p-8">
+                  <div className="flex justify-center mb-4">{service.icon}</div>
+                  <h3 className="text-xl font-bold mb-3">{service.title}</h3>
+                  <p className="text-muted-foreground">{service.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works 
       <section
         className="py-8 md:py-16"
         style={{
@@ -510,7 +569,8 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+      */}
+      
       {/* CTA Section */}
       <section className="py-12 md:py-20 bg-transparent text-foreground">
         <div className="container mx-auto px-4 text-center">
