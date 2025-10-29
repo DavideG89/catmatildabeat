@@ -3,7 +3,7 @@
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { Headphones, Mic, Music, Search, X } from "lucide-react"
+import { Headphones, Mic, Music, Search, Volume2, VolumeX, X } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -15,23 +15,22 @@ import PopularGenres from "@/components/popular-genres"
 import YouTubeSection from "@/components/youtube-section"
 import TracklistSection from "@/components/tracklist-section"
 import MobileScrollContainer from "@/components/mobile-scroll-container"
-import ScratchBeatSection from "@/components/scratch-beat-section"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { useBeats } from "@/components/beats-context"
-import { useAudioPlayer } from "@/components/audio-player-context"
 
 
 export default function Home() {
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const heroVideoRef = useRef<HTMLVideoElement>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const { beats, searchBeats, getBeatsByCategory } = useBeats()
-  const { currentTrack, isPlaying, playTrack, togglePlayPause } = useAudioPlayer()
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [showSearchResults, setShowSearchResults] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
+  const [isVideoMuted, setIsVideoMuted] = useState(false)
 
   // Enhanced search function
   const enhancedSearch = (query: string, allBeats: any[]) => {
@@ -99,6 +98,44 @@ export default function Home() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
+  useEffect(() => {
+    const videoElement = heroVideoRef.current
+    if (!videoElement) return
+
+    let listenersAttached = false
+
+    const ensureSoundOn = () => {
+      videoElement.muted = false
+      videoElement.volume = 1
+      setIsVideoMuted(false)
+    }
+
+    const handleUserGesture = () => {
+      ensureSoundOn()
+      videoElement.play().catch(() => {
+        // ignore play promise rejection
+      })
+      document.removeEventListener("click", handleUserGesture)
+      document.removeEventListener("touchstart", handleUserGesture)
+      listenersAttached = false
+    }
+
+    ensureSoundOn()
+
+    videoElement.play().catch(() => {
+      listenersAttached = true
+      document.addEventListener("click", handleUserGesture, { once: true })
+      document.addEventListener("touchstart", handleUserGesture, { once: true })
+    })
+
+    return () => {
+      if (listenersAttached) {
+        document.removeEventListener("click", handleUserGesture)
+        document.removeEventListener("touchstart", handleUserGesture)
+      }
+    }
+  }, [])
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
@@ -131,39 +168,23 @@ export default function Home() {
     window.open("https://beatstars.com/catmatildabeat", "_blank")
   }
 
-  const handlePlayTrack = (beat: any) => {
-    if (currentTrack?.id === beat.id) {
-      togglePlayPause()
-    } else {
-      playTrack({
-        id: beat.id,
-        title: beat.title,
-        artist: beat.producer,
-        audioSrc: beat.audio_file || "/demo-beat.mp3",
-        coverImage: beat.cover_image,
-        beatstarsLink: beat.beatstars_link,
-        durationString: beat.duration,
+  const handleToggleVideoMute = () => {
+    const videoElement = heroVideoRef.current
+    if (!videoElement) return
+
+    const nextMutedState = !videoElement.muted
+    videoElement.muted = nextMutedState
+    if (!nextMutedState) {
+      videoElement.volume = 1
+    }
+    setIsVideoMuted(nextMutedState)
+
+    if (!nextMutedState) {
+      videoElement.play().catch(() => {
+        // Some browsers may block playback; ignore errors
       })
     }
   }
-
-  const illustrationPreviews = [
-    {
-      src: "/img/Quadro%201.jpg",
-      alt: "Illustrazione Cat Matilda con palette calde",
-      caption: "Texture analogiche e colori caldi",
-    },
-    {
-      src: "/img/Quadro%202.jpg",
-      alt: "Artwork digitale dedicato a Cat Matilda",
-      caption: "Sperimentazione digitale su tela fisica",
-    },
-    {
-      src: "/img/Quadro%203.jpg",
-      alt: "Opera artistica Cat Matilda in movimento",
-      caption: "Motion grafico ispirato al sound design",
-    },
-  ]
 
   const services = [
     {
@@ -194,22 +215,30 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen mb-24 overflow-hidden">
       {/* Hero Section */}
-      <section
-  id="hero-section"
-  className="relative flex items-center justify-center px-0 sm:px-6 min-h-[85dvh] md:min-h-[80dvh]"
->
-  <div className="relative w-full max-w-none md:max-w-[1400px] lg:max-w-[1600px] aspect-[3/4] md:aspect-[16/9]">
-    <Image
-      src="/MTCLOGOANIMATEDNOBG.gif"   // converti la GIF in mp4/webm
-      width={1600}
-      height={900}
-      alt="Cat Matilda Logo Animation"
-      poster="/Logo-Big.png" // opzionale: poster di fallback
-      className="absolute inset-0 h-full w-full object-contain md:object-contain"
-    />
+      <section id="hero-section" className="relative flex items-center justify-center px-0 sm:px-6 min-h-[85dvh] md:min-h-[80dvh]">
+  <div className="relative w-full max-w-none md:max-w-[1400px] lg:max-w-[1600px] aspect-[3/2] md:aspect-[16/9]">
+    {/* Hero background animation */}
+    <video
+      ref={heroVideoRef}
+      playsInline
+      preload="auto"
+      aria-label="Matilda The Cat logo animation"
+      className="absolute inset-0 h-full w-full object-contain md:object-contain">
+      <source src="/Matilda-Opening.mp4" type="video/mp4"/>
+      Your browser does not support the video tag.
+    </video>
+    <button
+      type="button"
+      onClick={handleToggleVideoMute}
+      className="absolute bottom-4 right-4 z-10 flex items-center gap-2 rounded-full bg-black/60 px-3 py-2 text-xs md:text-sm font-medium text-white transition hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+      aria-pressed={!isVideoMuted}
+      aria-label={isVideoMuted ? "Unmute hero video" : "Mute hero video"}
+    >
+      {isVideoMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+      <span>{isVideoMuted ? "Tap to unmute" : "Sound on"}</span>
+    </button>
   </div>
 </section>
-
       <section className="relative min-h-[50vh] md:min-h-[50vh] flex items-center overflow-visible">
         <div className="container mx-auto px-4 z-10 relative">
           <div className="flex justify-center">
@@ -233,11 +262,14 @@ export default function Home() {
                           <Button
                             size="lg"
                             className="bg-brand-600 hover:bg-brand-500 text-base md:text-lg px-5 md:px-7 transition-all"
+                            asChild
                           >
                             <Link href="/beats">Browse Beats marketplace</Link>
                           </Button>
                           <Button size="lg" variant="outline" className="text-base md:text-lg px-5 md:px-7" asChild>
-                            <Link href="https://www.beatstars.com/catmatildabeat">Brows on Beatstar</Link>
+                            <Link href="https://www.beatstars.com/catmatildabeat" target="_blank" rel="noreferrer">
+                              Browse on BeatStars
+                            </Link>
                           </Button>
                         </div>
                       </motion.div>
@@ -405,7 +437,16 @@ export default function Home() {
               The visual side of our sound.
               </h2>
               <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-              A visual journey through colors, moods, and stories crafted by <Link rel="stylesheet" className="text-brand-600"href="https://www.instagram.com/jmoon_0000?igsh=ZGJ5MDh0MnN6MGd6" >J Moon </Link> who bring Matilda’s universe to life.
+              A visual journey through colors, moods, and stories crafted by{" "}
+              <Link
+                href="https://www.instagram.com/jmoon_0000?igsh=ZGJ5MDh0MnN6MGd6"
+                target="_blank"
+                rel="noreferrer"
+                className="text-brand-600 hover:underline"
+              >
+                J Moon
+              </Link>{" "}
+              who bring Matilda’s universe to life.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button size="lg" className="bg-brand-600 hover:bg-brand-500" asChild>

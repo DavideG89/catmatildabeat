@@ -1,8 +1,10 @@
 "use client"
+
 import Link from "next/link"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Music, Headphones, Mic, Users, Award, Clock } from "lucide-react"
+import { Music, Headphones, Mic } from "lucide-react"
 
 export default function AboutPage() {
   const services = [
@@ -113,9 +115,11 @@ export default function AboutPage() {
             size="lg"
             variant="outline"
             className="border-brand-600 text-brand-500 hover:bg-brand-500/10 bg-transparent"
-            onClick={() => window.open("https://beatstars.com/catmatildabeat", "_blank")}
+            asChild
           >
-            Browse Beats
+            <Link href="https://beatstars.com/catmatildabeat" target="_blank" rel="noreferrer">
+              Browse Beats
+            </Link>
           </Button>
         </div>
       </section>
