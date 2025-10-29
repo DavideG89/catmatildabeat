@@ -195,21 +195,20 @@ export default function Home() {
     <div className="flex flex-col min-h-screen mb-24 overflow-hidden">
       {/* Hero Section */}
       <section
-        id="hero-section"
-        className="relative flex items-center justify-center overflow-visible px-0 sm:px-6 min-h-[85vh] md:min-h-[80vh]"
-      >
-        <div className="relative w-full max-w-none md:max-w-[1400px] lg:max-w-[1600px] h-full md:h-auto aspect-[3/4] md:aspect-[16/9] flex items-center justify-center overflow-hidden">
-          <Image
-            src="/MTCLOGOANIMATEDNOBG.gif"
-            alt="Animated Cat Matilda logo"
-            fill
-            priority
-            unoptimized
-            sizes="(min-width: 1024px) 100vw, 100vw"
-            className="object-contain scale-[1.5] md:scale-110 lg:scale-125 transition-transform"
-          />
-        </div>
-      </section>
+  id="hero-section"
+  className="relative flex items-center justify-center px-0 sm:px-6 min-h-[85dvh] md:min-h-[80dvh]"
+>
+  <div className="relative w-full max-w-none md:max-w-[1400px] lg:max-w-[1600px] aspect-[3/4] md:aspect-[16/9]">
+    <Image
+      src="/MTCLOGOANIMATEDNOBG.gif"   // converti la GIF in mp4/webm
+      width={1600}
+      height={900}
+      alt="Cat Matilda Logo Animation"
+      poster="/Logo-Big.png" // opzionale: poster di fallback
+      className="absolute inset-0 h-full w-full object-contain md:object-contain"
+    />
+  </div>
+</section>
 
       <section className="relative min-h-[50vh] md:min-h-[50vh] flex items-center overflow-visible">
         <div className="container mx-auto px-4 z-10 relative">
