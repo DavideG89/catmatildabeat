@@ -66,12 +66,20 @@ export default function Header() {
       return
     }
 
-    const observer = new IntersectionObserver(([entry]) => {
-      setHeroInView(entry.isIntersecting)
-    }, {
-      threshold: 0,
-      rootMargin: "-300px 0px 0px 0px",
-    })
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const ratio = entry.intersectionRatio
+        setHeroInView((prev) => {
+          if (ratio >= 0.6) return true
+          if (ratio <= 0.2) return false
+          return prev
+        })
+      },
+      {
+        threshold: [0, 0.2, 0.4, 0.6, 1],
+        rootMargin: "-200px 0px 0px 0px",
+      }
+    )
 
     observer.observe(heroSection)
 
@@ -105,10 +113,8 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 overflow-hidden ${headerStyle} ${
-        shouldHideHeader
-          ? "-translate-y-full opacity-0 pointer-events-none h-0"
-          : "translate-y-0 opacity-100 h-auto"
+      className={`sticky top-0 z-50 transition-[transform,opacity] duration-300 will-change-transform overflow-hidden ${headerStyle} ${
+        shouldHideHeader ? "-translate-y-full opacity-0 pointer-events-none" : "translate-y-0 opacity-100"
       }`}
     >
       <div className="container mx-auto px-4">

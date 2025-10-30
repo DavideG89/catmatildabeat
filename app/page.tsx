@@ -155,22 +155,20 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen mb-24 overflow-hidden">
+    <div className="flex flex-col  overflow-x-hidden">
       {/* Hero Section */}
       <section
         id="hero-section"
-        className="relative flex items-center justify-center px-4 sm:px-6 py-12 min-h-[80dvh] md:min-h-[70dvh]"
+        className="relative flex items-center justify-center min-h-[70vh]"
       >
-        <div className="flex w-full h-full justify-center">
+        <div className="flex w-full justify-center overflow-hidden">
           {/* Hero background animation */}
           <Image
             src="/MTCLOGOANIMATEDNOBG.gif"
             alt="Matilda The Cat animated logo"
-            priority
-            unoptimized
-            width={800}
-            height={576}
-            className="h-auto w-full max-w-[800px]"
+            width={1600}
+            height={800}
+            className="max-w-[520px] sm:max-w-[700px] md:max-w-[900px] lg:max-w-[1200px] w-full h-[700px] object-contain origin-center scale-[1.4] sm:scale-85 "
           />
         </div>
       </section>
