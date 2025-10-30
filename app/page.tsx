@@ -3,7 +3,7 @@
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { Headphones, Mic, Music, Search, Volume2, VolumeX, X } from "lucide-react"
+import { Headphones, Mic, Music, Search, X } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -22,7 +22,6 @@ import { useBeats } from "@/components/beats-context"
 
 export default function Home() {
   const searchInputRef = useRef<HTMLInputElement>(null)
-  const heroVideoRef = useRef<HTMLVideoElement>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const { beats, searchBeats, getBeatsByCategory } = useBeats()
@@ -30,7 +29,6 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [showSearchResults, setShowSearchResults] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
-  const [isVideoMuted, setIsVideoMuted] = useState(false)
 
   // Enhanced search function
   const enhancedSearch = (query: string, allBeats: any[]) => {
@@ -98,44 +96,6 @@ export default function Home() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  useEffect(() => {
-    const videoElement = heroVideoRef.current
-    if (!videoElement) return
-
-    let listenersAttached = false
-
-    const ensureSoundOn = () => {
-      videoElement.muted = false
-      videoElement.volume = 1
-      setIsVideoMuted(false)
-    }
-
-    const handleUserGesture = () => {
-      ensureSoundOn()
-      videoElement.play().catch(() => {
-        // ignore play promise rejection
-      })
-      document.removeEventListener("click", handleUserGesture)
-      document.removeEventListener("touchstart", handleUserGesture)
-      listenersAttached = false
-    }
-
-    ensureSoundOn()
-
-    videoElement.play().catch(() => {
-      listenersAttached = true
-      document.addEventListener("click", handleUserGesture, { once: true })
-      document.addEventListener("touchstart", handleUserGesture, { once: true })
-    })
-
-    return () => {
-      if (listenersAttached) {
-        document.removeEventListener("click", handleUserGesture)
-        document.removeEventListener("touchstart", handleUserGesture)
-      }
-    }
-  }, [])
-
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
@@ -168,24 +128,6 @@ export default function Home() {
     window.open("https://beatstars.com/catmatildabeat", "_blank")
   }
 
-  const handleToggleVideoMute = () => {
-    const videoElement = heroVideoRef.current
-    if (!videoElement) return
-
-    const nextMutedState = !videoElement.muted
-    videoElement.muted = nextMutedState
-    if (!nextMutedState) {
-      videoElement.volume = 1
-    }
-    setIsVideoMuted(nextMutedState)
-
-    if (!nextMutedState) {
-      videoElement.play().catch(() => {
-        // Some browsers may block playback; ignore errors
-      })
-    }
-  }
-
   const services = [
     {
       icon: <Headphones className="h-8 w-8 text-brand-500" />,
@@ -215,20 +157,23 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen mb-24 overflow-hidden">
       {/* Hero Section */}
-      <section id="hero-section" className="relative flex items-center justify-center px-0 sm:px-6 min-h-[85dvh] md:min-h-[80dvh]">
-    <div className="relative w-full max-w-none md:max-w-[1400px] lg:max-w-[1600px] aspect-[3/2] md:aspect-[16/9]">
+      <section
+        id="hero-section"
+        className="relative flex items-center justify-center px-4 sm:px-6 py-12 min-h-[80dvh] md:min-h-[70dvh]"
+      >
+        <div className="flex w-full h-full justify-center">
           {/* Hero background animation */}
           <Image
             src="/MTCLOGOANIMATEDNOBG.gif"
             alt="Matilda The Cat animated logo"
-            fill
             priority
             unoptimized
-            sizes="100vw"
-            className="object-contain md:object-contain"
+            width={800}
+            height={576}
+            className="h-auto w-full max-w-[800px]"
           />
         </div>
-</section>
+      </section>
       <section className="relative min-h-[50vh] md:min-h-[50vh] flex items-center overflow-visible">
         <div className="container mx-auto px-4 z-10 relative">
           <div className="flex justify-center">

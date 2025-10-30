@@ -1,25 +1,25 @@
-# catmatildabeat
+# matildathecat
 
 ## Impostazione arrivo email (modulo Contatti)
 
-Per ricevere i messaggi del form Contatti all'indirizzo `catmatildabeat@gmail.com` è stato aggiunto l'endpoint `POST /api/contact` che invia una email via SMTP (Nodemailer).
+Per ricevere i messaggi del form Contatti all'indirizzo `matildathecat.meow@gmail.com` è stato aggiunto l'endpoint `POST /api/contact` che invia una email via SMTP (Nodemailer).
 
 ### Variabili d'ambiente richieste
 
 Impostare in `.env.local` (o su Vercel)
 
 ```
-# Destinatario (default: catmatildabeat@gmail.com)
-CONTACT_TO_EMAIL=catmatildabeat@gmail.com
+# Destinatario (default: matildathecat.meow@gmail.com)
+CONTACT_TO_EMAIL=matildathecat.meow@gmail.com
 
 # (Opzionale) Mittente visibile nella mail
-CONTACT_FROM_EMAIL=catmatildabeat@gmail.com
+CONTACT_FROM_EMAIL=matildathecat.meow@gmail.com
 
 # Config SMTP (Gmail)
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=465
 SMTP_SECURE=true
-SMTP_USER=catmatildabeat@gmail.com
+SMTP_USER=matildathecat.meow@gmail.com
 SMTP_PASS=<APP_PASSWORD_GOOGLE>
 ```
 
