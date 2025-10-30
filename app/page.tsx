@@ -216,28 +216,18 @@ export default function Home() {
     <div className="flex flex-col min-h-screen mb-24 overflow-hidden">
       {/* Hero Section */}
       <section id="hero-section" className="relative flex items-center justify-center px-0 sm:px-6 min-h-[85dvh] md:min-h-[80dvh]">
-  <div className="relative w-full max-w-none md:max-w-[1400px] lg:max-w-[1600px] aspect-[3/2] md:aspect-[16/9]">
-    {/* Hero background animation */}
-    <video
-      ref={heroVideoRef}
-      playsInline
-      preload="auto"
-      aria-label="Matilda The Cat logo animation"
-      className="absolute inset-0 h-full w-full object-contain md:object-contain">
-      <source src="/Matilda-Opening.mp4" type="video/mp4"/>
-      Your browser does not support the video tag.
-    </video>
-    <button
-      type="button"
-      onClick={handleToggleVideoMute}
-      className="absolute bottom-4 right-4 z-10 flex items-center gap-2 rounded-full bg-black/60 px-3 py-2 text-xs md:text-sm font-medium text-white transition hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-      aria-pressed={!isVideoMuted}
-      aria-label={isVideoMuted ? "Unmute hero video" : "Mute hero video"}
-    >
-      {isVideoMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-      <span>{isVideoMuted ? "Tap to unmute" : "Sound on"}</span>
-    </button>
-  </div>
+    <div className="relative w-full max-w-none md:max-w-[1400px] lg:max-w-[1600px] aspect-[3/2] md:aspect-[16/9]">
+          {/* Hero background animation */}
+          <Image
+            src="/MTCLOGOANIMATEDNOBG.gif"
+            alt="Matilda The Cat animated logo"
+            fill
+            priority
+            unoptimized
+            sizes="100vw"
+            className="object-contain md:object-contain"
+          />
+        </div>
 </section>
       <section className="relative min-h-[50vh] md:min-h-[50vh] flex items-center overflow-visible">
         <div className="container mx-auto px-4 z-10 relative">
