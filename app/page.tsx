@@ -168,7 +168,7 @@ export default function Home() {
             alt="Matilda The Cat animated logo"
             width={1600}
             height={800}
-            className="max-w-[520px] sm:max-w-[700px] md:max-w-[900px] lg:max-w-[1200px] w-full h-[700px] object-contain origin-center scale-[1.4] sm:scale-85 "
+            className="max-w-[520px] sm:max-w-[700px] md:max-w-[900px] lg:max-w-[1200px] w-full h-[400px] object-contain origin-center scale-[1.4] sm:scale-85 "
           />
         </div>
       </section>
@@ -181,9 +181,9 @@ export default function Home() {
                       <motion.div
                         initial="hidden"
                         whileInView="visible"
-                        viewport={{ once: true, amount: 0.3 }}
+                        viewport={{ once: true, amount: 1}}
                         variants={fadeInUp}
-                        transition={{ duration: 0.6 }}
+                        transition={{ duration: 0.3 }}
                       >
                         {/*<h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-3 md:mb-5 leading-tight font-heading text-left">
                           Feel the Beat and get Inspired.
@@ -213,7 +213,7 @@ export default function Home() {
                         className="relative"
                         initial="hidden"
                         whileInView="visible"
-                        viewport={{ once: true, amount: 0.3 }}
+                        viewport={{ once: true, amount: 0.1, margin: "-10% 0px -20% 0px" }}
                         variants={fadeInUp}
                         transition={{ duration: 0.6, delay: 0.2 }}
                       >
