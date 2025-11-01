@@ -10,15 +10,13 @@ import { useMemo, useRef } from "react"
 
 // Backgrounds from public/img
 const genreImages = [
-  "/img/Alternative.png",
-  "/img/CHILL.png",
-  "/img/CLASSIC(Full HD).png",
-  "/img/FUSION.png",
-  "/img/Pop.png",
-  "/img/CHILL.png",
-  "/img/CLASSIC(Full HD).png",
-  "/img/Pop.png",
-  "/img/FUSION.png",
+  "/generi/Gnr1.png",
+  "/generi/Gnr2.png",
+  "/generi/Gnr3.png",
+  "/generi/Gnr4.png",
+  "/generi/Gnr5.png",
+  "/generi/Gnr6.png",
+  "/generi/Gnr7.png",
 ]
 
 const ORDERED_GENRES = [
@@ -99,11 +97,12 @@ export default function PopularGenres() {
     return genreMetadata
       .map((meta) => ({ ...meta, count: counts.get(meta.name) ?? 0 }))
       .sort((a, b) => b.count - a.count)
+      .slice(0, 7)
   }, [beats])
 
   const showSkeleton = loading && beats.length === 0
 
-  const skeletonItems = genreMetadata.slice(0, 6)
+  const skeletonItems = genreMetadata.slice(0, 7)
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {

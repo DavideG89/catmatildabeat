@@ -56,7 +56,7 @@ export default function AboutPage() {
           </div>
           <div className="relative">
             <div className="aspect-square bg-gradient-to-br from-brand-500/20 to-accent2-500/20 rounded-2xl flex items-center justify-center">
-              <img src="/img/CatMatildaStudio.jpg" alt="Studio preview"
+              <img src="/LOGO-POSTER.jpeg" alt="Studio preview"
                   className="w-full h-full object-cover rounded-2xl aspect-video md:aspect-[4/3]" />
             </div>
           </div>

@@ -125,7 +125,7 @@ export default function Home() {
   }
 
   const handleBrowseBeats = () => {
-    window.open("https://beatstars.com/catmatildabeat", "_blank")
+    window.open("https://www.beatstars.com/catmatildabeat", "_blank")
   }
 
   const services = [
@@ -155,7 +155,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col  overflow-x-hidden">
+    <div className="flex flex-col overflow-x-hidden">
       {/* Hero Section */}
       <section
         id="hero-section"
@@ -172,9 +172,15 @@ export default function Home() {
           />
         </div>
       </section>
-      <section className="relative min-h-[50vh] md:min-h-[50vh] flex items-center overflow-visible">
-        <div className="container mx-auto px-4 z-10 relative">
-          <div className="flex justify-center">
+  
+      {/* Scratch Card Section */}
+      
+      {/*<ScratchBeatSection/>*/}
+
+
+      {/* Tracklist Section */}
+      <section className="pt-4 pb-3 md:pt-12 md:pb-8">
+      <div className="flex justify-center">
                   <div className=" w-full max-w-6xl md:grid-cols-2 flex justify-center gap-6 md:gap-12">
                     {/* Left: Heading, CTAs, Search */}
                     <div className="order-2 md:order-1 space-y-4 md:space-y-6 max-w-xl">
@@ -188,7 +194,7 @@ export default function Home() {
                         {/*<h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-3 md:mb-5 leading-tight font-heading text-left">
                           Feel the Beat and get Inspired.
                         </h1>*/}
-                        <h1 className="text-3xl sm:text-3xl md:text-4xl mb-3 md:mb-5 leading-tight text-left">
+                        <h1 className="text-4xl sm:text-5xl md:text-5xl mb-3 md:mb-5 leading-tight text-center">
                           No curse, just magic
                         </h1>
                         <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-start">
@@ -349,15 +355,6 @@ export default function Home() {
                  
                   </div>
           </div>
-        </div>
-        </section>
-      {/* Scratch Card Section */}
-      
-      {/*<ScratchBeatSection/>*/}
-
-
-      {/* Tracklist Section */}
-      <section className="pt-4 pb-3 md:pt-12 md:pb-8">
         <TracklistSection />
       </section>
       
@@ -411,10 +408,16 @@ export default function Home() {
       {/* Featured Content Tabs - Horizontal Scrolling for All Devices */}
       <section className="pt-3 pb-6 md:pt-10 md:pb-16 bg-transparent">
         <div className="container mx-auto px-4">
-          <Tabs defaultValue="trending" className="w-full">
+          <Tabs defaultValue="new" className="w-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
               <h2 className="text-2xl md:text-3xl font-bold font-heading">Discover Music</h2>
               <TabsList className="bg-gradient-to-r from-brand-50/80 via-white/80 to-white/80 text-brand-900 rounded-md h-auto p-1 border border-black/10 shadow-sm">
+              <TabsTrigger
+                  value="new"
+                  className="text-brand-900 data-[state=active]:bg-brand-600 data-[state=active]:text-white text-xs md:text-sm py-2 px-4"
+                >
+                  New Releases
+                </TabsTrigger>
                 <TabsTrigger
                   value="trending"
                   className="text-brand-900 data-[state=active]:bg-brand-600 data-[state=active]:text-white text-xs md:text-sm py-2 px-4"
@@ -427,12 +430,7 @@ export default function Home() {
                 >
                   Featured
                 </TabsTrigger>
-                <TabsTrigger
-                  value="new"
-                  className="text-brand-900 data-[state=active]:bg-brand-600 data-[state=active]:text-white text-xs md:text-sm py-2 px-4"
-                >
-                  New Releases
-                </TabsTrigger>
+              
               </TabsList>
             </div>
 
