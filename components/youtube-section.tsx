@@ -66,12 +66,12 @@ export default function YouTubeSection() {
   const formatNumber = (value: number) => new Intl.NumberFormat("en-US").format(value)
 
   const handleSubscribe = () => {
-    window.open("https://www.youtube.com/channel/UCKpPHRtsxkhHeao7ttkyb4A?sub_confirmation=1", "_blank")
+    window.open("https://www.youtube.com/channel/UC72Hn4poTD1RBSTPFXhhnBg?sub_confirmation=1", "_blank")
     setIsSubscribed(true)
   }
 
   const handleWatchVideos = () => {
-    window.open("https://www.youtube.com/channel/UCKpPHRtsxkhHeao7ttkyb4A", "_blank")
+    window.open("https://www.youtube.com/channel/UC72Hn4poTD1RBSTPFXhhnBg", "_blank")
   }
 
   const fallbackStats = [
@@ -201,9 +201,7 @@ export default function YouTubeSection() {
                   <Bell className="mr-2 h-5 w-5" />
                   {isSubscribed ? "Subscribed!" : "Subscribe Now"}
                 </Button>
-                <p className="text-center text-xs text-muted-foreground">
-                  Join {channelStats ? formatNumber(channelStats.subscriberCount) : "2.5K+"} producers and artists following my journey
-                </p>
+             
               </div>
             </motion.div>
           </div>
