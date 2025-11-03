@@ -56,7 +56,7 @@ export default function DashboardPage() {
               <UploadBeatForm onSuccess={() => setShowUploadForm(false)} />
             </DialogContent>
           </Dialog>
-          <Button variant="outline" onClick={handleSignOut} className="w-full sm:w-auto">Sign Out</Button>
+          <Button variant="secondary" onClick={handleSignOut} className="w-full sm:w-auto">Sign Out</Button>
         </div>
       </div>
 

@@ -114,7 +114,7 @@ export default function TracklistDashboard() {
               <TableRow key={beat.id} className="group">
                 <TableCell>
                   <Button
-                    variant="ghost"
+                    variant="tertiary"
                     size="icon"
                     className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
                     onClick={() => handlePlayPreview(beat)}
@@ -166,7 +166,7 @@ export default function TracklistDashboard() {
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Button variant="tertiary" size="icon" className="h-8 w-8">
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -372,7 +372,7 @@ export default function TracklistDashboard() {
                 />
               </div>
               <div className="flex flex-col sm:flex-row justify-end gap-2">
-                <Button variant="outline" onClick={() => setEditingBeat(null)} className="w-full sm:w-auto">
+                <Button variant="secondary" onClick={() => setEditingBeat(null)} className="w-full sm:w-auto">
                   Cancel
                 </Button>
                 <Button onClick={handleSaveEdit} className="bg-purple-600 hover:bg-purple-700 w-full sm:w-auto">

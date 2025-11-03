@@ -468,7 +468,7 @@ export default function BeatsDashboard() {
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
+                            <Button variant="tertiary" size="sm">
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -533,17 +533,22 @@ export default function BeatsDashboard() {
                   />
                   <div className="flex flex-wrap items-center gap-2">
                     {newCoverFile && (
-                      <Button type="button" variant="outline" onClick={handleClearNewCover}>
+                      <Button type="button" variant="secondary" onClick={handleClearNewCover}>
                         Cancel new image
                       </Button>
                     )}
                     {initialCoverImage && !newCoverFile && !removeExistingCover && (
-                      <Button type="button" variant="destructive" onClick={handleRemoveExistingCover}>
+                      <Button
+                        type="button"
+                        variant="primary"
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        onClick={handleRemoveExistingCover}
+                      >
                         Remove current cover
                       </Button>
                     )}
                     {removeExistingCover && initialCoverImage && !newCoverFile && (
-                      <Button type="button" variant="outline" onClick={handleRestoreCover}>
+                      <Button type="button" variant="secondary" onClick={handleRestoreCover}>
                         Undo removal
                       </Button>
                     )}
@@ -705,7 +710,7 @@ export default function BeatsDashboard() {
             </div>
           </div>
           <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={handleCancelEdit}>
+            <Button variant="secondary" onClick={handleCancelEdit}>
               Cancel
             </Button>
             <Button onClick={handleSaveEdit}>Save Changes</Button>

@@ -138,7 +138,7 @@ export default function BeatCard({ beat, onClick }: BeatCardProps) {
 
           <div className="flex items-center justify-between">
             <Button
-              variant="ghost"
+              variant="tertiary"
               size="sm"
               onClick={handlePlayTrack}
               className="text-brand-500 hover:text-brand-400 hover:bg-brand-500/10 px-3"
@@ -149,8 +149,8 @@ export default function BeatCard({ beat, onClick }: BeatCardProps) {
 
             <Button
               size="sm"
-              variant="cta"
-              className="transition-colors text-xs h-8"
+              variant="primary"
+              className="bg-[hsl(var(--cta-bg))] text-[hsl(var(--cta-fg))] hover:bg-[hsl(var(--cta-hover))] transition-colors text-xs h-8"
               onClick={handleBuyNow}
             >
               <ExternalLink className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />

@@ -530,9 +530,9 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
                 />
                 <Button
                   type="button"
-                  variant="destructive"
+                  variant="primary"
                   size="sm"
-                  className="absolute top-2 right-2"
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90 absolute top-2 right-2"
                   onClick={removeImage}
                 >
                   <X className="h-4 w-4" />
@@ -573,7 +573,7 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
                   <div className="flex items-center gap-2">
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="secondary"
                       size="sm"
                       onClick={toggleAudioPreview}
                       className="flex items-center gap-2 bg-transparent"
@@ -581,7 +581,13 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
                       {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                       {isPlaying ? "Pause" : "Preview"}
                     </Button>
-                    <Button type="button" variant="destructive" size="sm" onClick={removeAudio}>
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="sm"
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      onClick={removeAudio}
+                    >
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
@@ -712,7 +718,7 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
             <PopoverTrigger asChild>
               <Button
                 type="button"
-                variant="outline"
+                variant="secondary"
                 role="combobox"
                 className="w-full justify-between"
               >

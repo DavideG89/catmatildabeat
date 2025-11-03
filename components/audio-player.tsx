@@ -156,7 +156,7 @@ export default function AudioPlayer() {
           <p className="text-sm text-gray-400">{artistName}</p>
         </div>
         <div className="flex items-center space-x-3">
-          <Button variant="ghost" size="icon" onClick={toggleMute} className="h-8 w-8">
+          <Button variant="tertiary" size="icon" onClick={toggleMute} className="h-8 w-8">
             {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </Button>
           <div className="w-24">
@@ -187,7 +187,7 @@ export default function AudioPlayer() {
       </div>
 
       <div className="flex justify-center items-center space-x-4">
-        <Button variant="ghost" size="icon" onClick={skipBackward} className="h-10 w-10" disabled={isLoading}>
+        <Button variant="tertiary" size="icon" onClick={skipBackward} className="h-10 w-10" disabled={isLoading}>
           <SkipBack className="h-5 w-5" />
         </Button>
 
@@ -205,7 +205,7 @@ export default function AudioPlayer() {
           )}
         </Button>
 
-        <Button variant="ghost" size="icon" onClick={skipForward} className="h-10 w-10" disabled={isLoading}>
+        <Button variant="tertiary" size="icon" onClick={skipForward} className="h-10 w-10" disabled={isLoading}>
           <SkipForward className="h-5 w-5" />
         </Button>
       </div>

@@ -123,7 +123,7 @@ export default function PopularGenres() {
         {genres.length > 0 && (
           <>
             <Button
-              variant="outline"
+              variant="secondary"
               size="icon"
               className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white"
               onClick={scrollLeft}
@@ -134,7 +134,7 @@ export default function PopularGenres() {
             </Button>
 
             <Button
-              variant="outline"
+              variant="secondary"
               size="icon"
               className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white"
               onClick={scrollRight}

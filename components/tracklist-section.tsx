@@ -183,7 +183,7 @@ export default function TracklistSection() {
                 {/* Buttons inline on mobile, consistent spacing on desktop */}
                 <div className="flex flex-row flex-wrap sm:flex-row items-center gap-2 w-full sm:w-auto">
                   <Button
-                    variant="ghost"
+                    variant="tertiary"
                     size="sm"
                     onClick={() => handlePlayTrack(beat)}
                     className="text-brand-500 hover:text-brand-400 hover:bg-brand-500/10 px-3 flex-1 sm:flex-none"
@@ -201,8 +201,8 @@ export default function TracklistSection() {
 
                   <Button
                     size="sm"
-                    variant="cta"
-                    className="text-xs px-3 flex-1 sm:flex-none min-w-[90px]"
+                    variant="primary"
+                    className="bg-[hsl(var(--cta-bg))] text-[hsl(var(--cta-fg))] hover:bg-[hsl(var(--cta-hover))] text-xs px-3 flex-1 sm:flex-none min-w-[90px]"
                     onClick={() => handleBuyBeat(beat.beatstars_link)}
                   >
                     <ExternalLink className="h-3 w-3 mr-1" />
@@ -245,7 +245,7 @@ export default function TracklistSection() {
           transition={{ delay: 0.8, duration: 0.5 }}
         >
           {/* <Button
-            variant="outline"
+            variant="secondary"
             
             onClick={() => window.open("https://beatstars.com/catmatildabeat", "_blank")}
           >

@@ -123,7 +123,7 @@ export default function AdvancedAudioPlayer() {
               <Button onClick={togglePlayPause} className="h-9 w-9 rounded-full bg-white hover:bg-gray-100 text-black">
                 {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
               </Button>
-              <Button variant="ghost" size="sm" onClick={() => setIsCollapsed(false)} className="h-8 px-2 text-black">
+              <Button variant="tertiary" size="sm" onClick={() => setIsCollapsed(false)} className="h-8 px-2 text-black">
                 Show
               </Button>
             </div>
@@ -153,7 +153,7 @@ export default function AdvancedAudioPlayer() {
             {/* Control Buttons */}
             <div className="flex items-center gap-2">
               <Button
-                variant="ghost"
+                variant="tertiary"
                 size="sm"
                 onClick={handleShuffle}
                 className="h-8 w-8 p-0 text-black"
@@ -161,7 +161,7 @@ export default function AdvancedAudioPlayer() {
                 <Shuffle className="h-4 w-4" />
               </Button>
 
-              <Button variant="ghost" size="sm" onClick={previousTrack} className="h-8 w-8 p-0">
+              <Button variant="tertiary" size="sm" onClick={previousTrack} className="h-8 w-8 p-0">
                 <SkipBack className="h-4 w-4" />
               </Button>
 
@@ -172,12 +172,12 @@ export default function AdvancedAudioPlayer() {
                 {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
               </Button>
 
-              <Button variant="ghost" size="sm" onClick={nextTrack} className="h-8 w-8 p-0 text-black">
+              <Button variant="tertiary" size="sm" onClick={nextTrack} className="h-8 w-8 p-0 text-black">
                 <SkipForward className="h-4 w-4" />
               </Button>
 
               <Button
-                variant="ghost"
+                variant="tertiary"
                 size="sm"
                 onClick={handleRepeat}
                 className="h-8 w-8 p-0 text-black"
@@ -216,14 +216,14 @@ export default function AdvancedAudioPlayer() {
             {/* Mobile Buy button */}
             <Button
               size="sm"
-              variant="cta"
-              className="transition-colors text-xs h-8 sm:hidden"
+              variant="primary"
+              className="bg-[hsl(var(--cta-bg))] text-[hsl(var(--cta-fg))] hover:bg-[hsl(var(--cta-hover))] transition-colors text-xs h-8 sm:hidden"
               onClick={() => window.open(currentTrack.beatstarsLink || 'https://beatstars.com/catmatildabeat', '_blank')}
             >
               Buy
             </Button>
             <Button
-              variant="ghost"
+              variant="tertiary"
               size="sm"
               onClick={() => setShowQueue(!showQueue)}
               className="h-8 w-8 p-0 text-black hover:text-black"
@@ -233,7 +233,7 @@ export default function AdvancedAudioPlayer() {
 
             <div className="flex items-center gap-2">
               <Button
-                variant="ghost"
+                variant="tertiary"
                 size="sm"
                 onClick={toggleMute}
                 className="h-8 w-8 p-0 text-black hover:text-black"
@@ -251,7 +251,7 @@ export default function AdvancedAudioPlayer() {
                 />
               </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => setIsCollapsed(true)} className="h-8 px-2 text-black">
+            <Button variant="tertiary" size="sm" onClick={() => setIsCollapsed(true)} className="h-8 px-2 text-black">
               Hide
             </Button>
           </div>
@@ -263,7 +263,7 @@ export default function AdvancedAudioPlayer() {
           <div className="mt-3 p-4 bg-muted/50 rounded-lg -mx-3 md:mx-0">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-medium text-sm">Queue ({queue.length} tracks)</h3>
-              <Button variant="ghost" size="sm" onClick={clearQueue} className="text-xs">
+              <Button variant="tertiary" size="sm" onClick={clearQueue} className="text-xs">
                 Clear Queue
               </Button>
             </div>

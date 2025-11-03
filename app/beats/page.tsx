@@ -52,7 +52,7 @@ function BeatsPageContent() {
           </div>
           <div className="sm:hidden">
             <Button
-              variant="outline"
+              variant="secondary"
               onClick={() => setMobileFiltersOpen(true)}
               className="relative gap-2 h-10 px-4 rounded-xl bg-zinc-900 text-white border border-zinc-800 shadow-sm hover:bg-zinc-800 focus-visible:ring-2 focus-visible:ring-brand-500"
               aria-label="Open filters"
