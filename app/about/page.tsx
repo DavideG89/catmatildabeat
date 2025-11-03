@@ -113,7 +113,7 @@ export default function AboutPage() {
           </Button>
           <Button
             size="lg"
-            variant="outline"
+            variant="secondary"
             className="border-brand-600 text-brand-500 hover:bg-brand-500/10 bg-transparent"
             asChild
           >

@@ -152,7 +152,7 @@ export default function YouTubeSection() {
                     </div>
                     <Button
                       onClick={handleWatchVideos}
-                      variant="outline"
+                      variant="secondary"
                       className="w-full border-red-500/30 text-red-600 hover:bg-red-500/10 bg-transparent"
                     >
                       <Youtube className="mr-2 h-4 w-4" />

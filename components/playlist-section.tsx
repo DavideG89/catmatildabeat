@@ -174,7 +174,7 @@ export default function PlaylistSection() {
                         <Play className="h-4 w-4 mr-2" />
                         Play All
                       </Button>
-                      <Button size="sm" variant="outline" className="bg-transparent">
+                      <Button size="sm" variant="secondary" className="bg-transparent">
                         <Shuffle className="h-4 w-4" />
                       </Button>
                     </div>

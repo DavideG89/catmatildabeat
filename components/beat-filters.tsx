@@ -147,7 +147,7 @@ export default function BeatFilters({ onFiltersChange }: BeatFiltersProps) {
         <h3 className="hidden lg:block text-lg font-semibold">Filters</h3>
         {hasActiveFilters && (
           <Button
-            variant="ghost"
+            variant="tertiary"
             size="sm"
             onClick={clearAllFilters}
             className="text-brand-400 hover:text-brand-300 text-xs"

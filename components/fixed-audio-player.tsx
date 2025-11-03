@@ -117,7 +117,7 @@ export default function FixedAudioPlayer() {
                   <div className="flex items-center gap-2 sm:ml-auto">
                     <span className="text-xs text-muted-foreground w-8 hidden sm:block">{formatTime(currentTime)}</span>
                     <Button
-                      variant="ghost"
+                      variant="tertiary"
                       size="icon"
                       className="h-7 w-7 md:h-8 md:w-8 text-brand-500 hover:text-brand-400 hover:bg-brand-500/10 p-1"
                       onClick={togglePlayPause}
@@ -147,7 +147,7 @@ export default function FixedAudioPlayer() {
 
                   <div className="relative ml-1 hidden sm:block" ref={volumeControlRef}>
                     <Button
-                      variant="ghost"
+                      variant="tertiary"
                       size="icon"
                       className="h-6 w-6 text-muted-foreground hover:text-brand-400 p-1"
                       onClick={() => setShowVolumeControl(!showVolumeControl)}
@@ -188,8 +188,8 @@ export default function FixedAudioPlayer() {
             <div className="hidden sm:block">
               <Button
                 size="sm"
-                variant="cta"
-                className="transition-colors text-xs h-8"
+                variant="primary"
+                className="bg-[hsl(var(--cta-bg))] text-[hsl(var(--cta-fg))] hover:bg-[hsl(var(--cta-hover))] transition-colors text-xs h-8"
                 onClick={handleBuyLicense}
               >
                 <ExternalLink className="h-3 w-3 mr-1 md:mr-2 md:h-4 md:w-4" />

@@ -205,7 +205,7 @@ export default function Home() {
                           >
                             <Link href="/beats">Browse Beats marketplace</Link>
                           </Button>
-                          <Button size="lg" variant="outline" className="text-base md:text-lg px-5 md:px-7" asChild>
+                          <Button size="lg" variant="secondary" className="text-base md:text-lg px-5 md:px-7" asChild>
                             <Link href="https://www.beatstars.com/catmatildabeat" target="_blank" rel="noreferrer">
                               Browse on BeatStars
                             </Link>
@@ -364,7 +364,7 @@ export default function Home() {
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
             <div className="space-y-5 max-w-xl">
               <h2 className="text-3xl md:text-4xl font-bold font-heading">
-              The visual side of our sound.
+              The visual side of the sound.
               </h2>
               <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
               A visual journey through colors, moods, and stories crafted by{" "}
@@ -382,7 +382,7 @@ export default function Home() {
                 <Button size="lg" className="bg-brand-600 hover:bg-brand-500" asChild>
                   <Link href="/illustration">Explore the gallery</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-brand-600 text-brand-600 hover:bg-brand-500/10" asChild>
+                <Button size="lg" variant="secondary" className="" asChild>
                   <Link href="/contact">Request your own illustration</Link>
                 </Button>
               </div>

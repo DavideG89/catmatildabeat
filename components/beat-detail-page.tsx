@@ -252,7 +252,7 @@ export default function BeatDetailPage({ params }: BeatDetailPageProps) {
                 <Button onClick={handleBuyNow} className="bg-brand-600 hover:bg-brand-500 text-white">
                   Buy License on BeatStars
                 </Button>
-                <Button variant="outline" onClick={handleBuyNow} className="gap-2">
+                <Button variant="secondary" onClick={handleBuyNow} className="gap-2">
                   <ExternalLink className="h-4 w-4" /> Visit BeatStars Page
                 </Button>
               </div>

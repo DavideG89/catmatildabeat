@@ -98,7 +98,7 @@ export default function SamplePackFilters() {
 
       <div className="mt-6 space-y-2">
         <Button className="w-full bg-purple-600 hover:bg-purple-700">Apply Filters</Button>
-        <Button variant="outline" className="w-full">
+        <Button variant="secondary" className="w-full">
           Reset Filters
         </Button>
       </div>

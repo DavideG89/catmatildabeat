@@ -418,7 +418,7 @@ const ScratchBeatSection = () => {
                   </div>
                   <div className="flex flex-col gap-3 sm:flex-row">
                     <Button
-                      className="flex-1"
+                      className="flex-1 bg-white text-black hover:bg-white/90"
                       size="lg"
                       variant="secondary"
                       onClick={handlePlay}

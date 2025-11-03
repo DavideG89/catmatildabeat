@@ -50,7 +50,7 @@ export default function MobileScrollContainer({ children, className = "" }: Mobi
       {/* Left scroll button */}
       {canScrollLeft && (
         <Button
-          variant="ghost"
+          variant="tertiary"
           size="icon"
           className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm shadow-md hover:bg-background/90 md:hidden"
           onClick={scrollLeft}
@@ -73,7 +73,7 @@ export default function MobileScrollContainer({ children, className = "" }: Mobi
       {/* Right scroll button */}
       {canScrollRight && (
         <Button
-          variant="ghost"
+          variant="tertiary"
           size="icon"
           className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm shadow-md hover:bg-background/90 md:hidden"
           onClick={scrollRight}
