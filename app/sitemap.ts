@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next"
 const SITE_URL = "https://www.matildathecat.com"
 const LAST_MODIFIED = new Date("2025-01-01T00:00:00Z")
 
-const genreNames = [
+/* const genreNames = [
   "Alternative HipHop",
   "Alternative Rock",
   "Ambient",
@@ -20,7 +20,7 @@ const genreNames = [
   "Rock",
   "Synthwave",
   "Trip Hop",
-]
+] */
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
@@ -50,7 +50,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
   ]
-const genrePages: MetadataRoute.Sitemap = genreNames.map((genre) => {
+
+
+return [...staticPages,] /*...genrePages*/
+}
+
+/* const genrePages: MetadataRoute.Sitemap = genreNames.map((genre) => {
   const genreParam = encodeURIComponent(genre)
 
   return {
@@ -58,7 +63,4 @@ const genrePages: MetadataRoute.Sitemap = genreNames.map((genre) => {
     lastModified: LAST_MODIFIED,
     priority: 0.7,
   }
-})
-
-return [...staticPages, ...genrePages]
-}
+}) */
