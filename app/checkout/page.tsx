@@ -13,7 +13,7 @@ const beats = {
   "1": {
     id: "1",
     title: "Midnight Dreams",
-    producer: "Cat Matilda Beat",
+    producer: "Matilda The Cat",
     coverImage: "/placeholder.svg?height=100&width=100",
     licenses: {
       Basic: { price: 29.99, rights: "MP3 file, Non-exclusive, 5,000 streams" },
@@ -24,7 +24,7 @@ const beats = {
   "2": {
     id: "2",
     title: "Summer Vibes",
-    producer: "Cat Matilda Beat",
+    producer: "Matilda The Cat",
     coverImage: "/placeholder.svg?height=100&width=100",
     licenses: {
       Basic: { price: 24.99, rights: "MP3 file, Non-exclusive, 5,000 streams" },
@@ -35,7 +35,7 @@ const beats = {
   "3": {
     id: "3",
     title: "Urban Legend",
-    producer: "Cat Matilda Beat",
+    producer: "Matilda The Cat",
     coverImage: "/placeholder.svg?height=100&width=100",
     licenses: {
       Basic: { price: 34.99, rights: "MP3 file, Non-exclusive, 5,000 streams" },

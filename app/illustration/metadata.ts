@@ -1,14 +1,14 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Illustrazioni | Cat Matilda Beat",
+  title: "Illustrazioni | Matilda The Cat",
   description:
     "Scopri la galleria di illustrazioni dedicate a Cat Matilda: poster, ritratti e visual storytelling per release e collaborazioni.",
   alternates: {
     canonical: "/illustration",
   },
   openGraph: {
-    title: "Illustrazioni | Cat Matilda Beat",
+    title: "Illustrazioni | Matilda The Cat",
     description:
       "Visual originali, poster esclusivi e concept grafici che traducono l'energia dei beat di Cat Matilda in immagini.",
     url: "/illustration",

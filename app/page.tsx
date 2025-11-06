@@ -548,7 +548,7 @@ export default function Home() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <h2 className="text-3xl md:text-4xl font-bold mb-6 font-heading">Ready to Elevate Your Sound?</h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto text-black/70">
-              Join Cat Matilda Beat for premium beats.
+              Join Matilda The Cat for premium beats.
             </p>
             <Button
               size="lg"

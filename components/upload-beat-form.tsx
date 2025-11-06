@@ -109,7 +109,7 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
   // Form state
   const [formData, setFormData] = useState({
     title: "",
-    producer: "Cat Matilda Beat",
+    producer: "Matilda The Cat",
     bpm: "",
     key: "",
     genre: "",
@@ -482,7 +482,7 @@ export default function UploadBeatForm({ onSuccess }: UploadBeatFormProps) {
         // Reset form
         setFormData({
           title: "",
-          producer: "Cat Matilda Beat",
+          producer: "Matilda The Cat",
           bpm: "",
           key: "",
           genre: "",

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
-const title = "About Cat Matilda Beat"
-const description = "Learn about Cat Matilda Beat's journey, philosophy, and the creative vision behind the beats."
+const title = "About Matilda The Cat"
+const description = "Learn about Cat Matilda's journey, philosophy, and the creative vision behind the beats."
 
 export const metadata: Metadata = {
   title,
@@ -15,10 +15,10 @@ export const metadata: Metadata = {
     url: "/about",
     images: [
       {
-        url: "/img/CatMatildaStudio.jpg",
+        url: "/img/MatildaTheCat-Poster.png",
         width: 1200,
         height: 630,
-        alt: "Cat Matilda Beat studio",
+        alt: " Matilda The Cat studio",
       },
     ],
   },

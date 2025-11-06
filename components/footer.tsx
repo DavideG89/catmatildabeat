@@ -21,7 +21,7 @@ export default function Footer() {
               <img src="/img/logo-150px.png" alt="Cat Matilda Logo" className="h-14 w-auto md:h-14" />
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Feel the Beat and get Inspired. No curse, just beat.
+              Feel the Beat and get Inspired. No curse, just magic.
             </p>
             <div className="flex space-x-4">
               <Link href="https://www.instagram.com/catmatildabeat/" className="text-foreground hover:text-brand-400 transition-colors" target="_blank" rel="noopener noreferrer">
@@ -116,7 +116,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-border mt-8 md:mt-12 pt-6 md:pt-8 text-center text-muted-foreground text-xs md:text-sm">
-          <p>&copy; {new Date().getFullYear()} Cat Matilda Beat. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Matilda The Cat. All rights reserved.</p>
         </div>
       </div>
     </footer>

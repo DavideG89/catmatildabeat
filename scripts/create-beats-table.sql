@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS beats CASCADE;
 CREATE TABLE beats (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
-  producer TEXT NOT NULL DEFAULT 'Cat Matilda Beat',
+  producer TEXT NOT NULL DEFAULT 'Matilda The Cat',
   cover_image TEXT,
   audio_file TEXT,
   bpm INTEGER NOT NULL CHECK (bpm > 0 AND bpm <= 300),

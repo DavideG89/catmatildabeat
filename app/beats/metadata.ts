@@ -15,10 +15,10 @@ export const metadata: Metadata = {
     url: "/beats",
     images: [
       {
-        url: "/img/CatMatildaStudio.jpg",
+        url: "/img/MatildaTheCat-Poster.png",
         width: 1200,
         height: 630,
-        alt: "Browse Cat Matilda Beat marketplace",
+        alt: "Browse Matilda The Cat marketplace",
       },
     ],
   },

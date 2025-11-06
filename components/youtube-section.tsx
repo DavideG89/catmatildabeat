@@ -126,7 +126,7 @@ export default function YouTubeSection() {
                   <div className="relative aspect-video from-red-500/20 to-red-600/10 flex items-center justify-center">
                     <div className="text-center">
                       <Youtube className="h-16 w-16 md:h-20 md:w-20 text-red-500 mx-auto mb-4" />
-                      <h3 className="text-xl md:text-2xl font-bold mb-2 text-card-foreground">Cat Matilda Beat</h3>
+                      <h3 className="text-xl md:text-2xl font-bold mb-2 text-card-foreground">Matilda The Cat</h3>
                       <p className="text-muted-foreground text-sm md:text-base">Beat Making & Music Production</p>
                     </div>
                     <div

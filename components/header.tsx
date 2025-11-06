@@ -121,7 +121,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-20 md:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <img src="/Logo-Big.png" alt="Cat Matilda Beat Logo" className="h-12 w-auto md:h-16" />
+            <img src="/Logo-Big.png" alt="Matilda The Cat Logo" className="h-12 w-auto md:h-16" />
           </Link>
 
           {/* Desktop Navigation */}
