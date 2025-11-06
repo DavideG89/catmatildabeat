@@ -18,7 +18,7 @@ export const metadata: Metadata = {
         url: "/img/MatildaTheCat-Poster.png",
         width: 1200,
         height: 630,
-        alt: " Matilda The Cat studio",
+        alt: " Matilda The Cat - About Page",
       },
     ],
   },

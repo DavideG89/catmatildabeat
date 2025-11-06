@@ -6,7 +6,11 @@ import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
 import { ArrowLeft, ArrowRight, X } from "lucide-react"
 
+
 import { Button } from "@/components/ui/button"
+
+
+
 
 type IllustrationSlide = {
   id: string
@@ -96,7 +100,7 @@ const spookySlides = Array.from({ length: 9 }, (_, index) => ({
   height: 1200,
 }))
 
-type StorySlide = { id: string; src: string; alt: string; width: number; height: number }
+// Removed duplicate definition of StorySlide
 
 type StoryCatalog = {
   id: string
@@ -142,334 +146,9 @@ const storyCatalogs: StoryCatalog[] = [
   },
 ]
 
-const storyFigureVariants = {
-  enter: (direction: 1 | -1) => ({
-    opacity: 0,
-    x: direction > 0 ? 200 : -200, // entra lateralmente
-    rotate: 0,                     // niente rotazione
-    scale: 0.98,                   // leggera riduzione all'ingresso
-  }),
-  center: {
-    opacity: 1,
-    x: 0,
-    rotate: 0,
-    scale: 1,
-    transition: {
-      duration: 0.45,
-      ease: "easeInOut",
-    },
-  },
-  exit: (direction: 1 | -1) => ({
-    opacity: 0,
-    x: direction > 0 ? -200 : 200, // esce dal lato opposto
-    rotate: 0,
-    scale: 0.98,
-    transition: {
-      duration: 0.45,
-      ease: "easeInOut",
-    },
-  }),
-}
-
 // Reusable story carousel
 type StorySlide = { id: string; src: string; alt: string; width: number; height: number }
 
-function StoryCarousel({
-  id,
-  title,
-  subtitle,
-  slides,
-}: {
-  id: string
-  title: string
-  subtitle?: string
-  slides: StorySlide[]
-}) {
-  const [index, setIndex] = useState(0)
-  const [direction, setDirection] = useState<1 | -1>(1)
-  const [isFullscreen, setIsFullscreen] = useState(false)
-  const [chromeVisible, setChromeVisible] = useState(false)
-
-  const slide = slides[index]
-
-  const prev = () => {
-    setDirection(-1)
-    setIndex((p) => (p - 1 + slides.length) % slides.length)
-  }
-  const next = () => {
-    setDirection(1)
-    setIndex((p) => (p + 1) % slides.length)
-  }
-  const select = (i: number) => {
-    if (i === index) return
-    setDirection(i > index ? 1 : -1)
-    setIndex(i)
-  }
-  const onFigureClick = () => {
-    if (typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches) return
-    setIsFullscreen(true)
-    setChromeVisible(true)
-  }
-
-  // Lock scroll when fullscreen is open
-  useEffect(() => {
-    if (!isFullscreen) return
-    const originalBodyOverflow = document.body.style.overflow
-    const originalHtmlOverflow = document.documentElement.style.overflow
-    const originalBodyPosition = document.body.style.position
-    const originalBodyTop = document.body.style.top
-    const originalBodyWidth = document.body.style.width
-
-    const scrollY = window.scrollY
-    document.documentElement.style.overflow = "hidden"
-    document.body.style.overflow = "hidden"
-    document.body.style.position = "fixed"
-    document.body.style.top = `-${scrollY}px`
-    document.body.style.width = "100%"
-
-    return () => {
-      document.body.style.overflow = originalBodyOverflow
-      document.documentElement.style.overflow = originalHtmlOverflow
-      document.body.style.position = originalBodyPosition
-      document.body.style.top = originalBodyTop
-      document.body.style.width = originalBodyWidth
-      window.scrollTo(0, scrollY)
-    }
-  }, [isFullscreen])
-
-  useEffect(() => {
-    if (!isFullscreen) return
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsFullscreen(false)
-        return
-      }
-
-      if (event.key === "ArrowLeft") {
-        setDirection(-1)
-        setIndex((current) => (current - 1 + slides.length) % slides.length)
-      }
-
-      if (event.key === "ArrowRight") {
-        setDirection(1)
-        setIndex((current) => (current + 1) % slides.length)
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [isFullscreen, slides.length])
-
-  return (
-    <section className="border-t border-border bg-muted/20" aria-labelledby={`${id}-title`}>
-      <div className="container flex flex-col gap-10 px-6 py-16 md:px-12 lg:px-16">
-        <div className="flex flex-col gap-4 text-center">
-          <span className="text-xs font-semibold uppercase tracking-[0.42em] text-muted-foreground">Stories Carousel</span>
-          <h2 id={`${id}-title`} className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            {title}
-          </h2>
-          {subtitle && (
-            <p className="mx-auto max-w-2xl text-sm text-muted-foreground sm:text-base">{subtitle}</p>
-          )}
-        </div>
-
-        <div className="flex flex-col items-center gap-6">
-          <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 lg:gap-8">
-            <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start">
-              {/* Main figure */}
-              <div className="relative w-full">
-                <AnimatePresence initial={false} custom={direction} mode="wait">
-                  <motion.figure
-                    key={slide.id}
-                    custom={direction}
-                    variants={storyFigureVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{ duration: 0.55, ease: "easeInOut" }}
-                    className="relative aspect-[4/3] w-full overflow-hidden rounded-[36px] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/40 bg-background"
-                    tabIndex={0}
-                    onClick={(e) => {
-                      (e.currentTarget as HTMLElement).focus()
-                      onFigureClick()
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "ArrowLeft") prev()
-                      if (e.key === "ArrowRight") next()
-                      if (e.key === "Enter") onFigureClick()
-                    }}
-                    whileTap={{ scale: 0.98 }}
-                    whileFocus={{ scale: 1.01 }}
-                    aria-label={`${title}, slide ${index + 1} di ${slides.length}`}
-                  >
-                    <Image
-                      src={slide.src}
-                      alt={slide.alt}
-                      fill
-                      sizes="(min-width: 1280px) 720px, (min-width: 768px) 70vw, 90vw"
-                      className="object-contain"
-                      priority
-                    />
-                  </motion.figure>
-                </AnimatePresence>
-
-                {/* Desktop prev/next buttons */}
-                <div className="pointer-events-none absolute inset-y-0 left-0 hidden items-center pl-4 lg:flex">
-                  <div className="pointer-events-auto">
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      className="h-12 w-12 rounded-full border border-border bg-background/80 text-foreground backdrop-blur"
-                      onClick={prev}
-                      aria-label="Previous story slide"
-                    >
-                      <ArrowLeft className="h-5 w-5" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="pointer-events-none absolute inset-y-0 right-0 hidden items-center pr-4 lg:flex">
-                  <div className="pointer-events-auto">
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      className="h-12 w-12 rounded-full border border-border bg-background/80 text-foreground backdrop-blur"
-                      onClick={next}
-                      aria-label="Next story slide">
-                      <ArrowRight className="h-5 w-5" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Thumbnails */}
-              <div className="flex w-full items-start gap-3 overflow-x-auto px-1 pb-1 snap-x snap-mandatory lg:overflow-visible lg:snap-none lg:grid lg:auto-rows-[minmax(0,1fr)] lg:grid-cols-2 lg:gap-4">
-                {slides.map((thumb, i) => (
-                  <button
-                    key={thumb.id}
-                    type="button"
-                    onClick={() => select(i)}
-                    className={`relative aspect-[4/3] min-w-[108px] snap-start overflow-hidden rounded-2xl border transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/40 ${
-                      i === index ? "border-brand-600 shadow-lg shadow-brand-600/30" : "border-border opacity-80 hover:opacity-100"
-                    } lg:min-w-0`}
-                    aria-label={`Seleziona illustrazione ${title} ${i + 1}`}
-                    aria-current={i === index}
-                    title={`Slide ${i + 1}`}
-                  >
-                    <Image src={thumb.src} alt={thumb.alt} fill sizes="(min-width:1024px) 120px, 108px" className="object-cover" loading="lazy" />
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Mobile controls */}
-            <div className="flex items-center justify-center gap-3 lg:hidden">
-              <Button type="button" variant="secondary" className="h-12 w-12 rounded-full border-border text-foreground hover:bg-muted" onClick={prev} aria-label="Previous story slide">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <span className="text-xs uppercase tracking-[0.42em] text-muted-foreground" aria-live="polite">
-                0{index + 1} / 0{slides.length}
-              </span>
-              <Button type="button" className="h-12 w-12 rounded-full bg-brand-600 text-white hover:bg-brand-500" onClick={next} aria-label="Next story slide">
-                <ArrowRight className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Fullscreen (mobile) */}
-        <AnimatePresence>
-          {isFullscreen && (
-            <motion.div
-              key={`${id}-fullscreen`}
-              className="fixed inset-0 z-50 flex min-h-[100dvh] flex-col bg-black/95 overscroll-none"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsFullscreen(false)}
-            >
-              <div className={`flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top)+16px)] transition-opacity duration-200 ${chromeVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                <span className="text-xs tabular-nums tracking-[0.2em] text-white/70">{String(index + 1).padStart(2,'0')} / {String(slides.length).padStart(2,'0')}</span>
-                <button
-                  type="button"
-                  onClick={() => setIsFullscreen(false)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/70 text-white p-0"
-                  aria-label={`Chiudi anteprima ${title}`}
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-
-              {/* Desktop side arrows */}
-              <div className="pointer-events-none absolute inset-y-0 left-0 hidden items-center pl-4 lg:flex">
-                <div className="pointer-events-auto">
-                  <Button type="button" variant="secondary" className="h-12 w-12 rounded-full border-white/25 text-white hover:bg-white/10" onClick={(e) => { e.stopPropagation(); prev(); }} aria-label="Slide precedente">
-                    <ArrowLeft className="h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
-              <div className="pointer-events-none absolute inset-y-0 right-0 hidden items-center pr-4 lg:flex">
-                <div className="pointer-events-auto">
-                  <Button type="button" className="h-12 w-12 rounded-full bg-brand-600 text-white hover:bg-brand-500" onClick={(e) => { e.stopPropagation(); next(); }} aria-label="Slide successiva">
-                    <ArrowRight className="h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
-
-              <div className="relative flex-1 px-4">
-                <AnimatePresence initial={false} custom={direction} mode="wait">
-                  <motion.figure
-                    key={`${id}-fullslide-${slide.id}`}
-                    custom={direction}
-                    variants={storyFigureVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{ duration: 0.45, ease: "easeInOut" }}
-                    className="relative h-full w-full overflow-hidden rounded-[32px] bg-transparent shadow-none"
-                    onClick={(e) => { e.stopPropagation(); setChromeVisible((v) => !v); }}
-                    drag="x"
-                    dragConstraints={{ left: 0, right: 0 }}
-                    dragElastic={0.15}
-                    onDragEnd={(_, info) => {
-                      const threshold = 60
-                      if (info.offset.x > threshold || info.velocity.x > 400) prev()
-                      if (info.offset.x < -threshold || info.velocity.x < -400) next()
-                    }}
-                  >
-                    <div className="relative h-full w-full">
-                      <Image src={slide.src} alt={slide.alt} fill sizes="100vw" priority className="object-contain" />
-                    </div>
-                  </motion.figure>
-                </AnimatePresence>
-              </div>
-
-              <div className={`flex items-center justify-center gap-3 px-6 pb-[calc(env(safe-area-inset-bottom)+16px)] transition-opacity duration-200 ${chromeVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  className="h-10 w-10 rounded-full border-white/25 text-white hover:bg-white/10"
-                  onClick={(e) => { e.stopPropagation(); prev(); }}
-                  aria-label="Illustrazione precedente"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-                <Button
-                  type="button"
-                  className="h-10 w-10 rounded-full bg-brand-600 text-white hover:bg-brand-500"
-                  onClick={(e) => { e.stopPropagation(); next(); }}
-                  aria-label="Illustrazione successiva"
-                >
-                  <ArrowRight className="h-5 w-5" />
-                </Button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </section>
-  )
-}
 
 export default function IllustrationPage() {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -490,9 +169,6 @@ export default function IllustrationPage() {
     setActiveIndex((prev) => (prev + 1) % slides.length)
   }
 
-  const handleCardSelect = (slotIndex: number) => {
-    setActiveIndex((prev) => (prev + slotIndex) % slides.length)
-  }
 
   // Lightbox state for Stories Catalog
   const [openStoryId, setOpenStoryId] = useState<string | null>(null)
@@ -731,7 +407,7 @@ export default function IllustrationPage() {
         <div className="container px-6 py-16 md:px-12 lg:px-16">
           <div className="mb-8 text-center">
             <span className="text-xs font-semibold uppercase tracking-[0.42em] text-muted-foreground">Stories</span>
-            <h2 id="stories-grid-title" className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Matilda's Adventure</h2>
+            <h2 id="stories-grid-title" className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Matilda&apos;s Adventure</h2>
             <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">Choose a story from our Catalog.</p>
           </div>
 

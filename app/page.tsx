@@ -24,7 +24,7 @@ export default function Home() {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
-  const { beats, searchBeats, getBeatsByCategory } = useBeats()
+  const { beats, searchBeats } = useBeats()
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [showSearchResults, setShowSearchResults] = useState(false)

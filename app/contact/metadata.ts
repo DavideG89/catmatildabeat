@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     url: "/contact",
     images: [
       {
-        url: "/img/CatMatildaStudio.jpg",
+        url: "/img/logo-Face-720px.png",
         width: 1200,
         height: 630,
         alt: "Contact Matilda The Cat",

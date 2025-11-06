@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-const title = "Beats Marketplace"
+const title = "Beats Marketplace | Matilda The Cat"
 const description = "Browse and filter exclusive Beat instrumentals across genres, moods, and BPM."
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title,
-    description,
+    description: "Get original, royalty-free beats for your musical projects.",
     url: "/beats",
     images: [
       {
