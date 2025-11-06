@@ -1,5 +1,5 @@
 User-agent: *
-Disallow: /dashboard
+Disallow: /dashboard/
 Disallow: /login/
 
 # (Se hai directory o URL che **non** vuoi far indicizzare/crawllare, aggiungile qui)
