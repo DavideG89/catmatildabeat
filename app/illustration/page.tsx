@@ -159,7 +159,7 @@ export default function IllustrationPage() {
   })
   const [isDraggingGallery, setIsDraggingGallery] = useState(false)
 
-  const activeSlide = slides[activeIndex]
+  // Removed unused variable 'activeSlide'
   const handlePrev = () => {
     setActiveIndex((prev) => (prev - 1 + slides.length) % slides.length)
   }
