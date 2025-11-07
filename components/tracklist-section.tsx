@@ -82,7 +82,7 @@ export default function TracklistSection() {
   if (latestBeats.length === 0) {
     return (
       <div
-        className="pt-10 pb-6 md:pt-16 md:pb-10 bg-gradient-to-b from-card/50 to-background"
+        className="pt-10 pb-6 md:pt-16 md:pb-10 from-card/50 "
         style={{
           "--card": "0 0% 100%",
           "--card-foreground": "0 0% 10%",
@@ -202,7 +202,7 @@ export default function TracklistSection() {
                   <Button
                     size="sm"
                     variant="primary"
-                    className="bg-[hsl(var(--cta-bg))] text-[hsl(var(--cta-fg))] hover:bg-[hsl(var(--cta-hover))] text-xs px-3 flex-1 sm:flex-none min-w-[90px]"
+                    className="bg-brand-600 hover:bg-brand-500  text-[hsl(var(--cta-fg))]  text-xs px-3 flex-1 sm:flex-none min-w-[90px]"
                     onClick={() => handleBuyBeat(beat.beatstars_link)}
                   >
                     <ExternalLink className="h-3 w-3 mr-1" />

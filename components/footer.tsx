@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react"
 import Link from "next/link"
-import { Instagram, Youtube } from "lucide-react"
+import { Instagram, Youtube, } from "lucide-react"
 
 export default function Footer() {
   const [showNewsletterNotice, setShowNewsletterNotice] = useState(false)
@@ -13,8 +13,8 @@ export default function Footer() {
   }
 
   return (
-    <footer className="bg-card border-t border-border py-8 md:py-12">
-      <div className="container mx-auto px-4">
+    <footer className="bg-background border-t border-border py-8 md:py-12 ">
+      <div className="container mx-auto px-4 ">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
@@ -24,14 +24,18 @@ export default function Footer() {
               Feel the Beat and get Inspired. No curse, just magic.
             </p>
             <div className="flex space-x-4">
-              <Link href="https://www.instagram.com/catmatildabeat/" className="text-foreground hover:text-brand-400 transition-colors" target="_blank" rel="noopener noreferrer">
+              <Link href="https://www.instagram.com/matilda.theblackcat/" className="text-foreground hover:text-brand-400 transition-colors" target="_blank" rel="noopener noreferrer">
                 <Instagram className="h-5 w-5" />
                 <span className="sr-only">Instagram</span>
               </Link>
 
-              <Link href="https://www.youtube.com/channel/UCKpPHRtsxkhHeao7ttkyb4A" className="text-foreground hover:text-brand-400 transition-colors" target="_blank" rel="noopener noreferrer">
+              <Link href="https://www.youtube.com/channel/UC72Hn4poTD1RBSTPFXhhnBg" className="text-foreground hover:text-brand-400 transition-colors" target="_blank" rel="noopener noreferrer">
                 <Youtube className="h-5 w-5" />
                 <span className="sr-only">YouTube</span>
+              </Link>
+              <Link href="https://www.tiktok.com/@matilda.theblackcat" className="text-foreground hover:text-brand-400 transition-colors" target="_blank" rel="noopener noreferrer">
+              <img src="/tiktok-icon.svg" className="h-5 w-5" alt="TikTok Icon"/>
+                <span className="sr-only">TikTok</span>
               </Link>
             </div>
           </div>

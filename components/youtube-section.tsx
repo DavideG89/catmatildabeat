@@ -125,16 +125,10 @@ export default function YouTubeSection() {
                 <CardContent className="p-0">
                   <div className="relative aspect-video from-red-500/20 to-red-600/10 flex items-center justify-center">
                     <div className="text-center">
-                      <Youtube className="h-16 w-16 md:h-20 md:w-20 text-red-500 mx-auto mb-4" />
-                      <h3 className="text-xl md:text-2xl font-bold mb-2 text-card-foreground">Matilda The Cat</h3>
-                      <p className="text-muted-foreground text-sm md:text-base">Beat Making & Music Production</p>
+                      <img src="/Logo-Big.png" className="h-40 w-40 "alt="" />
+                     
                     </div>
-                    <div
-                      className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
-                      onClick={handleWatchVideos}
-                    >
-                      <Play className="h-12 w-12 text-white" />
-                    </div>
+                   
                   </div>
                   <div className="p-4 md:p-6">
                     <div className="grid grid-cols-3 gap-4 mb-4">
@@ -152,7 +146,7 @@ export default function YouTubeSection() {
                     </div>
                     <Button
                       onClick={handleWatchVideos}
-                      variant="secondary"
+                      variant="tertiary"
                       className="w-full border-red-500/30 text-red-600 hover:bg-red-500/10 bg-transparent"
                     >
                       <Youtube className="mr-2 h-4 w-4" />
