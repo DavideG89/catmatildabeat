@@ -355,7 +355,7 @@ export default function IllustrationPage() {
           </div>
           <div className="">
             <Image
-              src="/MatildaPost2.jpg"
+              src="/MatildaPost2.jpeg"
               width={400}
               height={500}
               alt="Matilda Cat Music illustration poster">
