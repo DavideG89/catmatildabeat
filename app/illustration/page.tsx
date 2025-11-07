@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
@@ -85,12 +86,6 @@ const slides: IllustrationSlide[] = [
   },
 ]
 
-const slotLayout = [
-  { position: "0rem", scale: 1.08, rotate: -1, opacity: 1, blur: "0px", zIndex: 40 },
-  { position: "14rem", scale: 0.96, rotate: -3, opacity: 0.82, blur: "0px", zIndex: 30 },
-  { position: "26rem", scale: 0.9, rotate: -5, opacity: 0.68, blur: "1px", zIndex: 20 },
-  { position: "38rem", scale: 0.86, rotate: -6, opacity: 0.52, blur: "2px", zIndex: 10 },
-]
 
 const spookySlides = Array.from({ length: 9 }, (_, index) => ({
   id: `spooky-${index + 1}`,
@@ -154,19 +149,64 @@ export default function IllustrationPage() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isMobileFullscreen, setIsMobileFullscreen] = useState(false)
   const scrollLockRef = useRef(0)
+  const galleryRef = useRef<HTMLDivElement>(null)
+  const dragStateRef = useRef({
+    isPointerDown: false,
+    startX: 0,
+    scrollLeft: 0,
+    moved: false,
+    preventClick: false,
+  })
+  const [isDraggingGallery, setIsDraggingGallery] = useState(false)
 
   const activeSlide = slides[activeIndex]
-  const visibleIndices = useMemo(
-    () => slotLayout.map((_, slotIndex) => slides[(activeIndex + slotIndex) % slides.length]),
-    [activeIndex],
-  )
-
   const handlePrev = () => {
     setActiveIndex((prev) => (prev - 1 + slides.length) % slides.length)
   }
 
   const handleNext = () => {
     setActiveIndex((prev) => (prev + 1) % slides.length)
+  }
+
+  const handleGalleryPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse" || !galleryRef.current) return
+    dragStateRef.current.isPointerDown = true
+    dragStateRef.current.startX = event.clientX
+    dragStateRef.current.scrollLeft = galleryRef.current.scrollLeft
+    dragStateRef.current.moved = false
+    dragStateRef.current.preventClick = false
+    setIsDraggingGallery(true)
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  const handleGalleryPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!dragStateRef.current.isPointerDown || !galleryRef.current) return
+    event.preventDefault()
+    const deltaX = event.clientX - dragStateRef.current.startX
+    if (Math.abs(deltaX) > 2) {
+      dragStateRef.current.moved = true
+    }
+    galleryRef.current.scrollLeft = dragStateRef.current.scrollLeft - deltaX
+  }
+
+  const endGalleryDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!dragStateRef.current.isPointerDown) return
+    dragStateRef.current.isPointerDown = false
+    dragStateRef.current.preventClick = dragStateRef.current.moved
+    dragStateRef.current.moved = false
+    setIsDraggingGallery(false)
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+  }
+
+  const handleSlideClick = (event: ReactMouseEvent<HTMLButtonElement>, index: number) => {
+    if (dragStateRef.current.preventClick) {
+      event.preventDefault()
+      dragStateRef.current.preventClick = false
+      return
+    }
+    openHeroLightbox(index)
   }
 
 
@@ -311,111 +351,75 @@ export default function IllustrationPage() {
                 <Link href="/contact">Request Artwork</Link>
               </Button>
             </div>
-              <div className=" flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        className="h-12 w-12 rounded-full border-border text-foreground hover:bg-muted"
-                        onClick={handlePrev}
-                      >
-                        <ArrowLeft className="h-5 w-5" />
-                      </Button>
-                      <Button
-                        type="button"
-                        className="h-12 w-12 rounded-full bg-brand-600 text-white hover:bg-brand-500"
-                        onClick={handleNext}
-                      >
-                        <ArrowRight className="h-5 w-5" />
-                      </Button>
-                    </div>
-              </div>
-          </div>
-
-          <div className="relative hidden h-[420px] w-full max-w-3xl justify-self-center lg:block lg:justify-self-end">
-            {visibleIndices.map((slide, slotIndex) => {
-              const layout = slotLayout[slotIndex]
-              return (
-                <motion.article
-                  key={`${slide.id}-${slotIndex}`}
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: layout.opacity, y: 0 }}
-                  transition={{ duration: 0.4, delay: slotIndex * 0.05 }}
-                  className="group absolute left-0 w-[320px] -translate-y-1/2 cursor-pointer sm:w-[360px] md:w-[580px]"
-                  style={{
-                    transform: `translateY(-50%) translateX(${layout.position}) rotate(${layout.rotate}deg) scale(${layout.scale})`,
-                    zIndex: layout.zIndex,
-                    filter: `blur(${layout.blur})`,
-                  }}
-                  onClick={() => openHeroLightbox((activeIndex + slotIndex) % slides.length)}
-                >
-                  <div
-                    className="relative overflow-hidden rounded-[40px] transition-transform group-hover:scale-[1.03]"
-                    style={{ aspectRatio: `${slide.image.width} / ${slide.image.height}` }}
-                  >
-                    <Image
-                      src={slide.image.src}
-                      alt={slide.cardTitle}
-                      width={slide.image.width}
-                      height={slide.image.height}
-                      className="h-auto w-full object-cover"
-                      sizes="(min-width: 1440px) 580px, (min-width: 1280px) 520px, (min-width: 1024px) 360px, 320px"/>
-                    <div className="absolute bottom-6 left-6 right-6 space-y-2 text-white drop-shadow-md">
-                      <span className="text-[0.7rem] uppercase tracking-[0.42em]">{slide.cardTitle}</span>
-                    </div>
-                  </div>
-                </motion.article>
-              )
-            })}
-          </div>
             
-          <div className="relative flex justify-center pb-6 lg:hidden">
-            <AnimatePresence mode="wait">
-              <motion.article
-                key={activeSlide.id}
-                initial={{ opacity: 0, x: 48 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -48 }}
-                transition={{ duration: 0.4 }}
-                className="relative w-full max-w-sm cursor-pointer overflow-hidden rounded-[32px] border border-border bg-background shadow-none"
-                style={{ aspectRatio: `${activeSlide.image.width} / ${activeSlide.image.height}` }}
-                onClick={() => openHeroLightbox(activeIndex)}
-              >
-                <Image
-                  src={activeSlide.image.src}
-                  alt={activeSlide.cardTitle}
-                  width={activeSlide.image.width}
-                  height={activeSlide.image.height}
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute bottom-5 left-5 right-5 space-y-1.5 text-white drop-shadow-md">
-                  <span className="text-[0.65rem] uppercase tracking-[0.42em]">{activeSlide.region}</span>
-                  <h3 className="text-base font-semibold leading-snug">{activeSlide.cardTitle}</h3>
-                  <p className="text-sm text-white/80">{activeSlide.cardSubtitle}</p>
-                </div>
-              </motion.article>
-            </AnimatePresence>
           </div>
-
+          <div className="">
+            <Image
+              src="/MatildaPost2.jpg"
+              width={400}
+              height={500}
+              alt="Matilda Cat Music illustration poster">
+            </Image>
+          </div>
         </div>
 
        
+      </section>
+      {/* Illustrations Section */}
+      <section className="border-t border-border bg-muted/20" aria-labelledby="illustrations-title">
+        <div className="container px-6 py-16 md:px-12 lg:px-16">
+          <div className="mb-8 text-left">
+            <span className="text-xs font-semibold uppercase tracking-[0.42em] text-muted-foreground">Art</span>
+            <h2 id="illustrations-title" className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Matilda&apos;s Illustrations</h2>
+            <p className="mx-auto mt-2 text-sm text-muted-foreground sm:text-base">Scroll through a selection of dreamy frames.</p>
+          </div>
+          <div
+            ref={galleryRef}
+            className={`illustration-scroll -mx-6 mt-10 overflow-x-auto px-6 pb-4 md:-mx-12 md:px-12 lg:-mx-16 lg:px-16 ${isDraggingGallery ? "cursor-grabbing" : "cursor-grab"}`}
+            onPointerDown={handleGalleryPointerDown}
+            onPointerMove={handleGalleryPointerMove}
+            onPointerUp={endGalleryDrag}
+            onPointerLeave={endGalleryDrag}
+            onPointerCancel={endGalleryDrag}
+          >
+            <div className="flex gap-6">
+              {slides.map((slide, index) => (
+                <button
+                  key={slide.id}
+                  type="button"
+                  onClick={(event) => handleSlideClick(event, index)}
+                  className="group relative h-[340px] min-w-[340px] overflow-hidden rounded-[16px] bg-background shadow-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/40 sm:min-w-[300px] lg:h-[420px] lg:min-w-[600px]"
+                  aria-label={`Apri illustrazione ${slide.cardTitle}`}
+                >
+                  <Image
+                    src={slide.image.src}
+                    alt={slide.cardTitle}
+                    fill
+                    sizes="(min-width: 1024px) 360px, (min-width: 640px) 300px, 240px"
+                    className="object-full transition-transform duration-300 group-hover:scale-[1.01]"
+                  />
+                  <span className="sr-only">{slide.cardTitle}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Stories Catalog Grid */}
       <section className="border-t border-border bg-muted/20" aria-labelledby="stories-grid-title">
         <div className="container px-6 py-16 md:px-12 lg:px-16">
-          <div className="mb-8 text-center">
+          <div className="mb-8 text-left">
             <span className="text-xs font-semibold uppercase tracking-[0.42em] text-muted-foreground">Stories</span>
             <h2 id="stories-grid-title" className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Matilda&apos;s Adventure</h2>
-            <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">Choose a story from our Catalog.</p>
+            <p className="mx-auto mt-2  text-sm text-muted-foreground sm:text-base">Choose a story from our Catalog.</p>
           </div>
 
           {(() => {
             const visibleCatalogs = storyCatalogs.filter((s) => s.published)
             const single = visibleCatalogs.length === 1
             return (
-              <div className={`grid gap-6 ${single ? 'grid-cols-1 max-w-xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
+              <div className={`grid gap-6 ${single ? 'grid-cols-1 max-w-xl' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
                 {visibleCatalogs.map((story) => (
                   <button
                     key={story.id}
@@ -449,7 +453,6 @@ export default function IllustrationPage() {
           })()}
         </div>
       </section>
-
 
       {/* Stories Catalog Lightbox */}
       <AnimatePresence>
@@ -531,6 +534,7 @@ export default function IllustrationPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
     </main>
   )
 }
