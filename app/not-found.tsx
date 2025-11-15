@@ -23,7 +23,7 @@ export default function NotFound() {
         </p>
         <div className="flex justify-center">
           <Button asChild className="bg-brand-600 px-6 py-5 text-white hover:bg-brand-500">
-            <Link href="/">Back to home</Link>
+            <Link href="https://matildathecat.com/">Back to home</Link>
           </Button>
         </div>
       </div>
