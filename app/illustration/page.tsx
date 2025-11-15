@@ -1,17 +1,13 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
 import { ArrowLeft, ArrowRight, X } from "lucide-react"
 
-
 import { Button } from "@/components/ui/button"
-
-
-
 
 type IllustrationSlide = {
   id: string
@@ -25,6 +21,23 @@ type IllustrationSlide = {
     width: number
     height: number
   }
+}
+
+type StorySlide = {
+  id: string
+  src: string
+  alt: string
+  width: number
+  height: number
+}
+
+type StoryCatalog = {
+  id: string
+  title: string
+  subtitle?: string
+  cover: { src: string; width: number; height: number; alt: string }
+  slides: StorySlide[]
+  published?: boolean
 }
 
 const slides: IllustrationSlide[] = [
@@ -86,8 +99,15 @@ const slides: IllustrationSlide[] = [
   },
 ]
 
+const heroSlides: StorySlide[] = slides.map((slide, index) => ({
+  id: slide.id,
+  src: slide.image.src,
+  alt: slide.cardTitle || `Slide ${index + 1}`,
+  width: slide.image.width,
+  height: slide.image.height,
+}))
 
-const spookySlides = Array.from({ length: 9 }, (_, index) => ({
+const spookySlides: StorySlide[] = Array.from({ length: 9 }, (_, index) => ({
   id: `spooky-${index + 1}`,
   src: `/Carousel/Spooky%20Nights/spoky%20night%20${index + 1}.jpg`,
   alt: `Spooky night illustration ${index + 1}`,
@@ -95,16 +115,13 @@ const spookySlides = Array.from({ length: 9 }, (_, index) => ({
   height: 1200,
 }))
 
-// Removed duplicate definition of StorySlide
-
-type StoryCatalog = {
-  id: string
-  title: string
-  subtitle?: string
-  cover: { src: string; width: number; height: number; alt: string }
-  slides: StorySlide[]
-  published?: boolean
-}
+const aPinchOfBadLuckSlides: StorySlide[] = Array.from({ length: 6 }, (_, index) => ({
+  id: `apinch-${index + 1}`,
+  src: `/Carousel/a Pinch of bad luck/Tavola${index + 1}.jpg`,
+  alt: `A pinch of bad luck ${index + 1}`,
+  width: 1600,
+  height: 1200,
+}))
 
 const storyCatalogs: StoryCatalog[] = [
   {
@@ -115,39 +132,23 @@ const storyCatalogs: StoryCatalog[] = [
     slides: spookySlides,
     published: true,
   },
-  // Placeholder examples — duplicate spooky cover for now; you can swap assets later
   {
-    id: "neon",
-    title: "Neon Promenade",
-    subtitle: "Chromatic urban tales",
-    cover: { src: "/Illustrazioni/Quadro%202.jpg", width: 1280, height: 983, alt: "Neon Promenade cover" },
-    slides: [
-      { id: "neon-1", src: "/Illustrazioni/Quadro%202.jpg", alt: "Neon 1", width: 1280, height: 983 },
-      { id: "neon-2", src: "/Illustrazioni/Quadro%201.jpg", alt: "Neon 2", width: 1280, height: 983 },
-      { id: "neon-3", src: "/Illustrazioni/Quadro%203.jpg", alt: "Neon 3", width: 1280, height: 983 },
-    ],
-    published: false,
-  },
-  {
-    id: "liquid",
-    title: "Liquid Horizons",
-    subtitle: "Waves, mist & motion",
-    cover: { src: "/Illustrazioni/Quadro%204.jpg", width: 1280, height: 983, alt: "Liquid Horizons cover" },
-    slides: [
-      { id: "liq-1", src: "/Illustrazioni/Quadro%204.jpg", alt: "Liquid 1", width: 1280, height: 983 },
-      { id: "liq-2", src: "/Illustrazioni/Quadro%203.jpg", alt: "Liquid 2", width: 1280, height: 983 },
-    ],
-    published: false,
+    id: "a-pinch-of-bad-luck",
+    title: "A Pinch of Bad Luck",
+    subtitle: "An unfortunate but pleasant ending",
+    cover: { src: "/Carousel/a Pinch of bad luck/Copertina.jpg", width: 1600, height: 1200, alt: "A Pinch of Bad Luck cover" },
+    slides: aPinchOfBadLuckSlides,
+    published: true,
   },
 ]
 
-// Reusable story carousel
-type StorySlide = { id: string; src: string; alt: string; width: number; height: number }
-
+const heroStory = {
+  id: "__hero__",
+  title: "Illustration",
+  slides: heroSlides,
+}
 
 export default function IllustrationPage() {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [isMobileFullscreen, setIsMobileFullscreen] = useState(false)
   const scrollLockRef = useRef(0)
   const galleryRef = useRef<HTMLDivElement>(null)
   const dragStateRef = useRef({
@@ -158,15 +159,51 @@ export default function IllustrationPage() {
     preventClick: false,
   })
   const [isDraggingGallery, setIsDraggingGallery] = useState(false)
+  const [openStoryId, setOpenStoryId] = useState<string | null>(null)
+  const [storyIndex, setStoryIndex] = useState(0)
 
-  // Removed unused variable 'activeSlide'
-  const handlePrev = () => {
-    setActiveIndex((prev) => (prev - 1 + slides.length) % slides.length)
-  }
+  const lockScroll = useCallback(() => {
+    scrollLockRef.current = window.scrollY
+    document.documentElement.style.overflow = "hidden"
+    document.body.style.overflow = "hidden"
+    document.body.style.position = "fixed"
+    document.body.style.top = `-${scrollLockRef.current}px`
+    document.body.style.width = "100%"
+  }, [])
 
-  const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % slides.length)
-  }
+  const unlockScroll = useCallback(() => {
+    document.body.style.overflow = ""
+    document.documentElement.style.overflow = ""
+    document.body.style.position = ""
+    document.body.style.top = ""
+    document.body.style.width = ""
+    window.scrollTo(0, scrollLockRef.current)
+  }, [])
+
+  const openHeroLightbox = useCallback(
+    (index = 0) => {
+      setOpenStoryId("__hero__")
+      setStoryIndex(index)
+      lockScroll()
+    },
+    [lockScroll],
+  )
+
+  const openLightbox = useCallback(
+    (storyId: string, index = 0) => {
+      setOpenStoryId(storyId)
+      setStoryIndex(index)
+      lockScroll()
+    },
+    [lockScroll],
+  )
+
+  const closeLightbox = useCallback(() => {
+    setOpenStoryId(null)
+    unlockScroll()
+  }, [unlockScroll])
+
+  const openStory = openStoryId === "__hero__" ? heroStory : storyCatalogs.find((story) => story.id === openStoryId) || null
 
   const handleGalleryPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType !== "mouse" || !galleryRef.current) return
@@ -209,123 +246,27 @@ export default function IllustrationPage() {
     openHeroLightbox(index)
   }
 
-
-  // Lightbox state for Stories Catalog
-  const [openStoryId, setOpenStoryId] = useState<string | null>(null)
-  const [storyIndex, setStoryIndex] = useState(0)
-  // --- HERO LIGHTBOX SUPPORT ---
-  const heroSlides: StorySlide[] = slides.map((s, i) => ({
-    id: s.id,
-    src: s.image.src,
-    alt: s.cardTitle || `Slide ${i + 1}`,
-    width: s.image.width,
-    height: s.image.height,
-  }))
-  const openStory = openStoryId === "__hero__"
-    ? { id: "__hero__", title: "Illustration", slides: heroSlides }
-    : (storyCatalogs.find((s) => s.id === openStoryId) || null)
-
-  // Open hero lightbox at index (global, not slot)
-  const openHeroLightbox = (index = 0) => {
-    setOpenStoryId("__hero__")
-    // See above: openStory will resolve to heroSlides
-    setStoryIndex(index)
-    // lock scroll (reuse existing)
-    const y = window.scrollY
-    document.documentElement.style.overflow = "hidden"
-    document.body.style.overflow = "hidden"
-    document.body.style.position = "fixed"
-    document.body.style.top = `-${y}px`
-    document.body.style.width = "100%"
-  }
-
-  // Lightbox handlers
-  const openLightbox = (storyId: string, index = 0) => {
-    setOpenStoryId(storyId)
-    setStoryIndex(index)
-    // lock scroll
-    const y = window.scrollY
-    document.documentElement.style.overflow = "hidden"
-    document.body.style.overflow = "hidden"
-    document.body.style.position = "fixed"
-    document.body.style.top = `-${y}px`
-    document.body.style.width = "100%"
-  }
-  const closeLightbox = () => {
-    setOpenStoryId(null)
-    // unlock
-    const top = document.body.style.top
-    document.body.style.overflow = ""
-    document.documentElement.style.overflow = ""
-    document.body.style.position = ""
-    document.body.style.top = ""
-    document.body.style.width = ""
-    const y = top ? parseInt(top.replace("-", "")) : 0
-    window.scrollTo(0, y)
-  }
-  const prevStorySlide = () => {
+  const prevStorySlide = useCallback(() => {
     if (!openStory) return
-    setStoryIndex((p) => (p - 1 + openStory.slides.length) % openStory.slides.length)
-  }
-  const nextStorySlide = () => {
+    setStoryIndex((previous) => (previous - 1 + openStory.slides.length) % openStory.slides.length)
+  }, [openStory])
+
+  const nextStorySlide = useCallback(() => {
     if (!openStory) return
-    setStoryIndex((p) => (p + 1) % openStory.slides.length)
-  }
+    setStoryIndex((previous) => (previous + 1) % openStory.slides.length)
+  }, [openStory])
 
   // Keyboard navigation for lightbox
   useEffect(() => {
     if (!openStory) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeLightbox()
-      if (e.key === 'ArrowLeft') prevStorySlide()
-      if (e.key === 'ArrowRight') nextStorySlide()
+      if (e.key === "Escape") closeLightbox()
+      if (e.key === "ArrowLeft") prevStorySlide()
+      if (e.key === "ArrowRight") nextStorySlide()
     }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [openStory])
-
-  useEffect(() => {
-    if (!isMobileFullscreen) return
-
-    const originalBodyOverflow = document.body.style.overflow
-    const originalHtmlOverflow = document.documentElement.style.overflow
-    const originalBodyPosition = document.body.style.position
-    const originalBodyTop = document.body.style.top
-    const originalBodyWidth = document.body.style.width
-
-    scrollLockRef.current = window.scrollY
-    document.documentElement.style.overflow = "hidden"
-    document.body.style.overflow = "hidden"
-    document.body.style.position = "fixed"
-    document.body.style.top = `-${scrollLockRef.current}px`
-    document.body.style.width = "100%"
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        if (isMobileFullscreen) {
-          setIsMobileFullscreen(false)
-        }
-      }
-      if (event.key === "ArrowLeft") {
-        handlePrev()
-      }
-      if (event.key === "ArrowRight") {
-        handleNext()
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
-
-    return () => {
-      document.body.style.overflow = originalBodyOverflow
-      document.documentElement.style.overflow = originalHtmlOverflow
-      document.body.style.position = originalBodyPosition
-      document.body.style.top = originalBodyTop
-      document.body.style.width = originalBodyWidth
-      window.removeEventListener("keydown", handleKeyDown)
-      window.scrollTo(0, scrollLockRef.current)
-    }
-  }, [isMobileFullscreen])
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [closeLightbox, nextStorySlide, openStory, prevStorySlide])
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-background text-foreground">
@@ -344,9 +285,6 @@ export default function IllustrationPage() {
 
 
             <div className="flex flex-wrap items-center gap-4">
-              { /* <Button className="rounded-full bg-brand-600 px-6 py-5 text-xs uppercase tracking-[0.32em] text-white hover:bg-brand-500">
-                Browse Collection
-              </Button> */}
               <Button className="rounded-full bg-brand-600 px-6 py-5 text-xs uppercase tracking-[0.32em] text-white hover:bg-brand-500" asChild>
                 <Link href="/contact">Request Artwork</Link>
               </Button>
@@ -419,7 +357,7 @@ export default function IllustrationPage() {
             const visibleCatalogs = storyCatalogs.filter((s) => s.published)
             const single = visibleCatalogs.length === 1
             return (
-              <div className={`grid gap-6 ${single ? 'grid-cols-1 max-w-xl' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
+              <div className={`grid gap-6 ${single ? "grid-cols-1 max-w-xl" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"}`}>
                 {visibleCatalogs.map((story) => (
                   <button
                     key={story.id}
@@ -466,8 +404,18 @@ export default function IllustrationPage() {
             onClick={closeLightbox}
           >
             <div className="flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top)+16px)]">
-              <span className="text-xs tabular-nums tracking-[0.2em] text-white/70">{String(storyIndex + 1).padStart(2,'0')} / {String(openStory.slides.length).padStart(2,'0')}</span>
-              <button type="button" onClick={(e) => { e.stopPropagation(); closeLightbox() }} className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/70 text-white p-0" aria-label="Chiudi galleria">
+              <span className="text-xs tabular-nums tracking-[0.2em] text-white/70">
+                {String(storyIndex + 1).padStart(2, "0")} / {String(openStory.slides.length).padStart(2, "0")}
+              </span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  closeLightbox()
+                }}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/70 p-0 text-white"
+                aria-label="Chiudi galleria"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -512,7 +460,10 @@ export default function IllustrationPage() {
                     type="button"
                     variant="secondary"
                     className="h-12 w-12 rounded-full border-white/25 text-white hover:bg-white/10"
-                    onClick={(e) => { e.stopPropagation(); prevStorySlide() }}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      prevStorySlide()
+                    }}
                     aria-label="Slide precedente"
                   >
                     <ArrowLeft className="h-5 w-5" />
@@ -522,7 +473,10 @@ export default function IllustrationPage() {
                   <Button
                     type="button"
                     className="h-12 w-12 rounded-full bg-brand-600 text-white hover:bg-brand-500"
-                    onClick={(e) => { e.stopPropagation(); nextStorySlide() }}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      nextStorySlide()
+                    }}
                     aria-label="Slide successiva"
                   >
                     <ArrowRight className="h-5 w-5" />
@@ -530,7 +484,6 @@ export default function IllustrationPage() {
                 </div>
               </div>
             </div>
-            {/* Removed bottom buttons for lightbox */}
           </motion.div>
         )}
       </AnimatePresence>
