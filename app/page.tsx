@@ -157,7 +157,7 @@ export default function Home() {
   return (
     <div className="flex flex-col overflow-x-hidden">
       {/* Hero Section */}
-      <section id="hero-section" className="bg-transparent relative flex items-center justify-center min-h-[70vh]">
+      <section id="hero-section" className="relative flex flex-col items-center justify-center min-h-[70vh]">
         <div className="flex w-full justify-center overflow-hidden">
           {/* Hero background animation */}
           <Image
@@ -168,16 +168,8 @@ export default function Home() {
             className="max-w-[520px] sm:max-w-[700px] md:max-w-[900px] lg:max-w-[1200px] w-full h-[400px] object-contain origin-center scale-[1.4] sm:scale-85 "
           />
         </div>
-      </section>
-  
-      {/* Scratch Card Section */}
-      
-      {/*<ScratchBeatSection/>*/}
-
-
-      {/* Tracklist Section */}
-      <section className="pt-4 pb-3 md:pt-12 md:pb-8">
-      <div className="flex justify-center">
+        {/* Search Bar */}
+        <div className="flex justify-center">
                   <div className=" w-full max-w-6xl md:grid-cols-2 flex justify-center gap-6 md:gap-12">
                     {/* Left: Heading, CTAs, Search */}
                     <div className="order-2 md:order-1 space-y-4 md:space-y-6 max-w-xl">
@@ -351,12 +343,21 @@ export default function Home() {
                     {/* Right: Visual panel */}
                  
                   </div>
-          </div>
+       </div>
+      </section>
+  
+      {/* Scratch Card Section */}
+      
+      {/*<ScratchBeatSection/>*/}
+
+
+      {/* Tracklist Section */}
+      <section className="pt-4 pb-3 md:pt-12 md:pb-8">
         <TracklistSection />
       </section>
       
  {/* Illustration Intro Section */}
- <section className="py-10 md:py-16 bg-transparent">
+ <section className="py-10 md:py-16 ">
         <div className="container mx-auto px-4">
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
             <div className="space-y-5 max-w-xl">
@@ -403,7 +404,7 @@ export default function Home() {
       </section>
 
       {/* Featured Content Tabs - Horizontal Scrolling for All Devices */}
-      <section className="pt-3 pb-6 md:pt-10 md:pb-16 bg-transparent">
+      <section className="pt-3 pb-6 md:pt-10 md:pb-16 ">
         <div className="container mx-auto px-4">
           <Tabs defaultValue="new" className="w-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -453,7 +454,7 @@ export default function Home() {
       </section>
 
       {/* Popular Genres */}
-      <section className="py-8 md:py-16 bg-transparent">
+      <section className="py-8 md:py-16 ">
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <h2 className="text-2xl md:text-3xl font-bold font-heading">Popular Genres</h2>
@@ -469,7 +470,7 @@ export default function Home() {
       </section>
 
    {/* Services Section */}
-   <section className="py-8 md:py-16 bg-transparent">
+   <section className="py-8 md:py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-2xl md:text-3xl font-bold mb-4 font-heading">What I Offer</h2>
