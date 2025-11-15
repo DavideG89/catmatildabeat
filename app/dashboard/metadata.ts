@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 const title = "Beats Dashboard"
-const description = "Manage Cat Matilda Beat listings, releases, and analytics from the producer dashboard."
+const description = "Manage Matilda The Cat listings, releases, and analytics from the producer dashboard."
 
 export const metadata: Metadata = {
   title,

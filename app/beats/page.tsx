@@ -29,8 +29,8 @@ function BeatsPageContent() {
     setSearchQuery(e.target.value)
   }, [])
 
-  const handleFiltersChange = useCallback((newFilters: any) => {
-    setFilters(newFilters)
+  const handleFiltersChange = useCallback((newFilters: Record<string, any>) => {
+    return setFilters(newFilters)
   }, [])
 
   return (

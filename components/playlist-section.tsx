@@ -71,7 +71,7 @@ export default function PlaylistSection() {
       setCurrentTrack({
         id: playlist.tracks[0].id,
         title: playlist.tracks[0].title,
-        artist: "Cat Matilda Beat",
+        artist: "Matilda The Cat",
         coverImage: playlist.coverImage,
         audioSrc: "/demo-beat.mp3",
         type: "beat",

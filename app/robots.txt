@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: /dashboard/
+Disallow: /login/
+
+# (Se hai directory o URL che **non** vuoi far indicizzare/crawllare, aggiungile qui)
+# Esempio:
+# Disallow: /admin/
+# Disallow: /private/
+# Disallow: /dashboard/
+# Disallow: /login/
+# Disallow: /*?genre=    # se vuoi impedire l’indicizzazione delle pagine con parametri
+
+Sitemap: https://www.matildathecat.com/sitemap.xml

@@ -157,10 +157,7 @@ export default function Home() {
   return (
     <div className="flex flex-col overflow-x-hidden">
       {/* Hero Section */}
-      <section
-        id="hero-section"
-        className="relative flex items-center justify-center min-h-[70vh]"
-      >
+      <section id="hero-section" className="bg-transparent relative flex items-center justify-center min-h-[70vh]">
         <div className="flex w-full justify-center overflow-hidden">
           {/* Hero background animation */}
           <Image
@@ -492,7 +489,7 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+    </section>
 
       {/* How It Works 
       <section

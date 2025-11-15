@@ -29,7 +29,7 @@ const mockBeats: Beat[] = [
   {
     id: "1",
     title: "Midnight Vibes",
-    producer: "Cat Matilda Beat",
+    producer: "Matilda The Cat",
     coverImage: "/placeholder.svg?height=500&width=500&text=Midnight+Vibes",
     price: 29.99,
     bpm: 140,
@@ -43,7 +43,7 @@ const mockBeats: Beat[] = [
   {
     id: "2",
     title: "Summer Vibes",
-    producer: "Cat Matilda Beat",
+    producer: "Matilda The Cat",
     coverImage: "/placeholder.svg?height=500&width=500&text=Summer+Vibes",
     price: 24.99,
     bpm: 95,
@@ -57,7 +57,7 @@ const mockBeats: Beat[] = [
   {
     id: "3",
     title: "Urban Legend",
-    producer: "Cat Matilda Beat",
+    producer: "Matilda The Cat",
     coverImage: "/placeholder.svg?height=500&width=500&text=Urban+Legend",
     price: 34.99,
     bpm: 160,
@@ -71,7 +71,7 @@ const mockBeats: Beat[] = [
   {
     id: "4",
     title: "Neon Lights",
-    producer: "Cat Matilda Beat",
+    producer: "Matilda The Cat",
     coverImage: "/placeholder.svg?height=500&width=500&text=Neon+Lights",
     price: 27.99,
     bpm: 128,
@@ -245,7 +245,7 @@ export default function BeatDetailPage({ params }: BeatDetailPageProps) {
 
               <div className="bg-muted/30 rounded-lg p-4 mb-6">
                 <p className="text-sm text-muted-foreground mb-2">About this beat</p>
-                <p>{beat.description || "A signature Cat Matilda Beat production built to inspire your next release."}</p>
+                <p>{beat.description || "A signature Matilda The Cat production built to inspire your next release."}</p>
               </div>
 
               <div className="flex flex-col md:flex-row gap-3">

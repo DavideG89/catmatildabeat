@@ -5,7 +5,7 @@ const samplePacks = [
   {
     id: "1",
     title: "Analog Drum Kit",
-    producer: "Cat Matilda Beat",
+    producer: "Matilda The Cat",
     coverImage: "/placeholder.svg?height=400&width=400",
     price: 49.99,
     description:
@@ -17,7 +17,7 @@ const samplePacks = [
   {
     id: "2",
     title: "Future Bass Essentials",
-    producer: "Cat Matilda Beat",
+    producer: "Matilda The Cat",
     coverImage: "/placeholder.svg?height=400&width=400",
     price: 39.99,
     description:
@@ -29,7 +29,7 @@ const samplePacks = [
   {
     id: "3",
     title: "Ambient Textures",
-    producer: "Cat Matilda Beat",
+    producer: "Matilda The Cat",
     coverImage: "/placeholder.svg?height=400&width=400",
     price: 34.99,
     description: "Ethereal pads, atmospheric textures, and evolving soundscapes for ambient and cinematic productions.",
@@ -40,7 +40,7 @@ const samplePacks = [
   {
     id: "4",
     title: "Rap Melody Loops",
-    producer: "Cat Matilda Beat",
+    producer: "Matilda The Cat",
     coverImage: "/placeholder.svg?height=400&width=400",
     price: 29.99,
     description:

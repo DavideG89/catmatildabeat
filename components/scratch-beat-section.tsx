@@ -257,7 +257,7 @@ const ScratchBeatSection = () => {
     return {
       id: "scratch-card-free-beat",
       title: "Catnip Dreams",
-      producer: "Cat Matilda Beat",
+      producer: "Matilda The Cat",
       cover_image: scratchCardConfig.coverImage,
       audio_file: scratchCardConfig.downloadUrl,
       bpm: 88,
@@ -338,7 +338,7 @@ const ScratchBeatSection = () => {
               Scratch the card to reveal the Beat
             </h2>
             <p className="max-w-xl text-base text-white/80 sm:text-lg">
-              Scratch below to uncover a surprise Cat Matilda beat. Once you clear about 20% of the foil, the beat unlocks with full preview and download.
+              Scratch below to uncover a surprise Matilda The Cat. Once you clear about 20% of the foil, the beat unlocks with full preview and download.
             </p>
             <ul className="space-y-2 text-sm text-white/70">
               <li>• Gratta almeno il 20% della card per completare il gioco.</li>
@@ -412,7 +412,7 @@ const ScratchBeatSection = () => {
                     <p className="text-sm text-white/70">
                       {isRevealed
                         ? displayBeat.description ||
-                          "Enjoy this exclusive Cat Matilda Beat and let it spark your next creative idea."
+                          "Enjoy this exclusive Matilda The Cat and let it spark your next creative idea."
                         : "Continua a grattare per sbloccare titolo, dettagli e download del beat gratuito."}
                     </p>
                   </div>

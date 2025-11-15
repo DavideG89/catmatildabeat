@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 const title = "Checkout"
-const description = "Secure checkout for Cat Matilda Beat purchases."
+const description = "Secure checkout for Matilda The Cat purchases."
 
 export const metadata: Metadata = {
   title,
