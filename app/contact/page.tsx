@@ -181,7 +181,7 @@ export default function ContactPage() {
             <div className="mt-6 space-y-4">
               <div className="flex items-center gap-3 text-sm">
                 <Mail className="h-4 w-4 text-brand-500" />
-                <span>catmatildabeat@gmail.com</span>
+                <span>matildathecat.meow@gmail.com</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Clock className="h-4 w-4 text-brand-500" />
