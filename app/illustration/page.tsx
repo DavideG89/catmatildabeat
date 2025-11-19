@@ -326,7 +326,7 @@ export default function IllustrationPage() {
                   key={slide.id}
                   type="button"
                   onClick={(event) => handleSlideClick(event, index)}
-                  className="group relative h-[340px] min-w-[340px] overflow-hidden rounded-[16px] bg-background shadow-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/40 sm:min-w-[300px] lg:h-[420px] lg:min-w-[600px]"
+                  className="group relative h-[340px] min-w-[340px] overflow-hidden rounded-[8px] bg-background shadow-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/40 sm:min-w-[300px] lg:h-[420px] lg:min-w-[600px]"
                   aria-label={`Apri illustrazione ${slide.cardTitle}`}
                 >
                   <Image
@@ -357,13 +357,13 @@ export default function IllustrationPage() {
             const visibleCatalogs = storyCatalogs.filter((s) => s.published)
             const single = visibleCatalogs.length === 1
             return (
-              <div className={`grid gap-6 ${single ? "grid-cols-1 max-w-xl" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"}`}>
+              <div className={`grid gap-6 ${single ? "grid-cols-1 max-w-xl" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
                 {visibleCatalogs.map((story) => (
                   <button
                     key={story.id}
                     type="button"
                     onClick={() => openLightbox(story.id, 0)}
-                    className="group relative block h-[400px] w-[300px] overflow-hidden rounded-[28px] bg-background text-left shadow-md transition hover:shadow-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/40"
+                    className="group relative block h-[400px] w-[300px] overflow-hidden rounded-[8px] bg-background text-left shadow-md transition hover:shadow-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/40"
                     aria-label={`Apri la storia ${story.title}`}
                   >
                     <div className="relative h-full w-full">
