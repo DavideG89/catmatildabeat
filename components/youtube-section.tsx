@@ -169,11 +169,11 @@ export default function YouTubeSection() {
                 <ul className="space-y-3 text-black/70">
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-red-500 rounded-full mr-3 flex-shrink-0"></div>
-                    3 Beats per weeks
+                    First listen to new beats
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-red-500 rounded-full mr-3 flex-shrink-0"></div>
-                    First listen to new beats
+                    3 Illustrated Beats videos per week
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-red-500 rounded-full mr-3 flex-shrink-0"></div>
