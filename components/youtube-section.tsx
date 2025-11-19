@@ -169,19 +169,11 @@ export default function YouTubeSection() {
                 <ul className="space-y-3 text-black/70">
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-red-500 rounded-full mr-3 flex-shrink-0"></div>
-                    Beat making tutorials and breakdowns
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-red-500 rounded-full mr-3 flex-shrink-0"></div>
-                    Behind-the-scenes studio sessions
+                    3 Beats per weeks
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-red-500 rounded-full mr-3 flex-shrink-0"></div>
                     First listen to new beats
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-red-500 rounded-full mr-3 flex-shrink-0"></div>
-                    Producer tips and techniques
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-red-500 rounded-full mr-3 flex-shrink-0"></div>
