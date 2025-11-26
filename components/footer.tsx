@@ -93,7 +93,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
+         {/* <div>
             <h3 className="font-bold mb-4 text-base md:text-lg">Newsletter</h3>
             <p className="text-sm text-foreground mb-4">
               Subscribe to get updates on new beats and exclusive offers.
@@ -116,7 +116,7 @@ export default function Footer() {
                 Newsletter signup is currently unavailable.
               </p>
             )}
-          </div>
+          </div> */}
         </div>
 
         <div className="border-t border-border mt-8 md:mt-12 pt-6 md:pt-8 text-center text-muted-foreground text-xs md:text-sm">
