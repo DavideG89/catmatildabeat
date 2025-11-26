@@ -550,7 +550,8 @@ export default function Home() {
             </p>
             <Button
               size="lg"
-              className="bg-white text-brand-900 hover:bg-gray-100 text-lg px-8"
+              variant='secondary'
+              className=""
               onClick={handleBrowseBeats}
             >
               Start Browsing on BeatStars

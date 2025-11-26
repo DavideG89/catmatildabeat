@@ -117,6 +117,7 @@ export default function Footer() {
               </p>
             )}
           </div> */}
+          
         </div>
 
         <div className="border-t border-border mt-8 md:mt-12 pt-6 md:pt-8 text-center text-muted-foreground text-xs md:text-sm">
